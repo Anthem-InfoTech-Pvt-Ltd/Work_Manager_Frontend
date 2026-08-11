@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi } from '@/lib/api';
+import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 interface Task {
   id: number; title: string; description?: string; priority: string;
   status: string; dueDate?: string; startDate?: string;
-  assigneeName?: string; estimatedHours?: number; actualHours?: number;
+  assigneeName?: string; assigneeId?: number; estimatedHours?: number; actualHours?: number;
   coverColor?: string; commentCount: number; checklistTotal: number; checklistDone: number;
 }
 interface Comment {
@@ -59,7 +59,7 @@ const formatActivity = (type: string, data?: string) => {
   return data;
 };
 
-export default function TaskDetailDrawer({ taskId, onClose }: { taskId: number; onClose: () => void }) {
+export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskId: number; projectId?: number; onClose: () => void }) {
   const { user, hasPermission } = useAuth();
   const canEdit = hasPermission('task.edit') || user?.roles?.includes('Admin') || user?.roles?.includes('Super Admin');
   const [task, setTask] = useState<Task | null>(null);
@@ -80,17 +80,24 @@ export default function TaskDetailDrawer({ taskId, onClose }: { taskId: number; 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState('');
   const [saving, setSaving] = useState(false);
+  const [projectMembers, setProjectMembers] = useState<any[]>([]);
 
   const loadData = () => {
     setLoading(true);
-    Promise.all([
+    const promises: Promise<any>[] = [
       tasksApi.getById(taskId),
       commentsApi.getByTask(taskId),
       checklistsApi.getByTask(taskId),
       attachmentsApi.getByTask(taskId),
       timeTrackingApi.getByTask(taskId),
       activitiesApi.getByTask(taskId),
-    ]).then(([taskRes, cmtRes, chkRes, attRes, timeRes, actRes]) => {
+    ];
+
+    if (projectId) {
+      promises.push(projectsApi.getMembers(projectId));
+    }
+
+    Promise.all(promises).then(([taskRes, cmtRes, chkRes, attRes, timeRes, actRes, membersRes]) => {
       const data = taskRes.data.data;
       const t = data && data.task ? data.task : data;
       const l = data && data.labels ? data.labels : [];
@@ -102,12 +109,15 @@ export default function TaskDetailDrawer({ taskId, onClose }: { taskId: number; 
       setAttachments(attRes.data.data ?? []);
       setTimeEntries(timeRes.data.data ?? []);
       setActivities(actRes.data.data ?? []);
+      if (membersRes) {
+        setProjectMembers(membersRes.data.data ?? []);
+      }
     }).catch(() => {}).finally(() => setLoading(false));
   };
 
   useEffect(() => {
     loadData();
-  }, [taskId]);
+  }, [taskId, projectId]);
 
   const saveField = async (field: string, value: unknown) => {
     if (!task) return;
@@ -357,9 +367,23 @@ export default function TaskDetailDrawer({ taskId, onClose }: { taskId: number; 
                         />
                       )},
                       { label: 'Assignee', value: (
-                        <div style={{ padding: '10px 14px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 8, fontSize: 13, color: task.assigneeName ? 'var(--text-primary)' : 'var(--text-muted)' }}>
-                          {task.assigneeName ?? 'Unassigned'}
-                        </div>
+                        <select
+                          className="input"
+                          value={task.assigneeId || ''}
+                          disabled={!canEdit}
+                          onChange={e => {
+                            const val = e.target.value ? Number(e.target.value) : null;
+                            saveField('assigneeId', val);
+                          }}
+                          style={{ fontSize: 13 }}
+                        >
+                          <option value="">Unassigned</option>
+                          {projectMembers.map(m => (
+                            <option key={m.userId} value={m.userId}>
+                              {m.userName} ({m.userEmail})
+                            </option>
+                          ))}
+                        </select>
                       )},
                       { label: 'Estimated (hrs)', value: (
                         <input type="number" className="input" style={{ fontSize: 13 }}
