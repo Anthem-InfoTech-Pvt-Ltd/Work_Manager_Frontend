@@ -1,12 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/lib/api';
 
 export default function RegisterPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RegisterForm />
+    </Suspense>
+  );
+}
+
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const inviteToken = searchParams.get('invite') || undefined;
+
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -25,12 +36,21 @@ export default function RegisterPage() {
         password,
         firstName,
         lastName,
+        inviteToken,
       });
 
       if (res.data.success) {
-        localStorage.setItem('wm_token', res.data.data.token);
-        localStorage.setItem('wm_user', JSON.stringify(res.data.data.user));
-        router.push('/dashboard');
+        const { token, user, boardId, workspaceId } = res.data.data;
+        localStorage.setItem('wm_token', token);
+        localStorage.setItem('wm_user', JSON.stringify(user));
+        if (workspaceId) {
+          localStorage.setItem('wm_ws_id', String(workspaceId));
+        }
+        if (boardId) {
+          router.push(`/boards/${boardId}`);
+        } else {
+          router.push('/dashboard');
+        }
       } else {
         setError(res.data.message || 'Registration failed');
       }

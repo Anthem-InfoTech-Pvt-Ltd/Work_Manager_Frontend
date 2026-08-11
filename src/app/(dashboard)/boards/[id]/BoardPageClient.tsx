@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { boardsApi, listsApi, tasksApi, projectsApi, usersApi } from '@/lib/api';
+import { boardsApi, listsApi, tasksApi, projectsApi, usersApi, invitationsApi } from '@/lib/api';
 import TaskDetailDrawer from '@/components/board/TaskDetailDrawer';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
@@ -56,26 +56,45 @@ export default function BoardPageClient() {
   const { workspaceId } = useAuth();
   const [showMembers, setShowMembers] = useState(false);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
-  const [allUsers, setAllUsers] = useState<any[]>([]);
-  const [selectedAddUserId, setSelectedAddUserId] = useState<number | null>(null);
   const [loadingMembers, setLoadingMembers] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState('');
 
   const handleOpenMembers = async () => {
     if (!board?.projectId) return;
     setShowMembers(true);
     setLoadingMembers(true);
-    setSelectedAddUserId(null);
+    setInviteEmail('');
+    setGeneratedLink('');
     try {
-      const [membersRes, usersRes] = await Promise.all([
-        projectsApi.getMembers(board.projectId),
-        usersApi.getAll(workspaceId || undefined)
-      ]);
-      setProjectMembers(membersRes.data.data ?? []);
-      setAllUsers(usersRes.data.data ?? []);
+      const res = await projectsApi.getMembers(board.projectId);
+      setProjectMembers(res.data.data ?? []);
     } catch (e) {
       console.error(e);
     } finally {
       setLoadingMembers(false);
+    }
+  };
+
+  const handleSendInvite = async () => {
+    if (!inviteEmail.trim() || !workspaceId || !board) return;
+    setInviting(true);
+    setGeneratedLink('');
+    try {
+      const res = await invitationsApi.create({
+        email: inviteEmail.trim(),
+        workspaceId,
+        projectId: board.projectId,
+        boardId: board.id
+      });
+      setGeneratedLink(res.data.data.inviteLink);
+      setInviteEmail('');
+    } catch (e: any) {
+      console.error(e);
+      alert(e.response?.data?.message || 'Failed to generate invitation');
+    } finally {
+      setInviting(false);
     }
   };
 
@@ -632,45 +651,36 @@ export default function BoardPageClient() {
               Project: <strong style={{ color: 'var(--text-primary)' }}>{board.name}</strong>
             </p>
 
-            {/* Add Member form */}
+            {/* Invite Member form */}
             <div style={{ background: 'var(--bg-secondary)', padding: 16, borderRadius: 12, marginBottom: 24 }}>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                Add Member to Project
+                Invite Member via Email
               </label>
               <div style={{ display: 'flex', gap: 10 }}>
-                <select
+                <input
+                  type="email"
                   className="input"
-                  value={selectedAddUserId || ''}
-                  onChange={e => setSelectedAddUserId(Number(e.target.value) || null)}
+                  placeholder="Enter email address..."
+                  value={inviteEmail}
+                  onChange={e => setInviteEmail(e.target.value)}
                   style={{ flex: 1 }}
-                >
-                  <option value="">Select a user...</option>
-                  {allUsers
-                    .filter(u => !projectMembers.some(pm => pm.userId === u.id))
-                    .map(u => (
-                      <option key={u.id} value={u.id}>
-                        {u.fullName} ({u.email})
-                      </option>
-                    ))}
-                </select>
+                />
                 <button
                   className="btn btn-primary"
-                  disabled={!selectedAddUserId}
-                  onClick={async () => {
-                    if (!selectedAddUserId) return;
-                    try {
-                      await projectsApi.addMember(board.projectId, selectedAddUserId);
-                      setSelectedAddUserId(null);
-                      const res = await projectsApi.getMembers(board.projectId);
-                      setProjectMembers(res.data.data ?? []);
-                    } catch (e) {
-                      console.error(e);
-                    }
-                  }}
+                  disabled={inviting || !inviteEmail.trim()}
+                  onClick={handleSendInvite}
                 >
-                  Add
+                  {inviting ? 'Inviting...' : 'Invite'}
                 </button>
               </div>
+              {generatedLink && (
+                <div style={{ marginTop: 14, padding: 10, background: 'rgba(99,102,241,0.1)', borderRadius: 8, border: '1px solid var(--border)' }}>
+                  <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4, fontWeight: 600 }}>Generated Invite Link (Logged to Backend Console):</p>
+                  <a href={generatedLink} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--accent)', wordBreak: 'break-all', textDecoration: 'underline' }}>
+                    {generatedLink}
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Members List */}

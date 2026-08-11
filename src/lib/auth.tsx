@@ -19,7 +19,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, inviteToken?: string) => Promise<{ boardId?: number }>;
   logout: () => void;
   isLoading: boolean;
   hasPermission: (key: string) => boolean;
@@ -67,29 +67,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
-    const res = await authApi.login(email, password);
-    const { token: t, user: u } = res.data.data;
+  const login = async (email: string, password: string, inviteToken?: string) => {
+    const res = await authApi.login(email, password, inviteToken);
+    const { token: t, user: u, boardId, workspaceId: invitedWsId } = res.data.data;
     localStorage.setItem('wm_token', t);
     localStorage.setItem('wm_user', JSON.stringify(u));
     setToken(t);
     setUser(u);
 
-    // Fetch and initialize workspace ID
-    try {
-      // Temporarily set token header manually for this initial request
-      const wsRes = await workspacesApi.getAll();
-      const wsList = wsRes.data.data;
-      if (wsList && wsList.length > 0) {
-        const id = wsList[0].id;
-        localStorage.setItem('wm_ws_id', String(id));
-        setWorkspaceId(id);
-      } else {
+    if (invitedWsId) {
+      localStorage.setItem('wm_ws_id', String(invitedWsId));
+      setWorkspaceId(invitedWsId);
+    } else {
+      // Fetch and initialize workspace ID
+      try {
+        const wsRes = await workspacesApi.getAll();
+        const wsList = wsRes.data.data;
+        if (wsList && wsList.length > 0) {
+          const id = wsList[0].id;
+          localStorage.setItem('wm_ws_id', String(id));
+          setWorkspaceId(id);
+        } else {
+          setWorkspaceId(1);
+        }
+      } catch {
         setWorkspaceId(1);
       }
-    } catch {
-      setWorkspaceId(1);
     }
+
+    return { boardId };
   };
 
   const logout = () => {

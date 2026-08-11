@@ -37,14 +37,14 @@ const dummyResolve = (data: any, message = '') => Promise.resolve({
 
 // ── Auth ──────────────────────────────────────────────────
 export const authApi = {
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
-  register: (data: { email: string; password: string; firstName: string; lastName: string }) =>
+  login: (email: string, password: string, inviteToken?: string) =>
+    api.post('/auth/login', { email, password, inviteToken }),
+  register: (data: { email: string; password: string; firstName: string; lastName: string; inviteToken?: string }) =>
     api.post('/auth/register', data),
   me: () => api.get('/auth/me'),
   changePassword: (..._args: any[]) => dummyResolve(true),
-  forgotPassword: (..._args: any[]) => dummyResolve('token'),
-  resetPassword: (..._args: any[]) => dummyResolve(true),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (data: object) => api.post('/auth/reset-password', data),
 };
 
 // ── Workspaces ────────────────────────────────────────────
@@ -164,6 +164,11 @@ export const usersApi = {
   getAll: (workspaceId?: number) => api.get(workspaceId ? `/users?workspaceId=${workspaceId}` : '/users'),
   assignRoles: (id: number, roles: string[]) => api.post(`/users/${id}/roles`, roles),
   update: (..._args: any[]) => dummyResolve(true),
+};
+export const invitationsApi = {
+  create: (data: { email: string; workspaceId: number; projectId?: number; boardId?: number }) => api.post('/invitations', data),
+  validate: (token: string) => api.get(`/invitations/validate?token=${token}`),
+  accept: (token: string) => api.post(`/invitations/accept?token=${token}`),
 };
 export const auditApi = { getLogs: (..._args: any[]) => dummyResolve([]) };
 export const departmentsApi = {
