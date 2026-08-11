@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { authApi } from '@/lib/api';
+import { authApi, invitationsApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 
 export default function RegisterPage() {
   return (
@@ -17,6 +18,7 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('invite') || undefined;
+  const { token } = useAuth();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -24,6 +26,25 @@ function RegisterForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (token && inviteToken) {
+      invitationsApi.accept(inviteToken)
+        .then(() => {
+          invitationsApi.validate(inviteToken)
+            .then(inviteRes => {
+              const boardId = inviteRes.data.data.boardId;
+              router.push(`/boards/${boardId}`);
+            })
+            .catch(() => {
+              router.push('/dashboard');
+            });
+        })
+        .catch(() => {
+          router.push('/dashboard');
+        });
+    }
+  }, [token, inviteToken, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -123,7 +144,7 @@ function RegisterForm() {
 
         <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
           Already have an account?{' '}
-          <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
+          <Link href={inviteToken ? `/login?invite=${inviteToken}` : "/login"} style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
             Sign In
           </Link>
         </p>

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { invitationsApi } from '@/lib/api';
 
 export default function LoginPage() {
   return (
@@ -18,10 +19,29 @@ function LoginForm() {
   const [password, setPassword] = useState('Admin@123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, token } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('invite') || undefined;
+
+  useEffect(() => {
+    if (token && inviteToken) {
+      invitationsApi.accept(inviteToken)
+        .then(() => {
+          invitationsApi.validate(inviteToken)
+            .then(inviteRes => {
+              const boardId = inviteRes.data.data.boardId;
+              router.push(`/boards/${boardId}`);
+            })
+            .catch(() => {
+              router.push('/dashboard');
+            });
+        })
+        .catch(() => {
+          router.push('/dashboard');
+        });
+    }
+  }, [token, inviteToken, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -175,7 +195,7 @@ function LoginForm() {
 
           <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
             Don't have an account?{' '}
-            <Link href="/register" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
+            <Link href={inviteToken ? `/register?invite=${inviteToken}` : "/register"} style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
               Sign Up
             </Link>
           </p>
