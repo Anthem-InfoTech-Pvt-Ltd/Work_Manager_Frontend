@@ -87,10 +87,12 @@ export default function BoardPageClient() {
         boardsApi.getById(boardId),
         tasksApi.getByBoard(boardId),
       ]);
-      const { board: b, views: v } = boardRes.data.data;
-      const allTasks: Task[] = tasksRes.data.data;
+      const data = boardRes.data.data;
+      const b = data && data.board ? data.board : data;
+      const v = data && data.views ? data.views : [];
       setBoard(b);
       setViews(v);
+      const allTasks: Task[] = tasksRes.data.data;
 
       const listsRes = await listsApi.getByBoard(boardId);
       const rawLists: List[] = listsRes.data.data;
