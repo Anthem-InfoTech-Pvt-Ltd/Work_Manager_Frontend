@@ -631,9 +631,10 @@ export default function BoardPageClient() {
       )}
 
       {/* Task Detail Drawer */}
-      {selectedTaskId && (
+      {selectedTaskId && board && (
         <TaskDetailDrawer
           taskId={selectedTaskId}
+          projectId={board.projectId}
           onClose={() => { setSelectedTaskId(null); loadBoard(); }}
         />
       )}
