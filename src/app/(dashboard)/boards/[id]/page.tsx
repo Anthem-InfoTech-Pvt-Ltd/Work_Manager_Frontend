@@ -1,10 +1,6 @@
 import BoardPageClient from './BoardPageClient';
 
-export const dynamicParams = false;
-
-export async function generateStaticParams() {
-  return [{ id: 'default' }, { id: '1' }];
-}
+export const dynamicParams = true;
 
 export default function BoardPage() {
   return <BoardPageClient />;
