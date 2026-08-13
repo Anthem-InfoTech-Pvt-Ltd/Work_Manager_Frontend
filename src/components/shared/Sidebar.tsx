@@ -30,6 +30,7 @@ export default function Sidebar() {
   ];
 
   const adminItems: NavItem[] = [
+    { label: 'User Management', href: '/admin/users', icon: <Icon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M9 11a4 4 0 004-4 4 4 0 00-4-4 4 4 0 00-4 4 4 4 0 004 4zm7-7.83a8.87 8.87 0 014 4.83m0 6a8.87 8.87 0 01-4 4.83" /> },
     /*
     { label: 'Roles & Perms',  href: '/admin/roles',         icon: <Icon d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /> },
     { label: 'Custom Fields',  href: '/admin/custom-fields', icon: <Icon d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" /> },

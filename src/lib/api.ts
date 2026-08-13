@@ -163,7 +163,8 @@ export const notificationsApi = {
 export const usersApi = {
   getAll: (workspaceId?: number) => api.get(workspaceId ? `/users?workspaceId=${workspaceId}` : '/users'),
   assignRoles: (id: number, roles: string[]) => api.post(`/users/${id}/roles`, roles),
-  update: (..._args: any[]) => dummyResolve(true),
+  update: (id: number, data: { firstName: string; lastName: string; role?: string }) => api.put(`/users/${id}`, data),
+  delete: (id: number) => api.delete(`/users/${id}`),
 };
 export const invitationsApi = {
   create: (data: { email: string; workspaceId: number; projectId?: number; boardId?: number }) => api.post('/invitations', data),
