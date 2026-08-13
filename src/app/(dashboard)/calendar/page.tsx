@@ -43,29 +43,42 @@ export default function CalendarPage() {
     try {
       const projectsRes = await projectsApi.getAll(workspaceId);
       const projects = projectsRes.data.data || [];
-      const list: Event[] = [];
-
-      for (const p of projects) {
-        const boardsRes = await boardsApi.getByProject(p.id);
-        const boards = boardsRes.data.data || [];
-        for (const b of boards) {
-          const tasksRes = await tasksApi.getByBoard(b.id);
-          const tasks = tasksRes.data.data || [];
-          for (const t of tasks) {
-            if (t.dueDate) {
-              list.push({
-                id: t.id,
-                title: t.title,
-                date: t.dueDate.split('T')[0],
-                project: p.name,
-                color: p.color || '#6366f1',
-                priority: t.priority
-              });
+      
+      const projectBoardsPromises = projects.map(async (p: any) => {
+        try {
+          const boardsRes = await boardsApi.getByProject(p.id);
+          const boards = boardsRes.data.data || [];
+          
+          const boardTasksPromises = boards.map(async (b: any) => {
+            try {
+              const tasksRes = await tasksApi.getByBoard(b.id);
+              const tasks = tasksRes.data.data || [];
+              return tasks
+                .filter((t: any) => t.dueDate)
+                .map((t: any) => ({
+                  id: t.id,
+                  title: t.title,
+                  date: t.dueDate.split('T')[0],
+                  project: p.name,
+                  color: p.color || '#6366f1',
+                  priority: t.priority
+                }));
+            } catch (err) {
+              console.error(`Failed to load tasks for board ${b.id}`, err);
+              return [];
             }
-          }
+          });
+          
+          const tasksArrays = await Promise.all(boardTasksPromises);
+          return tasksArrays.flat();
+        } catch (err) {
+          console.error(`Failed to load boards for project ${p.id}`, err);
+          return [];
         }
-      }
-      setRealEvents(list);
+      });
+
+      const eventsArrays = await Promise.all(projectBoardsPromises);
+      setRealEvents(eventsArrays.flat());
     } catch (e) {
       console.error(e);
     } finally {
