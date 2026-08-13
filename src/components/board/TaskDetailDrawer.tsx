@@ -97,22 +97,29 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
       promises.push(projectsApi.getMembers(projectId));
     }
 
-    Promise.all(promises).then(([taskRes, cmtRes, chkRes, attRes, timeRes, actRes, membersRes]) => {
-      const data = taskRes.data.data;
-      const t = data && data.task ? data.task : data;
-      const l = data && data.labels ? data.labels : [];
-      setTask(t);
-      if (t) setTitleValue(t.title);
-      setLabels(l ?? []);
-      setComments(cmtRes.data.data ?? []);
-      setChecklists(chkRes.data.data ?? []);
-      setAttachments(attRes.data.data ?? []);
-      setTimeEntries(timeRes.data.data ?? []);
-      setActivities(actRes.data.data ?? []);
-      if (membersRes) {
-        setProjectMembers(membersRes.data.data ?? []);
+    const getVal = (result: PromiseSettledResult<any>) =>
+      result.status === 'fulfilled' ? result.value : null;
+
+    Promise.allSettled(promises).then((results) => {
+      const [taskRes, cmtRes, chkRes, attRes, timeRes, actRes, membersRes] = results.map(getVal);
+
+      if (taskRes) {
+        const data = taskRes.data.data;
+        const t = data && data.task ? data.task : data;
+        const l = data && data.labels ? data.labels : [];
+        setTask(t);
+        if (t) setTitleValue(t.title);
+        setLabels(l ?? []);
       }
-    }).catch(() => {}).finally(() => setLoading(false));
+      setComments(cmtRes?.data?.data ?? []);
+      setChecklists(chkRes?.data?.data ?? []);
+      setAttachments(attRes?.data?.data ?? []);
+      setTimeEntries(timeRes?.data?.data ?? []);
+      setActivities(actRes?.data?.data ?? []);
+      if (membersRes) {
+        setProjectMembers(membersRes?.data?.data ?? []);
+      }
+    }).finally(() => setLoading(false));
   };
 
   useEffect(() => {
