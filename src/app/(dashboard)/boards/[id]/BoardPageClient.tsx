@@ -200,6 +200,44 @@ export default function BoardPageClient() {
     }
   };
 
+  const moveList = async (listId: number, direction: 'left' | 'right') => {
+    const listIndex = lists.findIndex(l => l.id === listId);
+    if (listIndex === -1) return;
+    
+    const targetIndex = direction === 'left' ? listIndex - 1 : listIndex + 1;
+    if (targetIndex < 0 || targetIndex >= lists.length) return;
+    
+    const currentList = lists[listIndex];
+    const targetList = lists[targetIndex];
+    
+    const tempPos = currentList.position;
+    currentList.position = targetList.position;
+    targetList.position = tempPos;
+    
+    try {
+      await Promise.all([
+        listsApi.update(currentList.id, { name: currentList.name, position: currentList.position }),
+        listsApi.update(targetList.id, { name: targetList.name, position: targetList.position })
+      ]);
+      loadBoard();
+    } catch (e) {
+      console.error(e);
+      alert('Failed to reorder columns');
+    }
+  };
+
+  const deleteList = async (listId: number, listName: string) => {
+    if (confirm(`Are you sure you want to delete column "${listName}"? All tasks inside it will be permanently deleted.`)) {
+      try {
+        await listsApi.delete(listId);
+        loadBoard();
+      } catch (e) {
+        console.error(e);
+        alert('Failed to delete column');
+      }
+    }
+  };
+
   const addTask = async (listId: number) => {
     if (!newTaskTitle.trim()) return;
     try {
@@ -270,7 +308,7 @@ export default function BoardPageClient() {
               <div key={list.id} className="kanban-column">
                 {/* Column header */}
                 <div className="kanban-column-header">
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
                     <div style={{ width: 10, height: 10, borderRadius: '50%', background: list.color, flexShrink: 0 }} />
                     {editingListId === list.id ? (
                       <input
@@ -278,7 +316,7 @@ export default function BoardPageClient() {
                         style={{
                           fontSize: 13,
                           height: 26,
-                          width: 130,
+                          width: 120,
                           padding: '2px 8px',
                           background: 'var(--bg-primary)',
                           border: '1px solid var(--border)',
@@ -296,7 +334,7 @@ export default function BoardPageClient() {
                       />
                     ) : (
                       <span
-                        style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer' }}
+                        style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer', flexGrow: 1 }}
                         onClick={() => {
                           setEditingListId(list.id);
                           setEditingListName(list.name);
@@ -315,10 +353,35 @@ export default function BoardPageClient() {
                     {list.wipLimit && (list.tasks?.length ?? 0) >= list.wipLimit && (
                       <span style={{ fontSize: 11, color: 'var(--danger)' }}>WIP limit!</span>
                     )}
+
+                    {/* Column controls */}
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
+                      <button
+                        onClick={() => moveList(list.id, 'left')}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
+                        title="Move Left"
+                      >
+                        ←
+                      </button>
+                      <button
+                        onClick={() => moveList(list.id, 'right')}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
+                        title="Move Right"
+                      >
+                        →
+                      </button>
+                      <button
+                        onClick={() => deleteList(list.id, list.name)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '2px', fontSize: 16, lineHeight: 1 }}
+                        title="Delete Column"
+                      >
+                        ×
+                      </button>
+                    </div>
                   </div>
                   <button
                     onClick={() => setAddingTaskListId(list.id)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 20, lineHeight: 1, borderRadius: 6, padding: '0 4px', transition: 'color 0.15s' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 20, lineHeight: 1, borderRadius: 6, padding: '0 4px', transition: 'color 0.15s', marginLeft: 8 }}
                     onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
                     onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
                   >+</button>
