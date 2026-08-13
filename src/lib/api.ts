@@ -51,6 +51,8 @@ export const authApi = {
 export const workspacesApi = {
   getAll: () => api.get('/workspaces'),
   create: (data: { name: string }) => api.post('/workspaces', data),
+  update: (id: number, data: { name: string }) => api.put(`/workspaces/${id}`, data),
+  delete: (id: number) => api.delete(`/workspaces/${id}`),
   archive: (..._args: any[]) => dummyResolve(true),
   restore: (..._args: any[]) => dummyResolve(true),
   getMembers: (id: number) => api.get(`/workspaces/${id}/members`),
@@ -165,6 +167,9 @@ export const usersApi = {
   assignRoles: (id: number, roles: string[]) => api.post(`/users/${id}/roles`, roles),
   update: (id: number, data: { firstName: string; lastName: string; role?: string }) => api.put(`/users/${id}`, data),
   delete: (id: number) => api.delete(`/users/${id}`),
+};
+export const adminApi = {
+  getPlatformSummary: () => api.get('/adminplatform/summary'),
 };
 export const invitationsApi = {
   create: (data: { email: string; workspaceId: number; projectId?: number; boardId?: number }) => api.post('/invitations', data),
