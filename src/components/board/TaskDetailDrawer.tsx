@@ -155,6 +155,16 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
     }
   };
 
+  const deleteTask = async () => {
+    if (!confirm('Are you sure you want to delete this task?')) return;
+    try {
+      await tasksApi.delete(taskId);
+      onClose();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'You do not have permission to delete this task.');
+    }
+  };
+
   const createChecklist = async () => {
     if (!newChecklistName.trim()) return;
     try {
@@ -285,12 +295,38 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
                     </h2>
                   )}
                 </div>
-                <button
-                  onClick={onClose}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 8, fontSize: 20, lineHeight: 1, flexShrink: 0 }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
-                >×</button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                  <button
+                    onClick={deleteTask}
+                    style={{
+                      background: 'transparent',
+                      border: '1px solid var(--danger)',
+                      borderRadius: 8,
+                      padding: '6px 12px',
+                      fontSize: 12,
+                      color: 'var(--danger)',
+                      cursor: 'pointer',
+                      fontWeight: 600,
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.background = 'var(--danger)';
+                      (e.currentTarget as HTMLElement).style.color = '#fff';
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.background = 'transparent';
+                      (e.currentTarget as HTMLElement).style.color = 'var(--danger)';
+                    }}
+                  >
+                    Delete Task
+                  </button>
+                  <button
+                    onClick={onClose}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 8, fontSize: 20, lineHeight: 1 }}
+                    onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                    onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+                  >×</button>
+                </div>
               </div>
 
               {labels.length > 0 && (
