@@ -179,7 +179,8 @@ export default function BoardPageClient() {
 
   const addList = async () => {
     if (!newListName.trim()) return;
-    await listsApi.create({ boardId, name: newListName.trim(), color: '#6366f1' });
+    const nextPosition = lists.length;
+    await listsApi.create({ boardId, name: newListName.trim(), color: '#6366f1', position: nextPosition });
     setNewListName('');
     setAddingList(false);
     loadBoard();
@@ -207,19 +208,24 @@ export default function BoardPageClient() {
     const targetIndex = direction === 'left' ? listIndex - 1 : listIndex + 1;
     if (targetIndex < 0 || targetIndex >= lists.length) return;
     
-    const currentList = lists[listIndex];
-    const targetList = lists[targetIndex];
-    
-    const tempPos = currentList.position;
-    currentList.position = targetList.position;
-    targetList.position = tempPos;
+    const reorderedLists = [...lists];
+    const [movedColumn] = reorderedLists.splice(listIndex, 1);
+    reorderedLists.splice(targetIndex, 0, movedColumn);
     
     try {
-      await Promise.all([
-        listsApi.update(currentList.id, { name: currentList.name, position: currentList.position }),
-        listsApi.update(targetList.id, { name: targetList.name, position: targetList.position })
-      ]);
-      loadBoard();
+      const promises = reorderedLists.map((l, index) => {
+        if (l.position !== index) {
+          l.position = index;
+          return listsApi.update(l.id, { name: l.name, position: index });
+        }
+        return null;
+      }).filter((p): p is Promise<any> => p !== null);
+      
+      if (promises.length > 0) {
+        await Promise.all(promises);
+      }
+      
+      setLists(reorderedLists);
     } catch (e) {
       console.error(e);
       alert('Failed to reorder columns');
