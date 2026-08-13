@@ -105,10 +105,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const roleTiers: Record<string, number> = {
     'Super Admin': 4,
     'Admin': 3,
-    'Manager': 2,
-    'Developer': 1,
-    'QA': 1,
-    'Viewer': 0,
   };
 
   const hasPermission = (key: string) => {

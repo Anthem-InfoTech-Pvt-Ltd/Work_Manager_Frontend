@@ -15,7 +15,7 @@ interface UserDto {
 
 export default function MembersPage() {
   const { user: currentUser, workspaceId } = useAuth();
-  const currentUserRole = currentUser?.roles?.[0] ?? 'Viewer';
+  const currentUserRole = currentUser?.roles?.[0] ?? 'Admin';
   const isAdmin = currentUserRole === 'Super Admin' || currentUserRole === 'Admin';
 
   const [users, setUsers] = useState<UserDto[]>([]);
@@ -28,7 +28,7 @@ export default function MembersPage() {
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [selectedRole, setSelectedRole] = useState('Viewer');
+  const [selectedRole, setSelectedRole] = useState('Admin');
   const [error, setError] = useState('');
   const [adding, setAdding] = useState(false);
 
@@ -51,8 +51,8 @@ export default function MembersPage() {
       const regRes = await authApi.register({ email, password, firstName, lastName });
       const userId = regRes.data.data.user.id;
       
-      // Assign selected role if not default Viewer (register endpoint assigns Viewer by default)
-      if (selectedRole !== 'Viewer') {
+      // Assign selected role if not default Admin
+      if (selectedRole !== 'Admin') {
         await usersApi.assignRoles(userId, [selectedRole]);
       }
 
@@ -66,7 +66,7 @@ export default function MembersPage() {
       setLastName('');
       setEmail('');
       setPassword('');
-      setSelectedRole('Viewer');
+      setSelectedRole('Admin');
       setShowAddModal(false);
       
       // Reload users list
@@ -146,7 +146,7 @@ export default function MembersPage() {
                 <td style={{ padding: '12px 14px' }}>
                   {isAdmin ? (
                     <select
-                      value={u.roles?.[0] ?? 'Viewer'}
+                      value={u.roles?.[0] ?? 'Admin'}
                       onChange={(e) => handleRoleChange(u.id, e.target.value)}
                       style={{
                         background: 'var(--bg-hover)',
@@ -170,7 +170,7 @@ export default function MembersPage() {
                       padding: '4px 10px', borderRadius: 8, fontSize: 12, fontWeight: 600,
                       background: 'rgba(99,102,241,0.12)', color: 'var(--accent)'
                     }}>
-                      {u.roles?.[0] ?? 'Viewer'}
+                      {u.roles?.[0] ?? 'Admin'}
                     </span>
                   )}
                 </td>

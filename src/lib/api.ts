@@ -146,8 +146,7 @@ export const dashboardApi = {
 export const rolesApi = {
   getAll: (..._args: any[]) => dummyResolve([
     { id: 1, name: 'Super Admin' },
-    { id: 2, name: 'Admin' },
-    { id: 3, name: 'Viewer' }
+    { id: 2, name: 'Admin' }
   ]),
   getPermissions: (..._args: any[]) => dummyResolve([]),
   getRolePermissions: (..._args: any[]) => dummyResolve([]),
