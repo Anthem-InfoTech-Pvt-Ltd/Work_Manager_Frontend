@@ -336,23 +336,6 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <span className={`badge badge-priority-${project.priority}`}>{project.priority}</span>
-        <button
-          onClick={() => onManageMembers(project.id, project.name)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: 'var(--accent)',
-            cursor: 'pointer',
-            fontSize: 12,
-            fontWeight: 600,
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 4
-          }}
-        >
-          👥 Members
-        </button>
         <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {new Date(project.createdAt).toLocaleDateString()}
         </span>

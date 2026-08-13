@@ -3,7 +3,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useSearchParams } from 'next/navigation';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
-import { boardsApi, listsApi, tasksApi } from '@/lib/api';
+import { boardsApi, listsApi, tasksApi, projectsApi, usersApi } from '@/lib/api';
+import { useAuth } from '@/lib/auth';
 import TaskDetailDrawer from '@/components/board/TaskDetailDrawer';
 import { formatDateIndian } from '@/lib/format';
 
@@ -28,6 +29,8 @@ const priorityConfig: Record<string, { color: string; icon: string }> = {
 
 export default function BoardPageClient() {
   const { id } = useParams<{ id: string }>();
+  const { user, workspaceId } = useAuth();
+  const isSuperAdmin = user?.roles?.includes('Super Admin');
   
   // Resolve boardId. If NaN (e.g. during static generation or after rewrite), try reading from pathname.
   let boardId = parseInt(id);
@@ -51,6 +54,32 @@ export default function BoardPageClient() {
   const [editingListId, setEditingListId] = useState<number | null>(null);
   const [editingListName, setEditingListName] = useState('');
 
+  // Members state
+  const [showMembers, setShowMembers] = useState(false);
+  const [projectMembers, setProjectMembers] = useState<any[]>([]);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
+  const [selectedAddUserId, setSelectedAddUserId] = useState<number | null>(null);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+
+  const handleOpenMembers = async () => {
+    if (!board?.projectId) return;
+    setShowMembers(true);
+    setLoadingMembers(true);
+    setSelectedAddUserId(null);
+    try {
+      const [membersRes, usersRes] = await Promise.all([
+        projectsApi.getMembers(board.projectId),
+        usersApi.getAll(workspaceId || undefined)
+      ]);
+      setProjectMembers(membersRes.data.data ?? []);
+      setAllUsers(usersRes.data.data ?? []);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingMembers(false);
+    }
+  };
+
   const loadBoard = useCallback(async () => {
     if (isNaN(boardId)) return;
     setLoading(true);
@@ -59,10 +88,9 @@ export default function BoardPageClient() {
         boardsApi.getById(boardId),
         tasksApi.getByBoard(boardId),
       ]);
-      const { board: b, views: v } = boardRes.data.data;
+      const b = boardRes.data.data;
       const allTasks: Task[] = tasksRes.data.data;
       setBoard(b);
-      setViews(v);
 
       const listsRes = await listsApi.getByBoard(boardId);
       const rawLists: List[] = listsRes.data.data;
@@ -198,6 +226,20 @@ export default function BoardPageClient() {
             </button>
           ))}
         </div>
+        {isSuperAdmin && (
+          <button
+            onClick={handleOpenMembers}
+            style={{
+              padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+              cursor: 'pointer', border: 'none', transition: 'all 0.2s',
+              background: 'rgba(99, 102, 241, 0.15)', color: 'var(--accent)',
+              marginLeft: 'auto',
+              display: 'flex', alignItems: 'center', gap: 6
+            }}
+          >
+            👥 Members
+          </button>
+        )}
       </div>
 
       {/* Kanban Board */}
@@ -574,6 +616,109 @@ export default function BoardPageClient() {
           taskId={selectedTaskId}
           onClose={() => { setSelectedTaskId(null); loadBoard(); }}
         />
+      )}
+
+      {/* Manage Project Members Modal */}
+      {showMembers && board && (
+        <div className="overlay" onClick={() => setShowMembers(false)}>
+          <div style={{
+            background: 'var(--bg-card)', border: '1px solid var(--border)',
+            borderRadius: 20, padding: 32, width: 500, maxWidth: '90vw',
+            boxShadow: '0 32px 80px rgba(0,0,0,0.6)',
+            color: 'var(--text-primary)',
+          }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Manage Members</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 24 }}>
+              Project: <strong style={{ color: 'var(--text-primary)' }}>{board.name}</strong>
+            </p>
+
+            {/* Add Member form */}
+            <div style={{ background: 'var(--bg-secondary)', padding: 16, borderRadius: 12, marginBottom: 24 }}>
+              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                Add Member to Project
+              </label>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <select
+                  className="input"
+                  value={selectedAddUserId || ''}
+                  onChange={e => setSelectedAddUserId(Number(e.target.value) || null)}
+                  style={{ flex: 1 }}
+                >
+                  <option value="">Select a user...</option>
+                  {allUsers
+                    .filter(u => !projectMembers.some(pm => pm.userId === u.id))
+                    .map(u => (
+                      <option key={u.id} value={u.id}>
+                        {u.fullName} ({u.email})
+                      </option>
+                    ))}
+                </select>
+                <button
+                  className="btn btn-primary"
+                  disabled={!selectedAddUserId}
+                  onClick={async () => {
+                    if (!selectedAddUserId) return;
+                    try {
+                      await projectsApi.addMember(board.projectId, selectedAddUserId);
+                      setSelectedAddUserId(null);
+                      const res = await projectsApi.getMembers(board.projectId);
+                      setProjectMembers(res.data.data ?? []);
+                    } catch (e) {
+                      console.error(e);
+                    }
+                  }}
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+
+            {/* Members List */}
+            <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)' }}>
+              Current Members ({projectMembers.length})
+            </h4>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 240, overflowY: 'auto', marginBottom: 24 }}>
+              {loadingMembers ? (
+                <div className="skeleton" style={{ height: 40 }} />
+              ) : projectMembers.length === 0 ? (
+                <p style={{ color: 'var(--text-muted)', fontSize: 13, fontStyle: 'italic', textAlign: 'center', padding: '12px 0' }}>
+                  No members in this project yet.
+                </p>
+              ) : (
+                projectMembers.map(m => (
+                  <div key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 10 }}>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{m.userName}</p>
+                      <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.userEmail}</p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        try {
+                          await projectsApi.removeMember(board.projectId, m.userId);
+                          const res = await projectsApi.getMembers(board.projectId);
+                          setProjectMembers(res.data.data ?? []);
+                        } catch (e) {
+                          console.error(e);
+                        }
+                      }}
+                      style={{
+                        background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
+                        fontSize: 12, fontWeight: 600, padding: '4px 8px'
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary" onClick={() => setShowMembers(false)}>Close</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
