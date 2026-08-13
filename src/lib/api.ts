@@ -168,7 +168,7 @@ export const notificationsApi = {
 export const usersApi = {
   getAll: (workspaceId?: number) => api.get(workspaceId ? `/users?workspaceId=${workspaceId}` : '/users'),
   assignRoles: (id: number, roles: string[]) => api.post(`/users/${id}/roles`, roles),
-  update: (id: number, data: { firstName: string; lastName: string; role?: string }) => api.put(`/users/${id}`, data),
+  update: (id: number, data: { firstName: string; lastName: string; role?: string; phone?: string; jobTitle?: string; bio?: string }) => api.put(`/users/${id}`, data),
   delete: (id: number) => api.delete(`/users/${id}`),
 };
 export const adminApi = {
