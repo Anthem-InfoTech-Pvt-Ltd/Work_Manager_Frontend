@@ -151,6 +151,9 @@ export default function UserManagementPage() {
   };
 
   const filteredUsers = users.filter(user => {
+    const isSuperAdmin = user.role.toLowerCase() === 'super_admin' || user.role.toLowerCase() === 'superadmin';
+    if (isSuperAdmin) return false;
+
     const term = searchTerm.toLowerCase();
     return (
       user.fullName.toLowerCase().includes(term) ||
