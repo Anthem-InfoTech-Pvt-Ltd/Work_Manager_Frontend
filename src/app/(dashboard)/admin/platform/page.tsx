@@ -70,7 +70,10 @@ export default function PlatformManagementPage() {
 
   // Workspace members manager modal state
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+  const [memberModalType, setMemberModalType] = useState<'workspace' | 'project' | 'board'>('workspace');
   const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceItem | null>(null);
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const [selectedBoard, setSelectedBoard] = useState<BoardItem | null>(null);
   const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
   const [addingMemberUserId, setAddingMemberUserId] = useState('');
 
@@ -156,30 +159,61 @@ export default function PlatformManagementPage() {
     }
   };
 
-  // -- WORKSPACE MEMBERS --
-  const handleOpenMembersModal = async (ws: WorkspaceItem) => {
-    setSelectedWorkspace(ws);
+  // -- MEMBERS MANAGEMENT --
+  const handleOpenMembersModal = async (type: 'workspace' | 'project' | 'board', item: any) => {
+    setMemberModalType(type);
+    if (type === 'workspace') {
+      setSelectedWorkspace(item);
+      setSelectedProject(null);
+      setSelectedBoard(null);
+    } else if (type === 'project') {
+      setSelectedWorkspace(null);
+      setSelectedProject(item);
+      setSelectedBoard(null);
+    } else {
+      setSelectedWorkspace(null);
+      setSelectedProject(null);
+      setSelectedBoard(item);
+    }
     setIsMembersModalOpen(true);
     setAddingMemberUserId('');
     setActionError(null);
     try {
-      const res = await workspacesApi.getMembers(ws.id);
+      let res;
+      if (type === 'workspace') {
+        res = await workspacesApi.getMembers(item.id);
+      } else if (type === 'project') {
+        res = await projectsApi.getMembers(item.id);
+      } else {
+        res = await boardsApi.getMembers(item.id);
+      }
       if (res.data.success) {
         setWorkspaceMembers(res.data.data || []);
       }
     } catch (err: any) {
-      setActionError(err.response?.data?.message || 'Failed to load workspace members.');
+      setActionError(err.response?.data?.message || `Failed to load ${type} members.`);
     }
   };
 
   const handleAddWorkspaceMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedWorkspace || !addingMemberUserId) return;
+    if (!addingMemberUserId) return;
     setActionError(null);
     try {
-      const res = await workspacesApi.addMember(selectedWorkspace.id, { userId: Number(addingMemberUserId) });
+      let res;
+      if (memberModalType === 'workspace') {
+        if (!selectedWorkspace) return;
+        res = await workspacesApi.addMember(selectedWorkspace.id, { userId: Number(addingMemberUserId) });
+      } else if (memberModalType === 'project') {
+        if (!selectedProject) return;
+        res = await projectsApi.addMember(selectedProject.id, Number(addingMemberUserId));
+      } else {
+        if (!selectedBoard) return;
+        res = await boardsApi.addMember(selectedBoard.id, { userId: Number(addingMemberUserId) });
+      }
+
       if (res.data.success) {
-        handleOpenMembersModal(selectedWorkspace);
+        handleOpenMembersModal(memberModalType, selectedWorkspace || selectedProject || selectedBoard);
       } else {
         setActionError(res.data.message || 'Failed to add member.');
       }
@@ -189,12 +223,22 @@ export default function PlatformManagementPage() {
   };
 
   const handleRemoveWorkspaceMember = async (userId: number) => {
-    if (!selectedWorkspace) return;
     setActionError(null);
     try {
-      const res = await workspacesApi.removeMember(selectedWorkspace.id, userId);
+      let res;
+      if (memberModalType === 'workspace') {
+        if (!selectedWorkspace) return;
+        res = await workspacesApi.removeMember(selectedWorkspace.id, userId);
+      } else if (memberModalType === 'project') {
+        if (!selectedProject) return;
+        res = await projectsApi.removeMember(selectedProject.id, userId);
+      } else {
+        if (!selectedBoard) return;
+        res = await boardsApi.removeMember(selectedBoard.id, userId);
+      }
+
       if (res.data.success) {
-        handleOpenMembersModal(selectedWorkspace);
+        handleOpenMembersModal(memberModalType, selectedWorkspace || selectedProject || selectedBoard);
       } else {
         setActionError(res.data.message || 'Failed to remove member.');
       }
@@ -411,7 +455,7 @@ export default function PlatformManagementPage() {
                       <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
-                            onClick={() => handleOpenMembersModal(ws)}
+                            onClick={() => handleOpenMembersModal('workspace', ws)}
                             style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
                           >
                             Members
@@ -481,6 +525,12 @@ export default function PlatformManagementPage() {
                       <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
+                            onClick={() => handleOpenMembersModal('project', p)}
+                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                          >
+                            Members
+                          </button>
+                          <button
                             onClick={() => {
                               setEditingProject(p);
                               setProjectForm({ name: p.name, description: p.description || '', workspaceId: p.workspaceId.toString(), ownerId: p.ownerId.toString() });
@@ -548,6 +598,12 @@ export default function PlatformManagementPage() {
                       </td>
                       <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
+                          <button
+                            onClick={() => handleOpenMembersModal('board', b)}
+                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                          >
+                            Members
+                          </button>
                           <button
                             onClick={() => {
                               setEditingBoard(b);
@@ -727,12 +783,14 @@ export default function PlatformManagementPage() {
         </div>
       )}
 
-      {/* --- WORKSPACE MEMBERS MODAL --- */}
-      {isMembersModalOpen && selectedWorkspace && (
+      {/* --- MEMBERS MODAL --- */}
+      {isMembersModalOpen && (selectedWorkspace || selectedProject || selectedBoard) && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
           <div className="card" style={{ width: 500, padding: 32 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Workspace Members</h3>
-            <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>Managing members for <strong>{selectedWorkspace.name}</strong></p>
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, textTransform: 'capitalize' }}>{memberModalType} Members</h3>
+            <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
+              Managing members for <strong>{selectedWorkspace?.name || selectedProject?.name || selectedBoard?.name}</strong>
+            </p>
 
             {/* Add Member Form */}
             <form onSubmit={handleAddWorkspaceMember} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
@@ -742,7 +800,7 @@ export default function PlatformManagementPage() {
                 onChange={e => setAddingMemberUserId(e.target.value)}
                 style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
               >
-                <option value="">-- Add User to Workspace --</option>
+                <option value="">-- Add User to {memberModalType} --</option>
                 {users
                   .filter(u => !workspaceMembers.some(m => m.userId === u.id))
                   .map(u => (
@@ -757,7 +815,7 @@ export default function PlatformManagementPage() {
             {/* Members List */}
             <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 24, border: '1px solid var(--border)', borderRadius: 8 }}>
               {workspaceMembers.length === 0 ? (
-                <p style={{ padding: 16, textAlign: 'center', color: 'var(--text-muted)' }}>No members in this workspace.</p>
+                <p style={{ padding: 16, textAlign: 'center', color: 'var(--text-muted)' }}>No members in this {memberModalType}.</p>
               ) : (
                 workspaceMembers.map(member => (
                   <div key={member.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
