@@ -223,7 +223,7 @@ export const timeTrackingApi = {
   delete: (..._args: any[]) => dummyResolve(true),
 };
 export const activitiesApi = {
-  getByTask: (..._args: any[]) => dummyResolve([]),
+  getByTask: (taskId: number) => api.get(`/activities?taskId=${taskId}`),
   getByProject: (..._args: any[]) => dummyResolve([]),
   getByBoard: (..._args: any[]) => dummyResolve([]),
   getByUser: (..._args: any[]) => dummyResolve([]),
