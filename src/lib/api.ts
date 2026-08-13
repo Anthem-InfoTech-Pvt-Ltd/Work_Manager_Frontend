@@ -57,6 +57,7 @@ export const workspacesApi = {
   addMember: (id: number, data: { userId: number }) => api.post(`/workspaces/${id}/members`, data),
   removeMember: (id: number, userId: number) => api.delete(`/workspaces/${id}/members/${userId}`),
   updateMemberRole: (..._args: any[]) => dummyResolve(true),
+  delete: (id: number) => api.delete(`/workspaces/${id}`),
 };
 
 // ── Projects ──────────────────────────────────────────────
@@ -82,6 +83,9 @@ export const boardsApi = {
   restore: (..._args: any[]) => dummyResolve(true),
   duplicate: (..._args: any[]) => dummyResolve(1),
   toggleFavorite: (..._args: any[]) => dummyResolve(true),
+  getMembers: (id: number) => api.get(`/boards/${id}/members`),
+  addMember: (id: number, data: { userId: number }) => api.post(`/boards/${id}/members`, data),
+  removeMember: (id: number, userId: number) => api.delete(`/boards/${id}/members/${userId}`),
 };
 
 // ── Lists ─────────────────────────────────────────────────

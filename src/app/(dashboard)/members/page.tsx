@@ -93,6 +93,17 @@ export default function MembersPage() {
     }
   };
 
+  const isSuperAdmin = currentUserRole === 'Super Admin';
+
+  if (!isSuperAdmin) {
+    return (
+      <div style={{ padding: 40, textAlign: 'center' }}>
+        <h2 style={{ color: 'var(--text-primary)' }}>Access Denied</h2>
+        <p style={{ color: 'var(--text-secondary)' }}>Super Admin privileges required to manage workspace members.</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ padding: 32, maxWidth: 1000, margin: '0 auto' }}>
       <div style={{ marginBottom: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

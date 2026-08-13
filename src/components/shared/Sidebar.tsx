@@ -23,35 +23,31 @@ export default function Sidebar() {
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(false);
 
+  const userRole = user?.roles?.[0] ?? 'Admin';
+  const isSuperAdmin = userRole === 'Super Admin';
+  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+
   const navItems: NavItem[] = [
     { label: 'Dashboard',    href: '/dashboard',  icon: <Icon d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /> },
     { label: 'Projects',     href: '/projects',   icon: <Icon d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" /> },
     { label: 'Calendar',     href: '/calendar',   icon: <Icon d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-    { label: 'Members',      href: '/members',    icon: <Icon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /> },
   ];
 
-  const adminItems: NavItem[] = [
-    /*
-    { label: 'Roles & Perms',  href: '/admin/roles',         icon: <Icon d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" /> },
-    { label: 'Custom Fields',  href: '/admin/custom-fields', icon: <Icon d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z" /> },
-    { label: 'Settings',       href: '/admin/settings',      icon: <Icon d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /> },
-    { label: 'Audit Logs',     href: '/admin/audit',         icon: <Icon d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8" /> },
-    { label: 'Archive Bin',    href: '/admin/archive',       icon: <Icon d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /> },
-    */
-  ];
-
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
-
-  const userRole = user?.roles?.[0] ?? 'Viewer';
-  const isAdminOrSuper = userRole === 'Super Admin' || userRole === 'Admin';
-  const isManager = userRole === 'Manager';
+  if (isSuperAdmin) {
+    navItems.push({
+      label: 'Members',
+      href: '/members',
+      icon: <Icon d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+    });
+    navItems.push({
+      label: 'Admin',
+      href: '/admin',
+      icon: <Icon d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    });
+  }
 
   // Filter Admin section based on user role
-  const visibleAdminItems = adminItems.filter(item => {
-    if (isAdminOrSuper) return true;
-    if (isManager && (item.href === '/admin/automations')) return true;
-    return false;
-  });
+  const visibleAdminItems: NavItem[] = [];
 
   const NavLink = ({ item }: { item: NavItem }) => (
     <Link
