@@ -152,6 +152,7 @@ function LoginForm() {
                 placeholder="admin@workmanager.com"
                 required
                 id="email"
+                maxLength={50}
               />
             </div>
 
@@ -172,6 +173,7 @@ function LoginForm() {
                 placeholder="••••••••"
                 required
                 id="password"
+                maxLength={50}
               />
             </div>
 

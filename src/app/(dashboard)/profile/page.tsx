@@ -93,27 +93,27 @@ export default function ProfilePage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>First Name</label>
-              <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} required />
+              <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} required maxLength={50} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Last Name</label>
-              <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} required />
+              <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} required maxLength={50} />
             </div>
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Job Title</label>
-            <input className="input" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Senior Software Engineer" />
+            <input className="input" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Senior Software Engineer" maxLength={50} />
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Phone Number</label>
-            <input className="input" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" />
+            <input className="input" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" maxLength={15} />
           </div>
 
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Bio / About</label>
-            <textarea className="input" rows={4} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell your team about yourself..." />
+            <textarea className="input" rows={4} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell your team about yourself..." maxLength={200} />
           </div>
 
           <button className="btn btn-primary" style={{ marginTop: 12, justifyContent: 'center' }} disabled={saving}>
@@ -131,17 +131,17 @@ export default function ProfilePage() {
         <form onSubmit={handlePasswordChange} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Current Password</label>
-            <input type="password" className="input" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required />
+            <input type="password" className="input" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} required maxLength={50} />
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>New Password</label>
-              <input type="password" className="input" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+              <input type="password" className="input" value={newPassword} onChange={e => setNewPassword(e.target.value)} required maxLength={50} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Confirm New Password</label>
-              <input type="password" className="input" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required />
+              <input type="password" className="input" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} required maxLength={50} />
             </div>
           </div>
 

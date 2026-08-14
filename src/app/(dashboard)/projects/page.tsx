@@ -128,11 +128,11 @@ export default function ProjectsPage() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Project Name *</label>
-                <input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. E-Commerce Platform" autoFocus id="project-name" />
+                <input className="input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. E-Commerce Platform" autoFocus id="project-name" maxLength={50} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Description</label>
-                <textarea className="input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="What is this project about?" rows={3} style={{ resize: 'none' }} id="project-desc" />
+                <textarea className="input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="What is this project about?" rows={3} style={{ resize: 'none' }} id="project-desc" maxLength={200} />
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                 <div>
@@ -395,7 +395,7 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Board Name *</label>
-                <input className="input" placeholder="e.g. Backlog Board" value={boardName} onChange={e => setBoardName(e.target.value)} autoFocus />
+                <input className="input" placeholder="e.g. Backlog Board" value={boardName} onChange={e => setBoardName(e.target.value)} autoFocus maxLength={50} />
               </div>
               <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
                 <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowAddBoard(false)}>Cancel</button>
