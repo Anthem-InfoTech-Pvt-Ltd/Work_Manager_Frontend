@@ -45,6 +45,9 @@ export default function Sidebar() {
     if (item.href === '/admin/platform') {
       return userRole === 'Super Admin';
     }
+    if (item.href === '/admin/users') {
+      return userRole === 'Super Admin';
+    }
     if (isAdminOrSuper) return true;
     if (isManager && (item.href === '/admin/automations')) return true;
     return false;
