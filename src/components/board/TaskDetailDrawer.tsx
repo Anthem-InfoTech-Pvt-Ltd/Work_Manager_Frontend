@@ -85,6 +85,49 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
 
   const isOwner = user?.roles?.includes('Super Admin') || (projectOwnerId && user?.id === projectOwnerId) || (boardOwnerId && user?.id === boardOwnerId);
 
+  const initDatepicker = (el: HTMLInputElement | null) => {
+    if (!el) return;
+    const loadAndInit = async () => {
+      const loadScript = (src: string) => {
+        return new Promise<void>((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = src;
+          script.onload = () => resolve();
+          script.onerror = () => reject();
+          document.body.appendChild(script);
+        });
+      };
+
+      try {
+        if (!document.getElementById('jquery-ui-css')) {
+          const link = document.createElement('link');
+          link.id = 'jquery-ui-css';
+          link.rel = 'stylesheet';
+          link.href = 'https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css';
+          document.head.appendChild(link);
+        }
+
+        if (!(window as any).$) {
+          await loadScript('https://code.jquery.com/jquery-3.7.1.min.js');
+        }
+        if (!(window as any).$.ui) {
+          await loadScript('https://code.jquery.com/ui/1.13.2/jquery-ui.min.js');
+        }
+
+        const $ = (window as any).$;
+        $(el).datepicker({
+          dateFormat: 'yy-mm-dd',
+          onSelect: (dateText: string) => {
+            saveField('dueDate', dateText || null);
+          }
+        });
+      } catch (err) {
+        console.error('Failed to load datepicker', err);
+      }
+    };
+    loadAndInit();
+  };
+
   const loadData = () => {
     setLoading(true);
     const promises: Promise<any>[] = [
@@ -299,6 +342,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                       onKeyDown={e => { if (e.key === 'Enter') { saveField('title', titleValue); setEditingTitle(false); } }}
                       style={{ fontSize: 20, fontWeight: 700, padding: '4px 8px' }}
                       autoFocus
+                      maxLength={100}
                     />
                   ) : (
                     <h2
@@ -412,10 +456,14 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                         </select>
                       )},
                       { label: 'Due Date', value: (
-                        <input type="date" className="input" style={{ fontSize: 13 }}
+                        <input
+                          type="text"
+                          ref={initDatepicker}
+                          className="input"
+                          style={{ fontSize: 13 }}
+                          placeholder="YYYY-MM-DD"
                           defaultValue={task.dueDate ? task.dueDate.substring(0,10) : ''}
                           disabled={!canEdit}
-                          onChange={e => saveField('dueDate', e.target.value || null)}
                         />
                       )},
                       { label: 'Assignee', value: (
@@ -468,6 +516,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                       onBlur={e => saveField('description', e.target.value || null)}
                       rows={5}
                       style={{ resize: 'vertical', fontSize: 14, lineHeight: 1.6 }}
+                      maxLength={500}
                     />
                   </div>
                 </div>
@@ -483,6 +532,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                       value={newChecklistName}
                       onChange={e => setNewChecklistName(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && createChecklist()}
+                      maxLength={50}
                     />
                     <button className="btn btn-primary btn-sm" onClick={createChecklist} disabled={!newChecklistName.trim()}>
                       Add Checklist
@@ -517,6 +567,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                           value={newItemTitle[c.id] || ''}
                           onChange={e => setNewItemTitle({ ...newItemTitle, [c.id]: e.target.value })}
                           onKeyDown={e => e.key === 'Enter' && addChecklistItem(c.id)}
+                          maxLength={100}
                         />
                         <button className="btn btn-secondary btn-sm" onClick={() => addChecklistItem(c.id)}>Add</button>
                       </div>
@@ -571,6 +622,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                         style={{ fontSize: 13 }}
                         value={logDesc}
                         onChange={e => setLogDesc(e.target.value)}
+                        maxLength={200}
                       />
                       <button className="btn btn-primary btn-sm" onClick={submitTimeLog} disabled={!logHours}>
                         Log
@@ -617,6 +669,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                           placeholder="Add a comment..."
                           rows={3}
                           style={{ resize: 'none', fontSize: 14, marginBottom: 10 }}
+                          maxLength={200}
                         />
                         <button className="btn btn-primary btn-sm" onClick={postComment} disabled={!newComment.trim()}>
                           Post Comment

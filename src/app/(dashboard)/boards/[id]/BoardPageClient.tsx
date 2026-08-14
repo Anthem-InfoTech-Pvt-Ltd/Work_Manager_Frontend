@@ -344,6 +344,7 @@ export default function BoardPageClient() {
                         value={editingListName}
                         onChange={e => setEditingListName(e.target.value)}
                         onBlur={() => renameList(list.id)}
+                        maxLength={50}
                         onKeyDown={e => {
                           if (e.key === 'Enter') renameList(list.id);
                           if (e.key === 'Escape') setEditingListId(null);
@@ -418,6 +419,7 @@ export default function BoardPageClient() {
                       onChange={e => setNewTaskTitle(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') addTask(list.id); if (e.key === 'Escape') setAddingTaskListId(null); }}
                       autoFocus
+                      maxLength={100}
                     />
                     <div style={{ display: 'flex', gap: 8 }}>
                       <button className="btn btn-primary btn-sm" onClick={() => addTask(list.id)}>Add</button>
@@ -528,6 +530,7 @@ export default function BoardPageClient() {
                     onChange={e => setNewListName(e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') addList(); if (e.key === 'Escape') setAddingList(false); }}
                     autoFocus
+                    maxLength={50}
                   />
                   <div style={{ display: 'flex', gap: 8 }}>
                     <button className="btn btn-primary btn-sm" onClick={addList}>Add List</button>
@@ -750,6 +753,7 @@ export default function BoardPageClient() {
                     value={inviteEmail}
                     onChange={e => setInviteEmail(e.target.value)}
                     style={{ flex: 1 }}
+                    maxLength={100}
                   />
                   <button
                     className="btn btn-primary"
