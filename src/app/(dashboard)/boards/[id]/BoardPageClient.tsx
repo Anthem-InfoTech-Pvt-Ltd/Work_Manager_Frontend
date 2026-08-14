@@ -22,14 +22,14 @@ interface BoardView { id: number; name: string; viewType: string; isDefault: boo
 
 const priorityConfig: Record<string, { color: string; icon: string }> = {
   critical: { color: '#dc2626', icon: '🔴' },
-  high:     { color: '#f97316', icon: '🟠' },
-  medium:   { color: '#f59e0b', icon: '🟡' },
-  low:      { color: '#22c55e', icon: '🟢' },
+  high: { color: '#f97316', icon: '🟠' },
+  medium: { color: '#f59e0b', icon: '🟡' },
+  low: { color: '#22c55e', icon: '🟢' },
 };
 
 export default function BoardPageClient() {
   const { id } = useParams<{ id: string }>();
-  
+
   // Resolve boardId. If NaN (e.g. during static generation or after rewrite), try reading from pathname.
   let boardId = parseInt(id);
   if (isNaN(boardId) && typeof window !== 'undefined') {
@@ -204,14 +204,14 @@ export default function BoardPageClient() {
   const moveList = async (listId: number, direction: 'left' | 'right') => {
     const listIndex = lists.findIndex(l => l.id === listId);
     if (listIndex === -1) return;
-    
+
     const targetIndex = direction === 'left' ? listIndex - 1 : listIndex + 1;
     if (targetIndex < 0 || targetIndex >= lists.length) return;
-    
+
     const reorderedLists = [...lists];
     const [movedColumn] = reorderedLists.splice(listIndex, 1);
     reorderedLists.splice(targetIndex, 0, movedColumn);
-    
+
     try {
       const promises = reorderedLists.map((l, index) => {
         if (l.position !== index) {
@@ -220,11 +220,11 @@ export default function BoardPageClient() {
         }
         return null;
       }).filter((p): p is Promise<any> => p !== null);
-      
+
       if (promises.length > 0) {
         await Promise.all(promises);
       }
-      
+
       setLists(reorderedLists);
     } catch (e) {
       console.error(e);
@@ -262,7 +262,7 @@ export default function BoardPageClient() {
 
   if (loading) return (
     <div style={{ display: 'flex', gap: 16, padding: 24, overflowX: 'auto' }}>
-      {[1,2,3,4].map(i => (
+      {[1, 2, 3, 4].map(i => (
         <div key={i} className="skeleton" style={{ width: 300, height: 400, borderRadius: 12, flexShrink: 0 }} />
       ))}
     </div>
@@ -657,12 +657,12 @@ export default function BoardPageClient() {
                       minHeight: 100,
                       transition: 'border-color 0.2s, transform 0.2s',
                     }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = 'var(--accent)';
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'var(--border)';
-                    }}
+                      onMouseEnter={e => {
+                        e.currentTarget.style.borderColor = 'var(--accent)';
+                      }}
+                      onMouseLeave={e => {
+                        e.currentTarget.style.borderColor = 'var(--border)';
+                      }}
                     >
                       <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-muted)' }}>{day}</span>
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 4, overflowY: 'auto', flex: 1 }}>
@@ -744,11 +744,8 @@ export default function BoardPageClient() {
                 </button>
               </div>
               {generatedLink && (
-                <div style={{ marginTop: 14, padding: 10, background: 'rgba(99,102,241,0.1)', borderRadius: 8, border: '1px solid var(--border)' }}>
-                  <p style={{ fontSize: 11, color: 'var(--text-secondary)', marginBottom: 4, fontWeight: 600 }}>Generated Invite Link (Logged to Backend Console):</p>
-                  <a href={generatedLink} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: 'var(--accent)', wordBreak: 'break-all', textDecoration: 'underline' }}>
-                    {generatedLink}
-                  </a>
+                <div style={{ marginTop: 14, padding: 12, background: 'rgba(34, 197, 94, 0.1)', borderRadius: 8, border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                  <p style={{ fontSize: 13, color: '#22c55e', fontWeight: 600, textAlign: 'center', margin: 0 }}>Invite has been sent successfully!</p>
                 </div>
               )}
             </div>
@@ -757,7 +754,7 @@ export default function BoardPageClient() {
             <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)' }}>
               Current Members ({projectMembers.length})
             </h4>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 240, overflowY: 'auto', marginBottom: 24 }}>
               {loadingMembers ? (
                 <div className="skeleton" style={{ height: 40 }} />
