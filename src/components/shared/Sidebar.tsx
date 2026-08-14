@@ -158,14 +158,16 @@ export default function Sidebar() {
               <p style={{ fontSize: 13, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.fullName}
               </p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                <span style={{
-                  fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
-                  background: 'rgba(99,102,241,0.15)', color: 'var(--accent)', textTransform: 'uppercase'
-                }}>
-                  {userRole}
-                </span>
-              </div>
+              {userRole === 'Super Admin' && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
+                    background: 'rgba(99,102,241,0.15)', color: 'var(--accent)', textTransform: 'uppercase'
+                  }}>
+                    {userRole}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </Link>

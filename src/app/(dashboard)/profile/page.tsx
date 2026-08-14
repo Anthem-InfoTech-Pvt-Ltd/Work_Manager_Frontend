@@ -82,9 +82,9 @@ export default function ProfilePage() {
             <h3 style={{ fontSize: 18, fontWeight: 700 }}>{user?.fullName}</h3>
             <p style={{ fontSize: 13, color: 'var(--text-muted)' }}>{user?.email}</p>
             <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
-              {user?.roles.map(r => (
-                <span key={r} style={{ padding: '2px 8px', borderRadius: 12, background: 'var(--bg-hover)', fontSize: 11, fontWeight: 600 }}>{r}</span>
-              ))}
+              {user?.roles.includes('Super Admin') && (
+                <span style={{ padding: '2px 8px', borderRadius: 12, background: 'var(--bg-hover)', fontSize: 11, fontWeight: 600 }}>Super Admin</span>
+              )}
             </div>
           </div>
         </div>
