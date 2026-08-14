@@ -83,7 +83,7 @@ export default function PlatformManagementPage() {
 
   // Redirect if not Super Admin
   useEffect(() => {
-    if (user && !user.roles?.includes('super_admin') && !user.roles?.includes('superadmin')) {
+    if (user && !user.roles?.includes('Super Admin')) {
       router.push('/dashboard');
     }
   }, [user, router]);
@@ -109,7 +109,7 @@ export default function PlatformManagementPage() {
   };
 
   useEffect(() => {
-    if (user && (user.roles?.includes('super_admin') || user.roles?.includes('superadmin'))) {
+    if (user && user.roles?.includes('Super Admin')) {
       fetchData();
     }
   }, [user]);
@@ -351,7 +351,7 @@ export default function PlatformManagementPage() {
     }
   };
 
-  if (!user || (!user.roles?.includes('super_admin') && !user.roles?.includes('superadmin'))) {
+  if (!user || !user.roles?.includes('Super Admin')) {
     return <div style={{ padding: 24 }}>Access Denied</div>;
   }
 
