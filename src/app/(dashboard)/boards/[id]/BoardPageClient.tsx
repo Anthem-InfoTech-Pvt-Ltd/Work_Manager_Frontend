@@ -17,7 +17,7 @@ interface Task {
   coverColor?: string;
 }
 interface List { id: number; name: string; color: string; position: number; tasks?: Task[]; wipLimit?: number; }
-interface Board { id: number; name: string; projectId: number; }
+interface Board { id: number; name: string; projectId: number; ownerId: number; }
 interface BoardView { id: number; name: string; viewType: string; isDefault: boolean; }
 
 const priorityConfig: Record<string, { color: string; icon: string }> = {
@@ -43,6 +43,7 @@ export default function BoardPageClient() {
   const [activeView, setActiveView] = useState('kanban');
   const [lists, setLists] = useState<List[]>([]);
   const [loading, setLoading] = useState(true);
+  const [projectOwnerId, setProjectOwnerId] = useState<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [addingList, setAddingList] = useState(false);
   const [newListName, setNewListName] = useState('');
@@ -53,7 +54,8 @@ export default function BoardPageClient() {
   const [editingListName, setEditingListName] = useState('');
 
   // Project Members management states
-  const { workspaceId } = useAuth();
+  const { user, workspaceId } = useAuth();
+  const isOwner = user?.roles?.includes('Super Admin') || board?.ownerId === user?.id || projectOwnerId === user?.id;
   const [showMembers, setShowMembers] = useState(false);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
@@ -111,6 +113,16 @@ export default function BoardPageClient() {
       const v = data && data.views ? data.views : [];
       setBoard(b);
       setViews(v);
+      
+      if (b && b.projectId) {
+        try {
+          const projRes = await projectsApi.getById(b.projectId);
+          setProjectOwnerId(projRes.data.data?.ownerId ?? null);
+        } catch (err) {
+          console.error('Failed to load project details', err);
+        }
+      }
+
       const allTasks: Task[] = tasksRes.data.data;
 
       const listsRes = await listsApi.getByBoard(boardId);
@@ -376,13 +388,15 @@ export default function BoardPageClient() {
                       >
                         →
                       </button>
-                      <button
-                        onClick={() => deleteList(list.id, list.name)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '2px', fontSize: 16, lineHeight: 1 }}
-                        title="Delete Column"
-                      >
-                        ×
-                      </button>
+                      {isOwner && (
+                        <button
+                          onClick={() => deleteList(list.id, list.name)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '2px', fontSize: 16, lineHeight: 1 }}
+                          title="Delete Column"
+                        >
+                          ×
+                        </button>
+                      )}
                     </div>
                   </div>
                   <button
@@ -704,6 +718,7 @@ export default function BoardPageClient() {
         <TaskDetailDrawer
           taskId={selectedTaskId}
           projectId={board.projectId}
+          boardOwnerId={board.ownerId}
           onClose={() => { setSelectedTaskId(null); loadBoard(); }}
         />
       )}
@@ -722,33 +737,35 @@ export default function BoardPageClient() {
             </p>
 
             {/* Invite Member form */}
-            <div style={{ background: 'var(--bg-secondary)', padding: 16, borderRadius: 12, marginBottom: 24 }}>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
-                Invite Member via Email
-              </label>
-              <div style={{ display: 'flex', gap: 10 }}>
-                <input
-                  type="email"
-                  className="input"
-                  placeholder="Enter email address..."
-                  value={inviteEmail}
-                  onChange={e => setInviteEmail(e.target.value)}
-                  style={{ flex: 1 }}
-                />
-                <button
-                  className="btn btn-primary"
-                  disabled={inviting || !inviteEmail.trim()}
-                  onClick={handleSendInvite}
-                >
-                  {inviting ? 'Inviting...' : 'Invite'}
-                </button>
-              </div>
-              {generatedLink && (
-                <div style={{ marginTop: 14, padding: 12, background: 'rgba(34, 197, 94, 0.1)', borderRadius: 8, border: '1px solid rgba(34, 197, 94, 0.3)' }}>
-                  <p style={{ fontSize: 13, color: '#22c55e', fontWeight: 600, textAlign: 'center', margin: 0 }}>Invite has been sent successfully!</p>
+            {isOwner && (
+              <div style={{ background: 'var(--bg-secondary)', padding: 16, borderRadius: 12, marginBottom: 24 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>
+                  Invite Member via Email
+                </label>
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <input
+                    type="email"
+                    className="input"
+                    placeholder="Enter email address..."
+                    value={inviteEmail}
+                    onChange={e => setInviteEmail(e.target.value)}
+                    style={{ flex: 1 }}
+                  />
+                  <button
+                    className="btn btn-primary"
+                    disabled={inviting || !inviteEmail.trim()}
+                    onClick={handleSendInvite}
+                  >
+                    {inviting ? 'Inviting...' : 'Invite'}
+                  </button>
                 </div>
-              )}
-            </div>
+                {generatedLink && (
+                  <div style={{ marginTop: 14, padding: 12, background: 'rgba(34, 197, 94, 0.1)', borderRadius: 8, border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                    <p style={{ fontSize: 13, color: '#22c55e', fontWeight: 600, textAlign: 'center', margin: 0 }}>Invite has been sent successfully!</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Members List */}
             <h4 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-secondary)' }}>
@@ -769,23 +786,25 @@ export default function BoardPageClient() {
                       <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{m.userName}</p>
                       <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.userEmail}</p>
                     </div>
-                    <button
-                      onClick={async () => {
-                        try {
-                          await projectsApi.removeMember(board.projectId, m.userId);
-                          const res = await projectsApi.getMembers(board.projectId);
-                          setProjectMembers(res.data.data ?? []);
-                        } catch (e) {
-                          console.error(e);
-                        }
-                      }}
-                      style={{
-                        background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
-                        fontSize: 12, fontWeight: 600, padding: '4px 8px'
-                      }}
-                    >
-                      Remove
-                    </button>
+                    {isOwner && (
+                      <button
+                        onClick={async () => {
+                          try {
+                            await projectsApi.removeMember(board.projectId, m.userId);
+                            const res = await projectsApi.getMembers(board.projectId);
+                            setProjectMembers(res.data.data ?? []);
+                          } catch (e) {
+                            console.error(e);
+                          }
+                        }}
+                        style={{
+                          background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
+                          fontSize: 12, fontWeight: 600, padding: '4px 8px'
+                        }}
+                      >
+                        Remove
+                      </button>
+                    )}
                   </div>
                 ))
               )}

@@ -59,7 +59,7 @@ const formatActivity = (type: string, data?: string) => {
   return data;
 };
 
-export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskId: number; projectId?: number; onClose: () => void }) {
+export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onClose }: { taskId: number; projectId?: number; boardOwnerId?: number; onClose: () => void }) {
   const { user, hasPermission } = useAuth();
   const canEdit = hasPermission('task.edit') || user?.roles?.includes('Admin') || user?.roles?.includes('Super Admin');
   const [task, setTask] = useState<Task | null>(null);
@@ -81,6 +81,9 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
   const [titleValue, setTitleValue] = useState('');
   const [saving, setSaving] = useState(false);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
+  const [projectOwnerId, setProjectOwnerId] = useState<number | null>(null);
+
+  const isOwner = user?.roles?.includes('Super Admin') || (projectOwnerId && user?.id === projectOwnerId) || (boardOwnerId && user?.id === boardOwnerId);
 
   const loadData = () => {
     setLoading(true);
@@ -95,13 +98,14 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
 
     if (projectId) {
       promises.push(projectsApi.getMembers(projectId));
+      promises.push(projectsApi.getById(projectId));
     }
 
     const getVal = (result: PromiseSettledResult<any>) =>
       result.status === 'fulfilled' ? result.value : null;
 
     Promise.allSettled(promises).then((results) => {
-      const [taskRes, cmtRes, chkRes, attRes, timeRes, actRes, membersRes] = results.map(getVal);
+      const [taskRes, cmtRes, chkRes, attRes, timeRes, actRes, membersRes, projRes] = results.map(getVal);
 
       if (taskRes) {
         const data = taskRes.data.data;
@@ -118,6 +122,9 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
       setActivities(actRes?.data?.data ?? []);
       if (membersRes) {
         setProjectMembers(membersRes?.data?.data ?? []);
+      }
+      if (projRes) {
+        setProjectOwnerId(projRes?.data?.data?.ownerId ?? null);
       }
     }).finally(() => setLoading(false));
   };
@@ -303,30 +310,32 @@ export default function TaskDetailDrawer({ taskId, projectId, onClose }: { taskI
                   )}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0 }}>
-                  <button
-                    onClick={deleteTask}
-                    style={{
-                      background: 'transparent',
-                      border: '1px solid var(--danger)',
-                      borderRadius: 8,
-                      padding: '6px 12px',
-                      fontSize: 12,
-                      color: 'var(--danger)',
-                      cursor: 'pointer',
-                      fontWeight: 600,
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--danger)';
-                      (e.currentTarget as HTMLElement).style.color = '#fff';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'transparent';
-                      (e.currentTarget as HTMLElement).style.color = 'var(--danger)';
-                    }}
-                  >
-                    Delete Task
-                  </button>
+                  {isOwner && (
+                    <button
+                      onClick={deleteTask}
+                      style={{
+                        background: 'transparent',
+                        border: '1px solid var(--danger)',
+                        borderRadius: 8,
+                        padding: '6px 12px',
+                        fontSize: 12,
+                        color: 'var(--danger)',
+                        cursor: 'pointer',
+                        fontWeight: 600,
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={e => {
+                        (e.currentTarget as HTMLElement).style.background = 'var(--danger)';
+                        (e.currentTarget as HTMLElement).style.color = '#fff';
+                      }}
+                      onMouseLeave={e => {
+                        (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        (e.currentTarget as HTMLElement).style.color = 'var(--danger)';
+                      }}
+                    >
+                      Delete Task
+                    </button>
+                  )}
                   <button
                     onClick={onClose}
                     style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 8, fontSize: 20, lineHeight: 1 }}

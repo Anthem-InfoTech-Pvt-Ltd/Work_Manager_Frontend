@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import Link from 'next/link';
 
 interface Project {
-  id: number; name: string; description?: string; color: string; status: string; priority: string; createdAt: string;
+  id: number; name: string; description?: string; color: string; status: string; priority: string; createdAt: string; ownerId: number;
 }
 
 const statusBadge: Record<string, { bg: string; color: string }> = {
@@ -273,8 +273,8 @@ export default function ProjectsPage() {
 }
 
 function ProjectBoardNavigator({ project, onManageMembers }: { project: Project; onManageMembers: (projectId: number, name: string) => void }) {
-  const { user, hasPermission } = useAuth();
-  const canCreateBoard = hasPermission('board.create') || user?.roles?.includes('Manager') || user?.roles?.includes('Admin') || user?.roles?.includes('Super Admin');
+  const { user } = useAuth();
+  const canCreateBoard = user?.roles?.includes('Super Admin') || project.ownerId === user?.id;
 
   const [boards, setBoards] = useState<{ id: number; name: string }[]>([]);
   const [showAddBoard, setShowAddBoard] = useState(false);
