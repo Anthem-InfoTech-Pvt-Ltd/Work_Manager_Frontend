@@ -194,12 +194,12 @@ export const labelsApi = {
   delete: (..._args: any[]) => dummyResolve(true),
 };
 export const checklistsApi = {
-  getByTask: (..._args: any[]) => dummyResolve([]),
-  create: (..._args: any[]) => dummyResolve({}),
-  addItem: (..._args: any[]) => dummyResolve({}),
-  toggleItem: (..._args: any[]) => dummyResolve(true),
-  delete: (..._args: any[]) => dummyResolve(true),
-  deleteItem: (..._args: any[]) => dummyResolve(true),
+  getByTask: (taskId: number) => api.get(`/checklists?taskId=${taskId}`),
+  create: (data: { taskId: number; name: string }) => api.post('/checklists', data),
+  addItem: (checklistId: number, data: { title: string }) => api.post(`/checklists/${checklistId}/items`, data),
+  toggleItem: (itemId: number, isChecked: boolean) => api.put(`/checklists/items/${itemId}`, { isChecked }),
+  delete: (id: number) => api.delete(`/checklists/${id}`),
+  deleteItem: (itemId: number) => api.delete(`/checklists/items/${itemId}`),
 };
 export const attachmentsApi = {
   getByTask: (taskId: number) => api.get(`/attachments?taskId=${taskId}`),
@@ -225,9 +225,9 @@ export const workflowsApi = {
   delete: (..._args: any[]) => dummyResolve(true),
 };
 export const timeTrackingApi = {
-  getByTask: (..._args: any[]) => dummyResolve([]),
-  logTime: (..._args: any[]) => dummyResolve({}),
-  delete: (..._args: any[]) => dummyResolve(true),
+  getByTask: (taskId: number) => api.get(`/timetracking?taskId=${taskId}`),
+  logTime: (data: { taskId: number; hours: number; description?: string }) => api.post('/timetracking', data),
+  delete: (id: number) => api.delete(`/timetracking/${id}`),
 };
 export const activitiesApi = {
   getByTask: (taskId: number) => api.get(`/activities?taskId=${taskId}`),
