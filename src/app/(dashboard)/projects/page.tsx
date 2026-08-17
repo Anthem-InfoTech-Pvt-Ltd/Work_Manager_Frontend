@@ -66,12 +66,22 @@ export default function ProjectsPage() {
   const createProject = async () => {
     if (!form.name.trim() || !workspaceId) return;
     setSaving(true);
-    await projectsApi.create({ ...form, workspaceId });
-    const res = await projectsApi.getAll(workspaceId);
-    setProjects(res.data.data ?? []);
-    setShowCreate(false);
-    setForm({ name: '', description: '', color: '#6366f1', priority: 'medium', workspaceId });
-    setSaving(false);
+    try {
+      await projectsApi.create({ ...form, workspaceId });
+      const res = await projectsApi.getAll(workspaceId);
+      setProjects(res.data.data ?? []);
+      setShowCreate(false);
+      setForm({ name: '', description: '', color: '#6366f1', priority: 'medium', workspaceId });
+    } catch (e: any) {
+      if (e.response?.status === 429) {
+        alert(e.response.data?.message || 'Quota limit reached. Please upgrade your plan.');
+      } else {
+        alert(e.response?.data?.message || 'Failed to create project.');
+      }
+      console.error(e);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -300,7 +310,12 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
       setBoardName('');
       setShowAddBoard(false);
       await loadBoards();
-    } catch (e) {
+    } catch (e: any) {
+      if (e.response?.status === 429) {
+        alert(e.response.data?.message || 'Quota limit reached. Please upgrade your plan.');
+      } else {
+        alert(e.response?.data?.message || 'Failed to create board.');
+      }
       console.error(e);
     } finally {
       setCreatingBoard(false);

@@ -259,6 +259,15 @@ export const errorLogsApi = {
   clearAll: () => api.delete('/errorlogs/clear'),
 };
 
+export const planApi = {
+  getPlans: () => api.get('/planmanagement/plans'),
+  updatePlanLimits: (id: number, data: { maxWorkspaces: number; maxProjects: number; maxBoards: number; maxMembers: number }) => 
+    api.put(`/planmanagement/plans/${id}`, data),
+  getWorkspaces: () => api.get('/planmanagement/workspaces'),
+  assignWorkspacePlan: (workspaceId: number, planId: number) => 
+    api.put(`/planmanagement/workspaces/${workspaceId}/plan`, { planId }),
+};
+
 export const getAttachmentUrl = (url: string | undefined | null): string => {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;

@@ -22,10 +22,11 @@ export default function AdminPage() {
     { title: 'Audit Logs', description: 'View full organization compliance audit trails, user logins, and database operations.', href: '/admin/audit', icon: '📋', color: '#a78bfa' },
     { title: 'Archive & Trash Bin', description: 'Recover archived or deleted tasks, lists, boards, and projects, or permanently purge them.', href: '/admin/archive', icon: '🗑️', color: '#f87171' },
     { title: 'System Error Logs', description: 'Monitor, inspect, and analyze system errors and exceptions captured in real time.', href: '/admin/error-logs', icon: '🐞', color: '#ef4444' },
+    { title: 'Plan Management', description: 'Configure workspace plans, subscription assignments, and system limits.', href: '/admin/plans', icon: '💎', color: '#3b82f6' },
   ];
 
   const visibleModules = modules.filter(m => {
-    if (m.href === '/admin/error-logs') {
+    if (m.href === '/admin/error-logs' || m.href === '/admin/plans') {
       return userRole === 'Super Admin';
     }
     return true;
