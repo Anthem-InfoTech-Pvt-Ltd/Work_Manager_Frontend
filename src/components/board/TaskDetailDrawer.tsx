@@ -331,7 +331,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
       <div className="drawer" onClick={e => e.stopPropagation()}>
         {loading ? (
           <div style={{ padding: 32 }}>
-            {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 32, marginBottom: 16, borderRadius: 8 }} />)}
+            {[1, 2, 3, 4].map(i => <div key={i} className="skeleton" style={{ height: 32, marginBottom: 16, borderRadius: 8 }} />)}
           </div>
         ) : task ? (
           <>
@@ -438,75 +438,87 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
                     {[
-                      { label: 'Priority', value: (
-                        <select
-                          className="input"
-                          value={task.priority}
-                          onChange={e => saveField('priority', e.target.value)}
-                          disabled={!canEdit}
-                          style={{ fontSize: 13, color: priorityColors[task.priority] ?? 'inherit' }}
-                        >
-                          {['critical', 'high', 'medium', 'low'].map(p => (
-                            <option key={p} value={p}>{p}</option>
-                          ))}
-                        </select>
-                      )},
-                      { label: 'Status', value: (
-                        <select
-                          className="input"
-                          value={task.status}
-                          onChange={e => saveField('status', e.target.value)}
-                          disabled={!canEdit}
-                          style={{ fontSize: 13 }}
-                        >
-                          {['todo', 'in_progress', 'review', 'testing', 'done', 'cancelled'].map(s => (
-                            <option key={s} value={s}>{s.replace('_', ' ')}</option>
-                          ))}
-                        </select>
-                      )},
-                      { label: 'Due Date', value: (
-                        <input
-                          type="text"
-                          ref={initDatepicker}
-                          className="input"
-                          style={{ fontSize: 13 }}
-                          placeholder="DD-MM-YYYY"
-                          defaultValue={task.dueDate ? formatDateDDMMYYYY(task.dueDate) : ''}
-                          disabled={!canEdit}
-                        />
-                      )},
-                      { label: 'Assignee', value: (
-                        <select
-                          className="input"
-                          value={task.assigneeId || ''}
-                          disabled={!canEdit}
-                          onChange={e => {
-                            const val = e.target.value ? Number(e.target.value) : null;
-                            saveField('assigneeId', val);
-                          }}
-                          style={{ fontSize: 13 }}
-                        >
-                          <option value="">Unassigned</option>
-                          {projectMembers.map(m => (
-                            <option key={m.userId} value={m.userId}>
-                              {m.userName} ({m.userEmail})
-                            </option>
-                          ))}
-                        </select>
-                      )},
-                      { label: 'Estimated (hrs)', value: (
-                        <input type="number" className="input" style={{ fontSize: 13 }}
-                          defaultValue={task.estimatedHours ?? ''}
-                          disabled={!canEdit}
-                          onBlur={e => saveField('estimatedHours', parseFloat(e.target.value) || null)}
-                        />
-                      )},
-                      { label: 'Actual (hrs)', value: (
-                        <input type="number" className="input" style={{ fontSize: 13 }}
-                          value={task.actualHours ?? 0}
-                          readOnly
-                        />
-                      )},
+                      {
+                        label: 'Priority', value: (
+                          <select
+                            className="input"
+                            value={task.priority}
+                            onChange={e => saveField('priority', e.target.value)}
+                            disabled={!canEdit}
+                            style={{ fontSize: 13, color: priorityColors[task.priority] ?? 'inherit' }}
+                          >
+                            {['critical', 'high', 'medium', 'low'].map(p => (
+                              <option key={p} value={p}>{p}</option>
+                            ))}
+                          </select>
+                        )
+                      },
+                      {
+                        label: 'Status', value: (
+                          <select
+                            className="input"
+                            value={task.status}
+                            onChange={e => saveField('status', e.target.value)}
+                            disabled={!canEdit}
+                            style={{ fontSize: 13 }}
+                          >
+                            {['todo', 'in_progress', 'review', 'testing', 'done', 'cancelled'].map(s => (
+                              <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                            ))}
+                          </select>
+                        )
+                      },
+                      {
+                        label: 'Due Date', value: (
+                          <input
+                            type="text"
+                            ref={initDatepicker}
+                            className="input"
+                            style={{ fontSize: 13 }}
+                            placeholder="DD-MM-YYYY"
+                            defaultValue={task.dueDate ? formatDateDDMMYYYY(task.dueDate) : ''}
+                            disabled={!canEdit}
+                          />
+                        )
+                      },
+                      {
+                        label: 'Assignee', value: (
+                          <select
+                            className="input"
+                            value={task.assigneeId || ''}
+                            disabled={!canEdit}
+                            onChange={e => {
+                              const val = e.target.value ? Number(e.target.value) : null;
+                              saveField('assigneeId', val);
+                            }}
+                            style={{ fontSize: 13 }}
+                          >
+                            <option value="">Unassigned</option>
+                            {projectMembers.map(m => (
+                              <option key={m.userId} value={m.userId}>
+                                {m.userName} ({m.userEmail})
+                              </option>
+                            ))}
+                          </select>
+                        )
+                      },
+                      {
+                        label: 'Estimated (hrs)', value: (
+                          <input type="number" className="input" style={{ fontSize: 13 }}
+                            defaultValue={task.estimatedHours ?? ''}
+                            disabled={!canEdit}
+                            onBlur={e => saveField('estimatedHours', parseFloat(e.target.value) || null)}
+                          />
+                        )
+                      },
+                      {
+                        label: 'Actual (hrs)', value: (
+                          <input type="number" className="input" style={{ fontSize: 13 }}
+                            value={task.actualHours ?? 0}
+                            readOnly
+                          />
+                        )
+                      },
                     ].map(({ label, value }) => (
                       <div key={label}>
                         <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>{label}</p>
