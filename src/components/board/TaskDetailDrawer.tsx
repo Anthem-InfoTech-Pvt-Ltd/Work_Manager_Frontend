@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
+import RichTextEditor from '@/components/shared/RichTextEditor';
+import { Paperclip } from 'lucide-react';
 
 interface Task {
   id: number; title: string; description?: string; priority: string;
@@ -13,6 +15,7 @@ interface Task {
 }
 interface Comment {
   id: number; content: string; userName?: string; createdAt: string; isEdited: boolean;
+  attachments?: Attachment[];
 }
 interface Label { id: number; name: string; color: string; }
 interface ChecklistItem { id: number; title: string; isChecked: boolean; }
@@ -71,6 +74,8 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [commentFiles, setCommentFiles] = useState<{ id: number; name: string }[]>([]);
+  const [uploadingCommentFile, setUploadingCommentFile] = useState(false);
   const [newChecklistName, setNewChecklistName] = useState('');
   const [newItemTitle, setNewItemTitle] = useState<Record<number, string>>({});
   const [logHours, setLogHours] = useState('');
@@ -200,13 +205,43 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
     }
   };
 
+  const handleCommentFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploadingCommentFile(true);
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const res = await attachmentsApi.upload(taskId, files[i]);
+        const uploaded = res.data.data;
+        setCommentFiles(prev => [...prev, { id: uploaded.id, name: uploaded.name }]);
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to upload comment file.');
+    } finally {
+      setUploadingCommentFile(false);
+    }
+  };
+
+  const removeCommentFile = async (id: number) => {
+    try {
+      await attachmentsApi.delete(id);
+      setCommentFiles(prev => prev.filter(f => f.id !== id));
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to delete file.');
+    }
+  };
+
   const postComment = async () => {
     if (!newComment.trim()) return;
     try {
-      await commentsApi.create({ taskId, content: newComment.trim() });
+      const attachmentIds = commentFiles.map(f => f.id);
+      await commentsApi.create({ taskId, content: newComment.trim(), attachmentIds });
       const res = await commentsApi.getByTask(taskId);
       setComments(res.data.data);
       setNewComment('');
+      setCommentFiles([]);
+      const attRes = await attachmentsApi.getByTask(taskId);
+      setAttachments(attRes.data.data ?? []);
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to add comment.');
     }
@@ -529,15 +564,11 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
 
                   <div>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Description</p>
-                    <textarea
-                      className="input"
+                    <RichTextEditor
+                      value={task.description ?? ''}
+                      onChange={val => saveField('description', val || null)}
                       placeholder="Add a description..."
-                      defaultValue={task.description ?? ''}
                       readOnly={!canEdit}
-                      onBlur={e => saveField('description', e.target.value || null)}
-                      rows={5}
-                      style={{ resize: 'vertical', fontSize: 14, lineHeight: 1.6 }}
-                      maxLength={500}
                     />
                   </div>
                 </div>
@@ -600,12 +631,6 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
               {/* Attachments Tab */}
               {activeTab === 'attachments' && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                  <div>
-                    <label className="btn btn-primary btn-sm" style={{ cursor: 'pointer', display: 'inline-block' }}>
-                      {uploading ? 'Uploading...' : 'Upload File'}
-                      <input type="file" onChange={handleFileUpload} style={{ display: 'none' }} disabled={uploading} />
-                    </label>
-                  </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {attachments.length === 0 ? (
                       <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No attachments uploaded.</p>
@@ -682,19 +707,35 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                       }}>
                         {user?.firstName?.[0]}
                       </div>
-                      <div style={{ flex: 1 }}>
-                        <textarea
-                          className="input"
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                        <RichTextEditor
                           value={newComment}
-                          onChange={e => setNewComment(e.target.value)}
+                          onChange={setNewComment}
                           placeholder="Add a comment..."
-                          rows={3}
-                          style={{ resize: 'none', fontSize: 14, marginBottom: 10 }}
-                          maxLength={200}
                         />
-                        <button className="btn btn-primary btn-sm" onClick={postComment} disabled={!newComment.trim()}>
-                          Post Comment
-                        </button>
+                        
+                        {commentFiles.length > 0 && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: '8px 12px', background: 'var(--bg-secondary)', borderRadius: 6, border: '1px solid var(--border)' }}>
+                            <p style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', color: 'var(--text-muted)' }}>Attached files:</p>
+                            {commentFiles.map(f => (
+                              <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 12 }}>
+                                <span>📎 {f.name}</span>
+                                <button type="button" onClick={() => removeCommentFile(f.id)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: 11 }}>Remove</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <label className="btn btn-secondary btn-sm" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <Paperclip size={14} />
+                            {uploadingCommentFile ? 'Uploading...' : 'Attach File'}
+                            <input type="file" multiple onChange={handleCommentFileUpload} style={{ display: 'none' }} disabled={uploadingCommentFile} />
+                          </label>
+                          <button className="btn btn-primary btn-sm" onClick={postComment} disabled={!newComment.trim() || uploadingCommentFile}>
+                            Post Comment
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -722,12 +763,40 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                             </span>
                             {c.isEdited && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>(edited)</span>}
                           </div>
-                          <div style={{
-                            background: 'var(--bg-secondary)', border: '1px solid var(--border)',
-                            borderRadius: 10, padding: '12px 14px', fontSize: 14, lineHeight: 1.6,
-                          }}>
-                            {c.content}
-                          </div>
+                          <div 
+                            style={{
+                              background: 'var(--bg-secondary)', border: '1px solid var(--border)',
+                              borderRadius: 10, padding: '12px 14px', fontSize: 14, lineHeight: 1.6,
+                            }}
+                            className="rte-content"
+                            dangerouslySetInnerHTML={{ __html: c.content }}
+                          />
+                          {c.attachments && c.attachments.length > 0 && (
+                            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+                              {c.attachments.map(att => (
+                                <a 
+                                  key={att.id} 
+                                  href={att.url} 
+                                  target="_blank" 
+                                  rel="noreferrer"
+                                  style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 6,
+                                    fontSize: 12,
+                                    padding: '4px 8px',
+                                    background: 'var(--bg-primary)',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: 6,
+                                    color: 'var(--accent)',
+                                    textDecoration: 'none'
+                                  }}
+                                >
+                                  📎 {att.name}
+                                </a>
+                              ))}
+                            </div>
+                          )}
                           <button
                             onClick={() => deleteComment(c.id)}
                             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: 12, color: 'var(--text-muted)', marginTop: 6, padding: 0 }}

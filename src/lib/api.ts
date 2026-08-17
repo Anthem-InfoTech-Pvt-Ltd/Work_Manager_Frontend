@@ -128,7 +128,7 @@ export const tasksApi = {
 // ── Comments ──────────────────────────────────────────────
 export const commentsApi = {
   getByTask: (taskId: number) => api.get(`/comments?taskId=${taskId}`),
-  create: (data: object) => api.post('/comments', data),
+  create: (data: { taskId: number; content: string; attachmentIds?: number[] }) => api.post('/comments', data),
   update: (..._args: any[]) => dummyResolve(true),
   delete: (id: number) => api.delete(`/comments/${id}`),
   togglePin: (..._args: any[]) => dummyResolve(true),
@@ -202,9 +202,16 @@ export const checklistsApi = {
   deleteItem: (..._args: any[]) => dummyResolve(true),
 };
 export const attachmentsApi = {
-  getByTask: (..._args: any[]) => dummyResolve([]),
-  upload: (..._args: any[]) => dummyResolve({}),
-  delete: (..._args: any[]) => dummyResolve(true),
+  getByTask: (taskId: number) => api.get(`/attachments?taskId=${taskId}`),
+  upload: (taskId: number, file: File) => {
+    const formData = new FormData();
+    formData.append('taskId', taskId.toString());
+    formData.append('file', file);
+    return api.post('/attachments/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+  },
+  delete: (id: number) => api.delete(`/attachments/${id}`),
 };
 export const workflowsApi = {
   getByProject: (..._args: any[]) => dummyResolve([]),
