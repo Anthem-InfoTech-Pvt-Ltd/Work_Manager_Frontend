@@ -124,7 +124,7 @@ export default function PlatformManagementPage() {
     setSubmitting(true);
     try {
       if (editingWorkspace) {
-        const res = await workspacesApi.update(editingWorkspace.id, { name: workspaceName });
+        const res = await workspacesApi.update(editingWorkspace.id, { name: workspaceName, ownerId: Number(workspaceOwnerId) });
         if (res.data.success) {
           setIsWorkspaceModalOpen(false);
           fetchData();
@@ -662,21 +662,19 @@ export default function PlatformManagementPage() {
                   style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
                 />
               </div>
-              {!editingWorkspace && (
-                <div style={{ marginBottom: 20 }}>
-                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
-                  <select
-                    required
-                    value={workspaceOwnerId}
-                    onChange={e => setWorkspaceOwnerId(e.target.value)}
-                    style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                  >
-                    {users.map(u => (
-                      <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
-                    ))}
-                  </select>
-                </div>
-              )}
+              <div style={{ marginBottom: 20 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
+                <select
+                  required
+                  value={workspaceOwnerId}
+                  onChange={e => setWorkspaceOwnerId(e.target.value)}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
+                >
+                  {users.map(u => (
+                    <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
+                  ))}
+                </select>
+              </div>
               {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                 <button type="button" onClick={() => setIsWorkspaceModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>
