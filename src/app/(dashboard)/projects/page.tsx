@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { projectsApi, boardsApi, usersApi } from '@/lib/api';
+import { projectsApi, boardsApi, usersApi, adminApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import Link from 'next/link';
 
@@ -52,10 +52,28 @@ export default function ProjectsPage() {
   };
 
   useEffect(() => {
-    if (!workspaceId) return;
+    const isSuperAdmin = user?.roles?.includes('Super Admin');
+    if (!isSuperAdmin && !workspaceId) return;
     setLoading(true);
-    projectsApi.getAll(workspaceId).then(res => setProjects(res.data.data ?? [])).finally(() => setLoading(false));
-  }, [workspaceId]);
+
+    const fetchProjects = async () => {
+      try {
+        if (isSuperAdmin) {
+          const res = await adminApi.getPlatformSummary();
+          setProjects(res.data.data?.projects ?? []);
+        } else {
+          const res = await projectsApi.getAll(workspaceId!);
+          setProjects(res.data.data ?? []);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user, workspaceId]);
 
   useEffect(() => {
     if (workspaceId) {
@@ -90,7 +108,9 @@ export default function ProjectsPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Projects</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>{projects.length} project{projects.length !== 1 ? 's' : ''} in your workspace</p>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
+            {projects.length} project{projects.length !== 1 ? 's' : ''} {user?.roles?.includes('Super Admin') ? 'across all workspaces' : 'in your workspace'}
+          </p>
         </div>
         {canCreateProject && (
           <button className="btn btn-primary" onClick={() => setShowCreate(true)} id="create-project-btn">
