@@ -22,11 +22,12 @@ export default function AdminPage() {
     { title: 'Audit Logs', description: 'View full organization compliance audit trails, user logins, and database operations.', href: '/admin/audit', icon: '📋', color: '#a78bfa' },
     { title: 'Archive & Trash Bin', description: 'Recover archived or deleted tasks, lists, boards, and projects, or permanently purge them.', href: '/admin/archive', icon: '🗑️', color: '#f87171' },
     { title: 'System Error Logs', description: 'Monitor, inspect, and analyze system errors and exceptions captured in real time.', href: '/admin/error-logs', icon: '🐞', color: '#ef4444' },
-    { title: 'Plan Management', description: 'Configure workspace plans, subscription assignments, and system limits.', href: '/admin/plans', icon: '💎', color: '#3b82f6' },
+    { title: 'Plan Limits', description: 'Configure subscription tiers, thresholds, and customize limits.', href: '/admin/plans', icon: '💎', color: '#3b82f6' },
+    { title: 'Workspace Subscriptions', description: 'Manage active workspaces, subscription tiers, and plan assignments.', href: '/admin/subscriptions', icon: '🏢', color: '#8b5cf6' },
   ];
 
   const visibleModules = modules.filter(m => {
-    if (m.href === '/admin/error-logs' || m.href === '/admin/plans') {
+    if (m.href === '/admin/error-logs' || m.href === '/admin/plans' || m.href === '/admin/subscriptions') {
       return userRole === 'Super Admin';
     }
     return true;

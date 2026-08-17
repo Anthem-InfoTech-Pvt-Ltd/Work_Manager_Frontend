@@ -59,6 +59,8 @@ export default function Header() {
     '/admin/custom-fields':  'Custom Fields',
     '/admin/settings':       'Settings',
     '/admin/audit':          'Audit Logs',
+    '/admin/plans':          'Plan Limits',
+    '/admin/subscriptions':  'Workspace Subscriptions',
   };
 
   const getTitle = () => {
