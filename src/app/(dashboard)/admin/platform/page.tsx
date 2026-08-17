@@ -8,6 +8,8 @@ import { useRouter } from 'next/navigation';
 interface WorkspaceItem {
   id: number;
   name: string;
+  ownerId?: number;
+  ownerName?: string;
   createdAt: string;
   memberCount: number;
 }
@@ -59,6 +61,7 @@ export default function PlatformManagementPage() {
   const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
   const [editingWorkspace, setEditingWorkspace] = useState<WorkspaceItem | null>(null);
   const [workspaceName, setWorkspaceName] = useState('');
+  const [workspaceOwnerId, setWorkspaceOwnerId] = useState('');
 
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
@@ -129,7 +132,7 @@ export default function PlatformManagementPage() {
           setActionError(res.data.message || 'Failed to update workspace.');
         }
       } else {
-        const res = await workspacesApi.create({ name: workspaceName });
+        const res = await workspacesApi.create({ name: workspaceName, ownerId: Number(workspaceOwnerId) });
         if (res.data.success) {
           setIsWorkspaceModalOpen(false);
           fetchData();
@@ -424,7 +427,12 @@ export default function PlatformManagementPage() {
               <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <h3 style={{ fontWeight: 600, fontSize: 16 }}>All Workspaces</h3>
                 <button
-                  onClick={() => { setEditingWorkspace(null); setWorkspaceName(''); setIsWorkspaceModalOpen(true); }}
+                  onClick={() => {
+                    setEditingWorkspace(null);
+                    setWorkspaceName('');
+                    setWorkspaceOwnerId(users[0]?.id.toString() || '');
+                    setIsWorkspaceModalOpen(true);
+                  }}
                   className="btn-primary"
                   style={{ padding: '8px 16px', fontSize: 13 }}
                 >
@@ -435,6 +443,7 @@ export default function PlatformManagementPage() {
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
                     <th style={{ padding: '16px 24px' }}>Workspace Name</th>
+                    <th style={{ padding: '16px 24px' }}>Owner</th>
                     <th style={{ padding: '16px 24px' }}>Members</th>
                     <th style={{ padding: '16px 24px' }}>Created Date</th>
                     <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
@@ -444,6 +453,7 @@ export default function PlatformManagementPage() {
                   {workspaces.map(ws => (
                     <tr key={ws.id} style={{ borderBottom: '1px solid var(--border)' }}>
                       <td style={{ padding: '16px 24px', fontWeight: 600 }}>{ws.name}</td>
+                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{ws.ownerName || '-'}</td>
                       <td style={{ padding: '16px 24px' }}>
                         <span style={{ background: 'var(--border)', padding: '4px 8px', borderRadius: 12, fontSize: 12 }}>
                           {ws.memberCount} members
@@ -461,7 +471,12 @@ export default function PlatformManagementPage() {
                             Members
                           </button>
                           <button
-                            onClick={() => { setEditingWorkspace(ws); setWorkspaceName(ws.name); setIsWorkspaceModalOpen(true); }}
+                            onClick={() => {
+                              setEditingWorkspace(ws);
+                              setWorkspaceName(ws.name);
+                              setWorkspaceOwnerId(ws.ownerId?.toString() || '');
+                              setIsWorkspaceModalOpen(true);
+                            }}
                             style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
                           >
                             Edit
@@ -647,6 +662,21 @@ export default function PlatformManagementPage() {
                   style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
                 />
               </div>
+              {!editingWorkspace && (
+                <div style={{ marginBottom: 20 }}>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
+                  <select
+                    required
+                    value={workspaceOwnerId}
+                    onChange={e => setWorkspaceOwnerId(e.target.value)}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
+                  >
+                    {users.map(u => (
+                      <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                 <button type="button" onClick={() => setIsWorkspaceModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>

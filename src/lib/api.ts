@@ -50,7 +50,7 @@ export const authApi = {
 // ── Workspaces ────────────────────────────────────────────
 export const workspacesApi = {
   getAll: () => api.get('/workspaces'),
-  create: (data: { name: string }) => api.post('/workspaces', data),
+  create: (data: { name: string; ownerId?: number }) => api.post('/workspaces', data),
   update: (id: number, data: { name: string }) => api.put(`/workspaces/${id}`, data),
   delete: (id: number) => api.delete(`/workspaces/${id}`),
   archive: (..._args: any[]) => dummyResolve(true),
