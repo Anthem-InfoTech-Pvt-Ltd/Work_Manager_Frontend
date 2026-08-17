@@ -720,6 +720,7 @@ export default function BoardPageClient() {
       {selectedTaskId && board && (
         <TaskDetailDrawer
           taskId={selectedTaskId}
+          boardId={board.id}
           projectId={board.projectId}
           boardOwnerId={board.ownerId}
           onClose={() => { setSelectedTaskId(null); loadBoard(); }}

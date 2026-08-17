@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi, getAttachmentUrl } from '@/lib/api';
+import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi, getAttachmentUrl, listsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
 import RichTextEditor from '@/components/shared/RichTextEditor';
@@ -12,6 +12,7 @@ interface Task {
   status: string; dueDate?: string; startDate?: string;
   assigneeName?: string; assigneeId?: number; estimatedHours?: number; actualHours?: number;
   coverColor?: string; commentCount: number; checklistTotal: number; checklistDone: number;
+  listId?: number;
 }
 interface Comment {
   id: number; content: string; userName?: string; createdAt: string; isEdited: boolean;
@@ -63,10 +64,19 @@ const formatActivity = (type: string, data?: string) => {
   return data;
 };
 
-export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onClose }: { taskId: number; projectId?: number; boardOwnerId?: number; onClose: () => void }) {
+export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwnerId, onClose }: { taskId: number; boardId?: number; projectId?: number; boardOwnerId?: number; onClose: () => void }) {
   const { user, hasPermission } = useAuth();
   const canEdit = hasPermission('task.edit') || user?.roles?.includes('Admin') || user?.roles?.includes('Super Admin');
   const [task, setTask] = useState<Task | null>(null);
+  const [boardLists, setBoardLists] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    if (boardId) {
+      listsApi.getByBoard(boardId).then(res => {
+        setBoardLists(res.data.data ?? []);
+      }).catch(err => console.error('Failed to load board lists', err));
+    }
+  }, [boardId]);
   const [labels, setLabels] = useState<Label[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [checklists, setChecklists] = useState<Checklist[]>([]);
@@ -501,13 +511,23 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                         label: 'Status', value: (
                           <select
                             className="input"
-                            value={task.status}
-                            onChange={e => saveField('status', e.target.value)}
+                            value={task.listId || ''}
+                            onChange={async (e) => {
+                              const newListId = Number(e.target.value);
+                              if (newListId && task) {
+                                try {
+                                  await tasksApi.move(task.id, newListId);
+                                  setTask(prev => prev ? { ...prev, listId: newListId } : prev);
+                                } catch (err: any) {
+                                  alert(err.response?.data?.message || 'Failed to move task.');
+                                }
+                              }
+                            }}
                             disabled={!canEdit}
                             style={{ fontSize: 13 }}
                           >
-                            {['todo', 'in_progress', 'review', 'testing', 'done', 'cancelled'].map(s => (
-                              <option key={s} value={s}>{s.replace('_', ' ')}</option>
+                            {boardLists.map(l => (
+                              <option key={l.id} value={l.id}>{l.name}</option>
                             ))}
                           </select>
                         )
