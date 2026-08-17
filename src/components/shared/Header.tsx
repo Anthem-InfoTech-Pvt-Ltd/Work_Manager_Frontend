@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { notificationsApi, searchApi } from '@/lib/api';
+import { notificationsApi, searchApi, workspacesApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 interface SearchResult {
@@ -17,7 +17,7 @@ interface SearchResult {
 
 export default function Header() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, workspaceId, setWorkspaceId } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
@@ -25,6 +25,15 @@ export default function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [workspaces, setWorkspaces] = useState<{ id: number; name: string }[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      workspacesApi.getAll()
+        .then(res => setWorkspaces(res.data.data || []))
+        .catch(err => console.error(err));
+    }
+  }, [user]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'light';
@@ -93,9 +102,32 @@ export default function Header() {
       display: 'flex', alignItems: 'center',
       padding: '0 28px', gap: 20, position: 'sticky', top: 0, zIndex: 30,
     }}>
-      {/* Page title */}
-      <div style={{ flex: 1 }}>
+      {/* Page title & Workspace Switcher */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
         <h2 style={{ fontSize: 18, fontWeight: 600 }}>{getTitle()}</h2>
+        {workspaces.length > 0 && (
+          <select
+            value={workspaceId || ''}
+            onChange={(e) => setWorkspaceId(Number(e.target.value))}
+            style={{
+              padding: '6px 12px',
+              borderRadius: 8,
+              border: '1px solid var(--border)',
+              background: 'var(--bg-primary)',
+              color: 'var(--text-primary)',
+              fontSize: 13,
+              fontWeight: 500,
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            {workspaces.map(ws => (
+              <option key={ws.id} value={ws.id}>
+                📁 {ws.name}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
 
       {/* Global search */}
