@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { dashboardApi, projectsApi, boardsApi, tasksApi } from '@/lib/api';
+import { adminApi, projectsApi, boardsApi, tasksApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateIndian } from '@/lib/format';
 import {
@@ -45,13 +45,15 @@ export default function DashboardPage() {
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    if (!workspaceId) return;
+    const isSuperAdmin = user?.roles?.includes('Super Admin');
+    if (!isSuperAdmin && !workspaceId) return;
     setLoading(true);
 
     const fetchStats = async () => {
       try {
-        const projectsRes = await projectsApi.getAll(workspaceId);
-        const projectsList = projectsRes.data.data || [];
+        const projectsRes = isSuperAdmin ? await adminApi.getPlatformSummary() : await projectsApi.getAll(workspaceId!);
+        const projectsList = isSuperAdmin ? (projectsRes.data.data.projects || []) : (projectsRes.data.data || []);
+        const globalBoardsList = isSuperAdmin ? (projectsRes.data.data.boards || []) : null;
         
         let totalTasks = 0;
         let overdueTasks = 0;
@@ -63,8 +65,10 @@ export default function DashboardPage() {
         const todayStr = new Date().toISOString().split('T')[0];
 
         for (const p of projectsList) {
-          const boardsRes = await boardsApi.getByProject(p.id);
-          const boardsList = boardsRes.data.data || [];
+          const boardsList = globalBoardsList
+            ? globalBoardsList.filter((b: any) => b.projectId === p.id)
+            : (await boardsApi.getByProject(p.id)).data.data || [];
+
           for (const b of boardsList) {
             const tasksRes = await tasksApi.getByBoard(b.id);
             const tasksList = tasksRes.data.data || [];
@@ -114,7 +118,7 @@ export default function DashboardPage() {
     };
 
     fetchStats();
-  }, [workspaceId]);
+  }, [user, workspaceId]);
 
   useEffect(() => {
     const checkTheme = () => {
@@ -179,7 +183,9 @@ export default function DashboardPage() {
           Good day, {user?.firstName}! 👋
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-          Here's what's happening across your workspace today.
+          {user?.roles?.includes('Super Admin')
+            ? "Here's what's happening across all workspaces today."
+            : "Here's what's happening across your workspace today."}
         </p>
       </div>
 
