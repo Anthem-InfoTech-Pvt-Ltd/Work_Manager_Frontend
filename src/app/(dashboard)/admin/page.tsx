@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useAuth } from '@/lib/auth';
 
 interface AdminModule {
   title: string;
@@ -11,6 +12,9 @@ interface AdminModule {
 }
 
 export default function AdminPage() {
+  const { user } = useAuth();
+  const userRole = user?.roles?.[0] ?? 'Admin';
+
   const modules: AdminModule[] = [
     { title: 'Roles & Permissions', description: 'Configure granular RBAC permissions, create roles, and assign capabilities.', href: '/admin/roles', icon: '🛡️', color: '#6366f1' },
     { title: 'Custom Fields', description: 'Create dynamic project fields (dropdowns, dates, values) without code changes.', href: '/admin/custom-fields', icon: '🔧', color: '#22c55e' },
@@ -19,6 +23,13 @@ export default function AdminPage() {
     { title: 'Archive & Trash Bin', description: 'Recover archived or deleted tasks, lists, boards, and projects, or permanently purge them.', href: '/admin/archive', icon: '🗑️', color: '#f87171' },
     { title: 'System Error Logs', description: 'Monitor, inspect, and analyze system errors and exceptions captured in real time.', href: '/admin/error-logs', icon: '🐞', color: '#ef4444' },
   ];
+
+  const visibleModules = modules.filter(m => {
+    if (m.href === '/admin/error-logs') {
+      return userRole === 'Super Admin';
+    }
+    return true;
+  });
 
   return (
     <div style={{ padding: '32px 32px 64px', maxWidth: 1000, margin: '0 auto' }} className="fade-in">
@@ -30,7 +41,7 @@ export default function AdminPage() {
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {modules.map((m, idx) => (
+        {visibleModules.map((m, idx) => (
           <Link key={idx} href={m.href} style={{ textDecoration: 'none' }}>
             <div className="card" style={{
               padding: 24,
@@ -40,16 +51,16 @@ export default function AdminPage() {
               cursor: 'pointer',
               transition: 'all 0.2s',
             }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = m.color;
-              e.currentTarget.style.boxShadow = `0 4px 20px ${m.color}11`;
-              e.currentTarget.style.transform = 'translateX(4px)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--border)';
-              e.currentTarget.style.boxShadow = 'none';
-              e.currentTarget.style.transform = 'none';
-            }}
+              onMouseEnter={e => {
+                e.currentTarget.style.borderColor = m.color;
+                e.currentTarget.style.boxShadow = `0 4px 20px ${m.color}11`;
+                e.currentTarget.style.transform = 'translateX(4px)';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.borderColor = 'var(--border)';
+                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'none';
+              }}
             >
               <div style={{
                 width: 52, height: 52, borderRadius: 14,
