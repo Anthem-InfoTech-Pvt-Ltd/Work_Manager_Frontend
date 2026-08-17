@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
 
 interface Task {
   id: number; title: string; description?: string; priority: string;
@@ -116,8 +117,16 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
 
         const $ = (window as any).$;
         $(el).datepicker({
-          dateFormat: 'yy-mm-dd',
+          dateFormat: 'dd-mm-yy',
           onSelect: (dateText: string) => {
+            if (dateText) {
+              const parts = dateText.split('-');
+              if (parts.length === 3) {
+                const yyyymmdd = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                saveField('dueDate', yyyymmdd);
+                return;
+              }
+            }
             saveField('dueDate', dateText || null);
           }
         });
@@ -461,8 +470,8 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                           ref={initDatepicker}
                           className="input"
                           style={{ fontSize: 13 }}
-                          placeholder="YYYY-MM-DD"
-                          defaultValue={task.dueDate ? task.dueDate.substring(0,10) : ''}
+                          placeholder="DD-MM-YYYY"
+                          defaultValue={task.dueDate ? formatDateDDMMYYYY(task.dueDate) : ''}
                           disabled={!canEdit}
                         />
                       )},
@@ -697,7 +706,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
                             <span style={{ fontWeight: 600, fontSize: 14 }}>{c.userName}</span>
                             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>
-                              {new Date(c.createdAt).toLocaleDateString()}
+                              {formatDateTimeDDMMYYYY12h(c.createdAt)}
                             </span>
                             {c.isEdited && <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>(edited)</span>}
                           </div>
@@ -738,7 +747,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                           <strong>{act.userName || 'System'}</strong> {formatActivity(act.type, act.data)}
                         </p>
                         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
-                          {new Date(act.createdAt).toLocaleString()}
+                          {formatDateTimeDDMMYYYY12h(act.createdAt)}
                         </span>
                       </div>
                     </div>

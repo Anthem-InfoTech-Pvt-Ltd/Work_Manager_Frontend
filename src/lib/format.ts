@@ -53,3 +53,39 @@ export function formatDateTimeIndian(dateInput: string | Date | undefined | null
   if (dateStr === '—') return '—';
   return `${dateStr}, ${timeStr}`;
 }
+
+/**
+ * Formats a date string or Date object into "dd-mm-yyyy" format.
+ * Example: "2026-08-17" -> "17-08-2026"
+ */
+export function formatDateDDMMYYYY(dateInput: string | Date | undefined | null): string {
+  if (!dateInput) return '';
+  try {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    if (isNaN(date.getTime())) return '';
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Formats a date/time string or Date object into combined "dd-mm-yyyy hh:mm AM/PM" format.
+ * Example: "2026-07-31T14:30:00" -> "31-07-2026 02:30 PM"
+ */
+export function formatDateTimeDDMMYYYY12h(dateInput: string | Date | undefined | null): string {
+  if (!dateInput) return '';
+  try {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
+    if (isNaN(date.getTime())) return '';
+    const datePart = formatDateDDMMYYYY(date);
+    const timePart = formatTime12h(date);
+    if (!datePart || timePart === '—') return '';
+    return `${datePart} ${timePart}`;
+  } catch {
+    return '';
+  }
+}
