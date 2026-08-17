@@ -17,6 +17,7 @@ export default function AdminPage() {
     { title: 'System Settings', description: 'Configure application branding, default currencies, date formats, and time zones.', href: '/admin/settings', icon: '⚙️', color: '#ec4899' },
     { title: 'Audit Logs', description: 'View full organization compliance audit trails, user logins, and database operations.', href: '/admin/audit', icon: '📋', color: '#a78bfa' },
     { title: 'Archive & Trash Bin', description: 'Recover archived or deleted tasks, lists, boards, and projects, or permanently purge them.', href: '/admin/archive', icon: '🗑️', color: '#f87171' },
+    { title: 'System Error Logs', description: 'Monitor, inspect, and analyze system errors and exceptions captured in real time.', href: '/admin/error-logs', icon: '🐞', color: '#ef4444' },
   ];
 
   return (

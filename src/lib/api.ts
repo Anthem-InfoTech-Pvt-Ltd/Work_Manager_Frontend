@@ -254,6 +254,10 @@ export const organizationsApi = {
   getById: (..._args: any[]) => dummyResolve({}),
   create: (..._args: any[]) => dummyResolve({}),
 };
+export const errorLogsApi = {
+  getAll: () => api.get('/errorlogs'),
+  clearAll: () => api.delete('/errorlogs/clear'),
+};
 
 export const getAttachmentUrl = (url: string | undefined | null): string => {
   if (!url) return '';
