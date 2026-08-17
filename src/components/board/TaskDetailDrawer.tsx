@@ -508,31 +508,6 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                         )
                       },
                       {
-                        label: 'Status', value: (
-                          <select
-                            className="input"
-                            value={task.listId || ''}
-                            onChange={async (e) => {
-                              const newListId = Number(e.target.value);
-                              if (newListId && task) {
-                                try {
-                                  await tasksApi.move(task.id, newListId);
-                                  setTask(prev => prev ? { ...prev, listId: newListId } : prev);
-                                } catch (err: any) {
-                                  alert(err.response?.data?.message || 'Failed to move task.');
-                                }
-                              }
-                            }}
-                            disabled={!canEdit}
-                            style={{ fontSize: 13 }}
-                          >
-                            {boardLists.map(l => (
-                              <option key={l.id} value={l.id}>{l.name}</option>
-                            ))}
-                          </select>
-                        )
-                      },
-                      {
                         label: 'Due Date', value: (
                           <input
                             type="text"
