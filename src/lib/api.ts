@@ -255,4 +255,12 @@ export const organizationsApi = {
   create: (..._args: any[]) => dummyResolve({}),
 };
 
+export const getAttachmentUrl = (url: string | undefined | null): string => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  
+  const baseUrl = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5181/api').replace(/\/api$/, '');
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+};
+
 export default api;

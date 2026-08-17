@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi } from '@/lib/api';
+import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi, getAttachmentUrl } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
 import RichTextEditor from '@/components/shared/RichTextEditor';
@@ -637,7 +637,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                     ) : attachments.map(att => (
                       <div key={att.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: 8 }}>
                         <div>
-                          <a href={att.url} target="_blank" rel="noreferrer" style={{ fontWeight: 500, fontSize: 13, color: 'var(--accent)' }}>{att.name}</a>
+                          <a href={getAttachmentUrl(att.url)} target="_blank" rel="noreferrer" style={{ fontWeight: 500, fontSize: 13, color: 'var(--accent)' }}>{att.name}</a>
                           {att.size && <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 8 }}>({(att.size / 1024).toFixed(1)} KB)</span>}
                         </div>
                         <button onClick={() => deleteAttachment(att.id)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 12 }}>Delete</button>
@@ -776,7 +776,7 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                               {c.attachments.map(att => (
                                 <a 
                                   key={att.id} 
-                                  href={att.url} 
+                                  href={getAttachmentUrl(att.url)} 
                                   target="_blank" 
                                   rel="noreferrer"
                                   style={{
