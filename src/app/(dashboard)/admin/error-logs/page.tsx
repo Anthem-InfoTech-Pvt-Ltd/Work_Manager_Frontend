@@ -100,12 +100,14 @@ export default function ErrorLogsPage() {
           <p style={{ color: 'var(--text-secondary)' }}>Loading system exception logs...</p>
         </div>
       ) : filteredLogs.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '64px 0', border: '1px dashed var(--border)', borderRadius: 12, background: 'var(--bg-secondary)' }}>
-          <ShieldAlert size={48} style={{ color: 'var(--text-muted)', marginBottom: 16 }} />
-          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>All quiet! No logs found.</h3>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
-            {searchTerm ? 'Try adjusting your search filters.' : 'No exceptions or unhandled server crashes have been captured.'}
-          </p>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '64px 24px', border: '1px dashed var(--border)', borderRadius: 12, background: 'var(--bg-secondary)', gap: 12 }}>
+          <ShieldAlert size={48} style={{ color: 'var(--text-muted)' }} />
+          <div style={{ textAlign: 'center' }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 6 }}>All quiet! No logs found.</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, margin: 0 }}>
+              {searchTerm ? 'Try adjusting your search filters.' : 'No exceptions or unhandled server crashes have been captured.'}
+            </p>
+          </div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
