@@ -12,8 +12,13 @@ interface RichTextEditorProps {
 
 export default function RichTextEditor({ value, onChange, placeholder = 'Write something...', readOnly = false }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const isLocalChange = useRef(false);
 
   useEffect(() => {
+    if (isLocalChange.current) {
+      isLocalChange.current = false;
+      return;
+    }
     if (editorRef.current && editorRef.current.innerHTML !== value) {
       editorRef.current.innerHTML = value || '';
     }
@@ -23,12 +28,14 @@ export default function RichTextEditor({ value, onChange, placeholder = 'Write s
     if (readOnly) return;
     document.execCommand(command, false, arg);
     if (editorRef.current) {
+      isLocalChange.current = true;
       onChange(editorRef.current.innerHTML);
     }
   };
 
   const handleInput = () => {
     if (editorRef.current) {
+      isLocalChange.current = true;
       onChange(editorRef.current.innerHTML);
     }
   };
