@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { tasksApi, commentsApi, checklistsApi, attachmentsApi, timeTrackingApi, activitiesApi, projectsApi, getAttachmentUrl } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
@@ -76,6 +76,15 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
   const [newComment, setNewComment] = useState('');
   const [commentFiles, setCommentFiles] = useState<{ id: number; name: string }[]>([]);
   const [uploadingCommentFile, setUploadingCommentFile] = useState(false);
+  const [localDesc, setLocalDesc] = useState('');
+  const prevTaskId = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (task && (prevTaskId.current !== taskId || localDesc === '')) {
+      setLocalDesc(task.description ?? '');
+      prevTaskId.current = taskId;
+    }
+  }, [task, taskId]);
   const [newChecklistName, setNewChecklistName] = useState('');
   const [newItemTitle, setNewItemTitle] = useState<Record<number, string>>({});
   const [logHours, setLogHours] = useState('');
@@ -565,11 +574,29 @@ export default function TaskDetailDrawer({ taskId, projectId, boardOwnerId, onCl
                   <div>
                     <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 10 }}>Description</p>
                     <RichTextEditor
-                      value={task.description ?? ''}
-                      onChange={val => saveField('description', val || null)}
+                      value={localDesc}
+                      onChange={setLocalDesc}
                       placeholder="Add a description..."
                       readOnly={!canEdit}
                     />
+                    {canEdit && localDesc !== (task.description ?? '') && (
+                      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                        <button 
+                          className="btn btn-primary btn-sm" 
+                          onClick={async () => {
+                            await saveField('description', localDesc || null);
+                          }}
+                        >
+                          Save
+                        </button>
+                        <button 
+                          className="btn btn-secondary btn-sm" 
+                          onClick={() => setLocalDesc(task.description ?? '')}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
