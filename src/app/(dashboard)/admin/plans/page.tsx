@@ -52,7 +52,7 @@ export default function PlansPage() {
   const handleStartEdit = (plan: Plan) => {
     setEditingPlanId(plan.id);
     setEditingForm({
-      maxWorkspaces: plan.maxWorkspaces,
+      maxWorkspaces: plan.maxWorkspaces, // Keep these fields in form so the API payloads stay happy
       maxProjects: plan.maxProjectsPerWorkspace,
       maxBoards: plan.maxBoardsPerProject,
       maxMembers: plan.maxMembersPerWorkspace,
@@ -95,7 +95,7 @@ export default function PlansPage() {
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Plan Limits</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-            Define custom thresholds and limits for workspaces, projects, boards, and members.
+            Define custom thresholds and limits for projects and members.
           </p>
         </div>
       </div>
@@ -113,9 +113,7 @@ export default function PlansPage() {
               <thead>
                 <tr style={{ borderBottom: '1.5px solid var(--border)' }}>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Plan Name</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Workspaces</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Projects / WS</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Boards / Project</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Projects per Workspace</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Members (Excl. Owner)</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
                 </tr>
@@ -132,37 +130,11 @@ export default function PlansPage() {
                             type="number"
                             className="input"
                             style={{ width: 80, padding: '4px 8px' }}
-                            value={editingForm?.maxWorkspaces}
-                            onChange={e => setEditingForm(f => f ? { ...f, maxWorkspaces: parseInt(e.target.value) || 0 } : null)}
-                          />
-                        ) : (
-                          p.maxWorkspaces === 0 ? 'Unlimited' : p.maxWorkspaces
-                        )}
-                      </td>
-                      <td style={{ padding: '16px' }}>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            className="input"
-                            style={{ width: 80, padding: '4px 8px' }}
                             value={editingForm?.maxProjects}
                             onChange={e => setEditingForm(f => f ? { ...f, maxProjects: parseInt(e.target.value) || 0 } : null)}
                           />
                         ) : (
                           p.maxProjectsPerWorkspace === 0 ? 'Unlimited' : p.maxProjectsPerWorkspace
-                        )}
-                      </td>
-                      <td style={{ padding: '16px' }}>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            className="input"
-                            style={{ width: 80, padding: '4px 8px' }}
-                            value={editingForm?.maxBoards}
-                            onChange={e => setEditingForm(f => f ? { ...f, maxBoards: parseInt(e.target.value) || 0 } : null)}
-                          />
-                        ) : (
-                          p.maxBoardsPerProject === 0 ? 'Unlimited' : p.maxBoardsPerProject
                         )}
                       </td>
                       <td style={{ padding: '16px' }}>

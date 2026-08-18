@@ -82,9 +82,9 @@ export default function SubscriptionsPage() {
     <div style={{ padding: '32px 32px 64px', maxWidth: 1200, margin: '0 auto' }} className="fade-in">
       <div style={{ marginBottom: 36, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Workspace Subscriptions</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Account Subscriptions</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-            View active workspaces, monitor member growth, and assign subscription plans.
+            View active user accounts, monitor member growth, and assign subscription plans.
           </p>
         </div>
       </div>
@@ -94,15 +94,15 @@ export default function SubscriptionsPage() {
       ) : (
         <div className="card" style={{ padding: 28 }}>
           <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>🏢</span> Workspace Subscriptions
+            <span>🏢</span> Account Subscriptions
           </h2>
 
           <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
               <thead>
                 <tr style={{ borderBottom: '1.5px solid var(--border)' }}>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Workspace Name</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Workspace Owner</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Account Name</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Owner</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Members</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Current Plan</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Assign Subscription</th>

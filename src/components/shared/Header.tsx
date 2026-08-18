@@ -69,7 +69,7 @@ export default function Header() {
     '/admin/settings':       'Settings',
     '/admin/audit':          'Audit Logs',
     '/admin/plans':          'Plan Limits',
-    '/admin/subscriptions':  'Workspace Subscriptions',
+    '/admin/subscriptions':  'Account Subscriptions',
   };
 
   const getTitle = () => {
