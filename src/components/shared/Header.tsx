@@ -102,32 +102,9 @@ export default function Header() {
       display: 'flex', alignItems: 'center',
       padding: '0 28px', gap: 20, position: 'sticky', top: 0, zIndex: 30,
     }}>
-      {/* Page title & Workspace Switcher */}
+      {/* Page title */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
         <h2 style={{ fontSize: 18, fontWeight: 600 }}>{getTitle()}</h2>
-        {workspaces.length > 0 && (
-          <select
-            value={workspaceId || ''}
-            onChange={(e) => setWorkspaceId(Number(e.target.value))}
-            style={{
-              padding: '6px 12px',
-              borderRadius: 8,
-              border: '1px solid var(--border)',
-              background: 'var(--bg-primary)',
-              color: 'var(--text-primary)',
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              outline: 'none',
-            }}
-          >
-            {workspaces.map(ws => (
-              <option key={ws.id} value={ws.id}>
-                📁 {ws.name}
-              </option>
-            ))}
-          </select>
-        )}
       </div>
 
       {/* Global search */}
