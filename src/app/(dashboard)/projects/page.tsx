@@ -304,12 +304,7 @@ export default function ProjectsPage() {
 
 function ProjectBoardNavigator({ project, onManageMembers }: { project: Project; onManageMembers: (projectId: number, name: string) => void }) {
   const { user } = useAuth();
-  const canCreateBoard = user?.roles?.includes('Super Admin') || project.ownerId === user?.id;
-
   const [boards, setBoards] = useState<{ id: number; name: string }[]>([]);
-  const [showAddBoard, setShowAddBoard] = useState(false);
-  const [boardName, setBoardName] = useState('');
-  const [creatingBoard, setCreatingBoard] = useState(false);
 
   const loadBoards = async () => {
     try {
@@ -322,30 +317,11 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
     loadBoards();
   }, [project.id]);
 
-  const handleCreateBoard = async () => {
-    if (!boardName.trim()) return;
-    setCreatingBoard(true);
-    try {
-      await boardsApi.create({ projectId: project.id, name: boardName.trim() });
-      setBoardName('');
-      setShowAddBoard(false);
-      await loadBoards();
-    } catch (e: any) {
-      if (e.response?.status === 429) {
-        alert(e.response.data?.message || 'Quota limit reached. Please upgrade your plan.');
-      } else {
-        alert(e.response?.data?.message || 'Failed to create board.');
-      }
-      console.error(e);
-    } finally {
-      setCreatingBoard(false);
-    }
-  };
-
   const st = statusBadge[project.status] ?? statusBadge.active;
+  const defaultBoardId = boards[0]?.id;
 
-  return (
-    <div className="card" style={{ padding: 24 }}>
+  const cardContent = (
+    <>
       {/* Top accent */}
       <div style={{ height: 4, borderRadius: 4, background: project.color, margin: '-24px -24px 20px', borderTopLeftRadius: 12, borderTopRightRadius: 12 }} />
 
@@ -369,79 +345,27 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
         </p>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <span className={`badge badge-priority-${project.priority}`}>{project.priority}</span>
         <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {new Date(project.createdAt).toLocaleDateString()}
         </span>
       </div>
+    </>
+  );
 
-      {/* Boards */}
-      <div style={{ borderTop: '1px solid var(--border)', paddingTop: 14, marginTop: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-          <p style={{ fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.07em', fontWeight: 600 }}>Boards ({boards.length})</p>
-          {canCreateBoard && (
-            <button
-              onClick={() => setShowAddBoard(true)}
-              style={{
-                background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer',
-                fontSize: 12, fontWeight: 600, padding: 0, display: 'flex', alignItems: 'center', gap: 4
-              }}
-            >
-              + Add Board
-            </button>
-          )}
-        </div>
+  if (defaultBoardId) {
+    return (
+      <Link href={`/boards/${defaultBoardId}`} className="card" style={{ padding: 24, textDecoration: 'none', color: 'inherit', display: 'block', transition: 'transform 0.2s, box-shadow 0.2s' }}>
+        {cardContent}
+      </Link>
+    );
+  }
 
-        {boards.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            {boards.map(b => (
-              <Link key={b.id} href={`/boards/${b.id}`} style={{
-                display: 'flex', alignItems: 'center', gap: 8,
-                padding: '7px 10px', borderRadius: 8, fontSize: 13,
-                color: 'var(--text-secondary)', textDecoration: 'none',
-                transition: 'all 0.15s',
-              }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'var(--bg-hover)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)'; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)'; }}
-              >
-                <div style={{ width: 8, height: 8, borderRadius: '50%', background: project.color, flexShrink: 0 }} />
-                {b.name}
-                <svg style={{ marginLeft: 'auto' }} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round"/>
-                </svg>
-              </Link>
-            ))}
-          </div>
-        ) : (
-          <p style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic' }}>No boards in this project yet.</p>
-        )}
-      </div>
-
-      {/* Add Board Modal */}
-      {showAddBoard && (
-        <div className="overlay" onClick={() => setShowAddBoard(false)}>
-          <div style={{
-            background: 'var(--bg-card)', border: '1px solid var(--border)',
-            borderRadius: 16, padding: 28, width: 400, maxWidth: '90vw',
-            boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
-          }} onClick={e => e.stopPropagation()}>
-            <h4 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>Add Board to {project.name}</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Board Name *</label>
-                <input className="input" placeholder="e.g. Backlog Board" value={boardName} onChange={e => setBoardName(e.target.value)} autoFocus maxLength={50} />
-              </div>
-              <div style={{ display: 'flex', gap: 10, marginTop: 10 }}>
-                <button className="btn btn-secondary" style={{ flex: 1 }} onClick={() => setShowAddBoard(false)}>Cancel</button>
-                <button className="btn btn-primary" style={{ flex: 1 }} onClick={handleCreateBoard} disabled={creatingBoard || !boardName.trim()}>
-                  {creatingBoard ? 'Creating...' : 'Create Board'}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+  return (
+    <div className="card" style={{ padding: 24, opacity: 0.8 }}>
+      {cardContent}
+      <p style={{ fontSize: 12, color: 'var(--text-muted)', fontStyle: 'italic', marginTop: 12 }}>Setting up project stages...</p>
     </div>
   );
 }

@@ -280,14 +280,14 @@ export default function BoardPageClient() {
     </div>
   );
 
-  return (
+    return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       {/* Board header */}
       <div style={{
         padding: '16px 24px', borderBottom: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', gap: 16, background: 'var(--bg-secondary)',
       }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>{board?.name}</h2>
+        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Project Stages & Tasks</h2>
         <div style={{ display: 'flex', gap: 4 }}>
           {['kanban', 'table', 'calendar'].map(vt => (
             <button key={vt}
