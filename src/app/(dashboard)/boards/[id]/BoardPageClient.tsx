@@ -346,42 +346,45 @@ export default function BoardPageClient() {
         display: 'flex', alignItems: 'center', gap: 16, background: 'var(--bg-secondary)',
         flexWrap: 'wrap'
       }}>
-        {/* Project Name & Switcher */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
+        {/* Project Title Label & Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
           <span style={{ fontSize: 16 }}>📁</span>
-          {workspaceProjects.length > 1 ? (
-            <select
-              value={currentProject?.id || ''}
-              onChange={async (e) => {
-                const selectedPid = parseInt(e.target.value);
-                if (!isNaN(selectedPid)) {
-                  try {
-                    const bRes = await boardsApi.getByProject(selectedPid);
-                    const bList = bRes.data.data || [];
-                    if (bList.length > 0) {
-                      window.location.href = `/boards/${bList[0].id}`;
-                    } else {
-                      showToast.error('No boards found for this project');
+          <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            {currentProject?.name || 'Project'}
+          </h2>
+
+          {workspaceProjects.length > 1 && (
+            <div style={{ position: 'relative' }}>
+              <select
+                value={currentProject?.id || ''}
+                onChange={async (e) => {
+                  const selectedPid = parseInt(e.target.value);
+                  if (!isNaN(selectedPid)) {
+                    try {
+                      const bRes = await boardsApi.getByProject(selectedPid);
+                      const bList = bRes.data.data || [];
+                      if (bList.length > 0) {
+                        window.location.href = `/boards/${bList[0].id}`;
+                      } else {
+                        showToast.error('No boards found for this project');
+                      }
+                    } catch {
+                      showToast.error('Failed to switch project');
                     }
-                  } catch {
-                    showToast.error('Failed to switch project');
                   }
-                }
-              }}
-              style={{
-                fontSize: 16, fontWeight: 700, background: 'var(--bg-card)',
-                color: 'var(--text-primary)', border: '1px solid var(--border)',
-                borderRadius: 8, padding: '4px 10px', cursor: 'pointer', outline: 'none'
-              }}
-            >
-              {workspaceProjects.map(p => (
-                <option key={p.id} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          ) : (
-            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
-              {currentProject?.name || 'Project'}
-            </h2>
+                }}
+                style={{
+                  fontSize: 12, fontWeight: 600, background: 'var(--bg-hover)',
+                  color: 'var(--text-secondary)', border: '1px solid var(--border)',
+                  borderRadius: 6, padding: '4px 8px', cursor: 'pointer', outline: 'none'
+                }}
+              >
+                <option value="" disabled hidden>🔄 Switch Project</option>
+                {workspaceProjects.map(p => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
+            </div>
           )}
         </div>
 
