@@ -49,7 +49,7 @@ export default function PlatformManagementPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'workspaces' | 'projects' | 'boards'>('workspaces');
+  const [activeTab, setActiveTab] = useState<'workspaces' | 'projects' | 'boards'>('projects');
 
   // Summary state
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
@@ -364,49 +364,20 @@ export default function PlatformManagementPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>Platform Management</h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 15 }}>Manage global workspaces, projects, boards, and members.</p>
+          <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 15 }}>Manage global platform projects, users, and member access.</p>
         </div>
       </div>
 
       {/* Stats Summary Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 32 }}>
         {[
-          { title: 'Total Workspaces', val: workspaces.length, color: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' },
           { title: 'Total Projects', val: projects.length, color: 'linear-gradient(135deg, #10b981, #047857)' },
-          { title: 'Total Boards', val: boards.length, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' },
           { title: 'Registered Users', val: users.length, color: 'linear-gradient(135deg, #f59e0b, #d97706)' }
         ].map((stat, idx) => (
           <div key={idx} className="card" style={{ padding: 24, background: stat.color, color: '#fff', border: 'none' }}>
             <p style={{ fontSize: 13, textTransform: 'uppercase', opacity: 0.8, fontWeight: 600, letterSpacing: '0.05em' }}>{stat.title}</p>
             <p style={{ fontSize: 36, fontWeight: 800, marginTop: 8 }}>{stat.val}</p>
           </div>
-        ))}
-      </div>
-
-      {/* Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: 24, gap: 24 }}>
-        {[
-          { id: 'workspaces', label: 'Workspaces' },
-          { id: 'projects', label: 'Projects' },
-          { id: 'boards', label: 'Boards' }
-        ].map(t => (
-          <button
-            key={t.id}
-            onClick={() => setActiveTab(t.id as any)}
-            style={{
-              padding: '12px 4px',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: activeTab === t.id ? '2px solid var(--accent)' : '2px solid transparent',
-              color: activeTab === t.id ? 'var(--accent)' : 'var(--text-secondary)',
-              fontWeight: 600,
-              fontSize: 15,
-              cursor: 'pointer',
-              transition: 'all 0.15s'
-            }}
-          >
-            {t.label}
-          </button>
         ))}
       </div>
 

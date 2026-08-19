@@ -101,8 +101,7 @@ export default function SubscriptionsPage() {
             <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
               <thead>
                 <tr style={{ borderBottom: '1.5px solid var(--border)' }}>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Account Name</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Owner</th>
+                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Owner Account</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Members</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Current Plan</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Assign Subscription</th>
@@ -111,8 +110,7 @@ export default function SubscriptionsPage() {
               <tbody>
                 {workspaces.map(w => (
                   <tr key={w.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
-                    <td style={{ padding: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{w.name}</td>
-                    <td style={{ padding: '16px', color: 'var(--text-secondary)' }}>{w.ownerName || 'Unknown Owner'}</td>
+                    <td style={{ padding: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{w.ownerName || w.name}</td>
                     <td style={{ padding: '16px' }}>{w.memberCount ?? 0} members</td>
                     <td style={{ padding: '16px' }}>
                       <span style={{
@@ -143,8 +141,8 @@ export default function SubscriptionsPage() {
                 ))}
                 {workspaces.length === 0 && (
                   <tr>
-                    <td colSpan={5} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
-                      No workspaces found.
+                    <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                      No accounts found.
                     </td>
                   </tr>
                 )}
