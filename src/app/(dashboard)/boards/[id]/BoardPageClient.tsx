@@ -114,9 +114,9 @@ export default function BoardPageClient() {
     }
   };
 
-  const loadBoard = useCallback(async () => {
+  const loadBoard = useCallback(async (isSilent = false) => {
     if (isNaN(boardId)) return;
-    setLoading(true);
+    if (!isSilent) setLoading(true);
     try {
       const [boardRes, tasksRes] = await Promise.all([
         boardsApi.getById(boardId),
@@ -147,7 +147,9 @@ export default function BoardPageClient() {
       }));
       setLists(listsWithTasks);
     } catch (e) { console.error(e); }
-    finally { setLoading(false); }
+    finally {
+      if (!isSilent) setLoading(false);
+    }
   }, [boardId]);
 
   const searchParams = useSearchParams();
@@ -200,7 +202,7 @@ export default function BoardPageClient() {
 
     try {
       await tasksApi.move(taskId, destListId, newPos);
-    } catch { loadBoard(); }
+    } catch { loadBoard(true); }
   };
 
   const addList = async () => {
@@ -211,7 +213,7 @@ export default function BoardPageClient() {
       setNewListName('');
       setAddingList(false);
       showToast.success('Column added');
-      loadBoard();
+      loadBoard(true);
     } catch (e: any) {
       console.error(e);
       showToast.error(e.response?.data?.message || 'Failed to add column');
@@ -231,7 +233,7 @@ export default function BoardPageClient() {
     } catch (e: any) {
       console.error(e);
       showToast.error(e.response?.data?.message || 'Failed to rename column');
-      loadBoard();
+      loadBoard(true);
     }
   };
 
@@ -274,7 +276,7 @@ export default function BoardPageClient() {
       onConfirm: async () => {
         try {
           await listsApi.delete(listId);
-          loadBoard();
+          loadBoard(true);
           showToast.success(`Column "${listName}" deleted.`);
         } catch (e: any) {
           console.error(e);
@@ -296,7 +298,7 @@ export default function BoardPageClient() {
       setNewTaskTitle('');
       setAddingTaskListId(null);
       showToast.success('Task created');
-      loadBoard();
+      loadBoard(true);
     } catch (e: any) {
       console.error(e);
       showToast.error(e.response?.data?.message || 'Failed to add task');
