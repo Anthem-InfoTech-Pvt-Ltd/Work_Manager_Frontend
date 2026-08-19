@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { projectsApi, customFieldsApi, workspacesApi } from '@/lib/api';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface Workspace {
   id: number;
@@ -44,6 +45,18 @@ export default function CustomFieldsPage() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<number | null>(null);
   const [loadingWorkspaces, setLoadingWorkspaces] = useState(true);
+
+  // Confirmation Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   useEffect(() => {
     workspacesApi.getAll()
@@ -134,18 +147,28 @@ export default function CustomFieldsPage() {
       setDefinitions(res.data.data || []);
       setModalOpen(false);
     } catch (err) {
-      alert('Error saving custom field definition');
+      showToast.error('Error saving custom field definition');
     }
   };
 
   const handleDelete = async (id: number) => {
-    if (!selectedProjectId || !confirm('Are you sure you want to delete this custom field? Existing values on tasks will be hidden.')) return;
-    try {
-      await customFieldsApi.deleteDefinition(id);
-      setDefinitions(prev => prev.filter(d => d.id !== id));
-    } catch {
-      alert('Error deleting custom field definition');
-    }
+    if (!selectedProjectId) return;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Custom Field?',
+      message: 'Are you sure you want to delete this custom field? Existing values on tasks will be hidden.',
+      onConfirm: async () => {
+        try {
+          await customFieldsApi.deleteDefinition(id);
+          setDefinitions(prev => prev.filter(d => d.id !== id));
+          showToast.success('Custom field deleted.');
+        } catch {
+          showToast.error('Error deleting custom field definition');
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   if (loadingWorkspaces) {
@@ -389,6 +412,14 @@ export default function CustomFieldsPage() {
           </div>
         </div>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

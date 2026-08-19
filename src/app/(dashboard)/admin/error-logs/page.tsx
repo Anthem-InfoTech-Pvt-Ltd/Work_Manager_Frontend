@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { errorLogsApi } from '@/lib/api';
 import { formatDateTimeDDMMYYYY12h } from '@/lib/format';
 import { ShieldAlert, Trash2, Search, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 import Link from 'next/link';
 
 interface ErrorLog {
@@ -22,13 +23,25 @@ export default function ErrorLogsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
+  // Confirmation Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
+
   const fetchLogs = async () => {
     setLoading(true);
     try {
       const res = await errorLogsApi.getAll();
       setLogs(res.data.data ?? []);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to fetch error logs.');
+      showToast.error(err.response?.data?.message || 'Failed to fetch error logs.');
     } finally {
       setLoading(false);
     }
@@ -39,14 +52,22 @@ export default function ErrorLogsPage() {
   }, []);
 
   const clearAllLogs = async () => {
-    if (!window.confirm('Are you sure you want to permanently clear all system error logs?')) return;
-    try {
-      await errorLogsApi.clearAll();
-      setLogs([]);
-      alert('All logs cleared successfully.');
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to clear error logs.');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Clear Error Logs?',
+      message: 'Are you sure you want to permanently clear all system error logs?',
+      onConfirm: async () => {
+        try {
+          await errorLogsApi.clearAll();
+          setLogs([]);
+          showToast.success('All logs cleared successfully.');
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'Failed to clear error logs.');
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const filteredLogs = logs.filter(
@@ -195,6 +216,14 @@ export default function ErrorLogsPage() {
           })}
         </div>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

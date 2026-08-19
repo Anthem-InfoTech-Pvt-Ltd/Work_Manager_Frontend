@@ -230,7 +230,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       setTask(prev => prev ? { ...prev, [field]: value } : prev);
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.message || 'You do not have permission to perform this action.');
+      showToast.error(err.response?.data?.message || 'You do not have permission to perform this action.');
       loadData();
     } finally {
       setSaving(false);
@@ -248,7 +248,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
         setCommentFiles(prev => [...prev, { id: uploaded.id, name: uploaded.name }]);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to upload comment file.');
+      showToast.error(err.response?.data?.message || 'Failed to upload comment file.');
     } finally {
       setUploadingCommentFile(false);
     }
@@ -259,7 +259,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       await attachmentsApi.delete(id);
       setCommentFiles(prev => prev.filter(f => f.id !== id));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete file.');
+      showToast.error(err.response?.data?.message || 'Failed to delete file.');
     }
   };
 
@@ -275,7 +275,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       const attRes = await attachmentsApi.getByTask(taskId);
       setAttachments(attRes.data.data ?? []);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to add comment.');
+      showToast.error(err.response?.data?.message || 'Failed to add comment.');
     }
   };
 
@@ -284,7 +284,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       await commentsApi.delete(id);
       setComments(prev => prev.filter(c => c.id !== id));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete comment.');
+      showToast.error(err.response?.data?.message || 'Failed to delete comment.');
     }
   };
 
@@ -315,7 +315,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       const res = await checklistsApi.getByTask(taskId);
       setChecklists(res.data.data ?? []);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to create checklist.');
+      showToast.error(err.response?.data?.message || 'Failed to create checklist.');
     }
   };
 
@@ -328,7 +328,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       const res = await checklistsApi.getByTask(taskId);
       setChecklists(res.data.data ?? []);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to add checklist item.');
+      showToast.error(err.response?.data?.message || 'Failed to add checklist item.');
     }
   };
 
@@ -340,7 +340,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
         items: c.items.map(i => i.id === itemId ? { ...i, isChecked: !current } : i)
       })));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to update checklist item.');
+      showToast.error(err.response?.data?.message || 'Failed to update checklist item.');
     }
   };
 
@@ -349,7 +349,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       await checklistsApi.delete(id);
       setChecklists(prev => prev.filter(c => c.id !== id));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete checklist.');
+      showToast.error(err.response?.data?.message || 'Failed to delete checklist.');
     }
   };
 
@@ -362,7 +362,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       const res = await attachmentsApi.getByTask(taskId);
       setAttachments(res.data.data ?? []);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to upload attachment.');
+      showToast.error(err.response?.data?.message || 'Failed to upload attachment.');
     } finally {
       setUploading(false);
     }
@@ -373,7 +373,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       await attachmentsApi.delete(id);
       setAttachments(prev => prev.filter(a => a.id !== id));
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete attachment.');
+      showToast.error(err.response?.data?.message || 'Failed to delete attachment.');
     }
   };
 
@@ -386,7 +386,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       setLogDesc('');
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to log time.');
+      showToast.error(err.response?.data?.message || 'Failed to log time.');
     }
   };
 
@@ -396,7 +396,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
       setTimeEntries(prev => prev.filter(t => t.id !== id));
       loadData();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to delete time entry.');
+      showToast.error(err.response?.data?.message || 'Failed to delete time entry.');
     }
   };
 

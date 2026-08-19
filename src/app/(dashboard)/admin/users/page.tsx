@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usersApi, authApi } from '@/lib/api';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface User {
   id: number;
@@ -38,6 +39,18 @@ export default function UserManagementPage() {
   const [createSaving, setCreateSaving] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
+
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -135,19 +148,26 @@ export default function UserManagementPage() {
   };
 
   const handleDeleteUser = async (id: number, name: string) => {
-    if (confirm(`Are you sure you want to permanently delete user "${name}"? This action cannot be undone and will reassign their projects/boards.`)) {
-      try {
-        const res = await usersApi.delete(id);
-        if (res.data.success) {
-          alert('User deleted successfully.');
-          fetchUsers();
-        } else {
-          alert(res.data.message || 'Failed to delete user.');
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete User?',
+      message: `Are you sure you want to permanently delete user "${name}"? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          const res = await usersApi.delete(id);
+          if (res.data.success) {
+            showToast.success('User deleted successfully.');
+            fetchUsers();
+          } else {
+            showToast.error(res.data.message || 'Failed to delete user.');
+          }
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'An error occurred while deleting the user.');
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
         }
-      } catch (err: any) {
-        alert(err.response?.data?.message || 'An error occurred while deleting the user.');
-      }
-    }
+      },
+    });
   };
 
   const filteredUsers = users.filter(user => {
@@ -643,6 +663,15 @@ export default function UserManagementPage() {
         @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
         .table-row-hover:hover { background-color: var(--bg-hover) !important; }
       `}</style>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

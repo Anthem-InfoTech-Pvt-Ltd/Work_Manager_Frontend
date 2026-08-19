@@ -254,7 +254,7 @@ export default function BoardPageClient() {
       setLists(reorderedLists);
     } catch (e) {
       console.error(e);
-      alert('Failed to reorder columns');
+      showToast.error('Failed to reorder columns');
     }
   };
 
@@ -290,7 +290,7 @@ export default function BoardPageClient() {
       loadBoard();
     } catch (e: any) {
       console.error(e);
-      alert(e.response?.data?.message || 'Failed to add task');
+      showToast.error(e.response?.data?.message || 'Failed to add task');
     }
   };
 

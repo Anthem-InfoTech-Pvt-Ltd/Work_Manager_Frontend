@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { projectsApi, boardsApi, listsApi, tasksApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface ArchivedItem {
   id: number;
@@ -18,6 +19,18 @@ export default function ArchivePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'task' | 'board' | 'list'>('all');
   const [toast, setToast] = useState<string | null>(null);
+
+  // Confirmation Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -123,21 +136,28 @@ export default function ArchivePage() {
   };
 
   const handlePermanentDelete = async (item: ArchivedItem) => {
-    if (!confirm(`Are you sure you want to permanently delete this ${item.type}? This action is irreversible.`)) return;
-
-    try {
-      if (item.type === 'task') {
-        await tasksApi.delete(item.id);
-      } else if (item.type === 'list') {
-        await listsApi.delete(item.id);
-      } else if (item.type === 'board') {
-        await boardsApi.delete(item.id);
-      }
-      showToast(`Permanently deleted ${item.type} "${item.title}"`);
-      setItems(prev => prev.filter(i => !(i.id === item.id && i.type === item.type)));
-    } catch {
-      showToast(`Failed to delete ${item.type}`);
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: `Delete ${item.type}?`,
+      message: `Are you sure you want to permanently delete this ${item.type}? This action is irreversible.`,
+      onConfirm: async () => {
+        try {
+          if (item.type === 'task') {
+            await tasksApi.delete(item.id);
+          } else if (item.type === 'list') {
+            await listsApi.delete(item.id);
+          } else if (item.type === 'board') {
+            await boardsApi.delete(item.id);
+          }
+          showToast(`Permanently deleted ${item.type} "${item.title}"`);
+          setItems(prev => prev.filter(i => !(i.id === item.id && i.type === item.type)));
+        } catch {
+          showToast(`Failed to delete ${item.type}`);
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const filteredItems = items.filter(i => activeTab === 'all' || i.type === activeTab);
@@ -248,6 +268,14 @@ export default function ArchivePage() {
           ))}
         </div>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }
