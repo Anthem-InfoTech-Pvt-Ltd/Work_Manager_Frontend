@@ -243,8 +243,10 @@ export default function ProjectsPage() {
                       setSelectedAddUserId(null);
                       const res = await projectsApi.getMembers(showMembers.id);
                       setProjectMembers(res.data.data ?? []);
-                    } catch (e) {
+                      showToast.success('Member added to project');
+                    } catch (e: any) {
                       console.error(e);
+                      showToast.error(e.response?.data?.message || 'Failed to add member to project');
                     }
                   }}
                 >
@@ -278,8 +280,10 @@ export default function ProjectsPage() {
                           await projectsApi.removeMember(showMembers.id, m.userId);
                           const res = await projectsApi.getMembers(showMembers.id);
                           setProjectMembers(res.data.data ?? []);
-                        } catch (e) {
+                          showToast.success('Member removed from project');
+                        } catch (e: any) {
                           console.error(e);
+                          showToast.error(e.response?.data?.message || 'Failed to remove member');
                         }
                       }}
                       style={{
