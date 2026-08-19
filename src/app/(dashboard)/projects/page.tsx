@@ -169,10 +169,10 @@ export default function ProjectsPage() {
             </div>
 
             <div style={{ display: 'flex', gap: 12, marginTop: 32 }}>
+              <button className="btn btn-secondary" onClick={() => setShowCreate(false)} style={{ flex: 1 }}>Cancel</button>
               <button className="btn btn-primary" onClick={createProject} disabled={saving || !form.name.trim()} style={{ flex: 1 }} id="save-project-btn">
                 {saving ? 'Creating...' : 'Create Project'}
               </button>
-              <button className="btn btn-secondary" onClick={() => setShowCreate(false)}>Cancel</button>
             </div>
           </div>
         </div>
