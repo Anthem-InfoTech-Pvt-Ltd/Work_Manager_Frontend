@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { adminApi, workspacesApi, projectsApi, boardsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 import { useRouter } from 'next/navigation';
 
 interface WorkspaceItem {
@@ -147,19 +148,37 @@ export default function PlatformManagementPage() {
     }
   };
 
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
+
   const handleDeleteWorkspace = async (id: number, name: string) => {
-    if (confirm(`Are you sure you want to delete workspace "${name}"? All projects, boards, and tasks under this workspace will be deleted.`)) {
-      try {
-        const res = await workspacesApi.delete(id);
-        if (res.data.success) {
-          fetchData();
-        } else {
-          alert(res.data.message || 'Failed to delete workspace.');
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Workspace',
+      message: `Are you sure you want to delete workspace "${name}"? All projects, boards, and tasks under this workspace will be deleted.`,
+      onConfirm: async () => {
+        setConfirmState(prev => ({ ...prev, isOpen: false }));
+        try {
+          const res = await workspacesApi.delete(id);
+          if (res.data.success) {
+            showToast.success('Workspace deleted successfully.');
+            fetchData();
+          } else {
+            showToast.error(res.data.message || 'Failed to delete workspace.');
+          }
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'Server error.');
         }
-      } catch (err: any) {
-        alert(err.response?.data?.message || 'Server error.');
-      }
-    }
+      },
+    });
   };
 
   // -- MEMBERS MANAGEMENT --
@@ -288,18 +307,25 @@ export default function PlatformManagementPage() {
   };
 
   const handleDeleteProject = async (id: number, name: string) => {
-    if (confirm(`Are you sure you want to delete project "${name}"? This deletes all associated boards and tasks.`)) {
-      try {
-        const res = await projectsApi.delete(id);
-        if (res.data.success) {
-          fetchData();
-        } else {
-          alert(res.data.message || 'Failed to delete project.');
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Project',
+      message: `Are you sure you want to delete project "${name}"? This deletes all associated boards and tasks.`,
+      onConfirm: async () => {
+        setConfirmState(prev => ({ ...prev, isOpen: false }));
+        try {
+          const res = await projectsApi.delete(id);
+          if (res.data.success) {
+            showToast.success('Project deleted successfully.');
+            fetchData();
+          } else {
+            showToast.error(res.data.message || 'Failed to delete project.');
+          }
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'Server error.');
         }
-      } catch (err: any) {
-        alert(err.response?.data?.message || 'Server error.');
-      }
-    }
+      },
+    });
   };
 
   // -- BOARD ACTIONS --
@@ -340,18 +366,25 @@ export default function PlatformManagementPage() {
   };
 
   const handleDeleteBoard = async (id: number, name: string) => {
-    if (confirm(`Are you sure you want to delete board "${name}"? This will delete all lists and tasks.`)) {
-      try {
-        const res = await boardsApi.delete(id);
-        if (res.data.success) {
-          fetchData();
-        } else {
-          alert(res.data.message || 'Failed to delete board.');
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Board',
+      message: `Are you sure you want to delete board "${name}"? This will delete all lists and tasks.`,
+      onConfirm: async () => {
+        setConfirmState(prev => ({ ...prev, isOpen: false }));
+        try {
+          const res = await boardsApi.delete(id);
+          if (res.data.success) {
+            showToast.success('Board deleted successfully.');
+            fetchData();
+          } else {
+            showToast.error(res.data.message || 'Failed to delete board.');
+          }
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'Server error.');
         }
-      } catch (err: any) {
-        alert(err.response?.data?.message || 'Server error.');
-      }
-    }
+      },
+    });
   };
 
   if (!user || !user.roles?.includes('Super Admin')) {
@@ -825,6 +858,15 @@ export default function PlatformManagementPage() {
           </div>
         </div>
       )}
+
+      {/* Global Confirm Modal */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        title={confirmState.title}
+        message={confirmState.message}
+        onConfirm={confirmState.onConfirm}
+        onCancel={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }

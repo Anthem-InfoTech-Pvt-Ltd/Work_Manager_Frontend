@@ -68,7 +68,7 @@ export default function RolesPage() {
         {/* Roles list */}
         <div className="card" style={{ padding: 24, alignSelf: 'start' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700 }}>Workspace Roles</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700 }}>Account & System Roles</h3>
             {isAdmin && <button className="btn btn-primary btn-sm" onClick={() => setShowCreate(true)}>+ New Role</button>}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

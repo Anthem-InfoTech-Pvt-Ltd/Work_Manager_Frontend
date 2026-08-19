@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { projectsApi, boardsApi, usersApi, adminApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { showToast } from '@/components/shared/ToastProvider';
 import Link from 'next/link';
 
 interface Project {
@@ -90,11 +91,12 @@ export default function ProjectsPage() {
       setProjects(res.data.data ?? []);
       setShowCreate(false);
       setForm({ name: '', description: '', color: '#6366f1', priority: 'medium', workspaceId });
+      showToast.success('Project created successfully!');
     } catch (e: any) {
       if (e.response?.status === 429) {
-        alert(e.response.data?.message || 'Quota limit reached. Please upgrade your plan.');
+        showToast.error(e.response.data?.message || 'Quota limit reached. Please upgrade your plan.');
       } else {
-        alert(e.response?.data?.message || 'Failed to create project.');
+        showToast.error(e.response?.data?.message || 'Failed to create project.');
       }
       console.error(e);
     } finally {
@@ -109,7 +111,7 @@ export default function ProjectsPage() {
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Projects</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
-            {projects.length} project{projects.length !== 1 ? 's' : ''} {user?.roles?.includes('Super Admin') ? 'across all workspaces' : 'in your workspace'}
+            {projects.length} project{projects.length !== 1 ? 's' : ''} total
           </p>
         </div>
         {canCreateProject && (

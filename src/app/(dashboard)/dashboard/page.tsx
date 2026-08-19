@@ -183,9 +183,7 @@ export default function DashboardPage() {
           Good day, {user?.firstName}! 👋
         </h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-          {user?.roles?.includes('Super Admin')
-            ? "Here's what's happening across all workspaces today."
-            : "Here's what's happening across your workspace today."}
+          Here's an overview of your projects and active tasks today.
         </p>
       </div>
 
