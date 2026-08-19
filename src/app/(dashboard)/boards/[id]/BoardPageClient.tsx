@@ -756,7 +756,7 @@ export default function BoardPageClient() {
           boardId={board.id}
           projectId={board.projectId}
           boardOwnerId={board.ownerId}
-          onClose={() => { setSelectedTaskId(null); loadBoard(); }}
+          onClose={() => { setSelectedTaskId(null); loadBoard(true); }}
         />
       )}
 
