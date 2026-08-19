@@ -205,11 +205,17 @@ export default function BoardPageClient() {
 
   const addList = async () => {
     if (!newListName.trim()) return;
-    const nextPosition = lists.length;
-    await listsApi.create({ boardId, name: newListName.trim(), color: '#6366f1', position: nextPosition });
-    setNewListName('');
-    setAddingList(false);
-    loadBoard();
+    try {
+      const nextPosition = lists.length;
+      await listsApi.create({ boardId, name: newListName.trim(), color: '#6366f1', position: nextPosition });
+      setNewListName('');
+      setAddingList(false);
+      showToast.success('Column added');
+      loadBoard();
+    } catch (e: any) {
+      console.error(e);
+      showToast.error(e.response?.data?.message || 'Failed to add column');
+    }
   };
 
   const renameList = async (listId: number) => {
@@ -221,8 +227,10 @@ export default function BoardPageClient() {
     setEditingListId(null);
     try {
       await listsApi.update(listId, { name: editingListName.trim() });
-    } catch (e) {
+      showToast.success('Column renamed');
+    } catch (e: any) {
       console.error(e);
+      showToast.error(e.response?.data?.message || 'Failed to rename column');
       loadBoard();
     }
   };
@@ -287,6 +295,7 @@ export default function BoardPageClient() {
       });
       setNewTaskTitle('');
       setAddingTaskListId(null);
+      showToast.success('Task created');
       loadBoard();
     } catch (e: any) {
       console.error(e);
