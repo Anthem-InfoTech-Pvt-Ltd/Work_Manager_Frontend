@@ -24,7 +24,7 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [form, setForm] = useState({ name: '', description: '', color: '#6366f1', priority: 'medium', workspaceId: workspaceId || 1 });
+  const [form, setForm] = useState({ name: '', description: '', workspaceId: workspaceId || 1 });
   const [saving, setSaving] = useState(false);
 
   // Project Members management states
@@ -90,7 +90,7 @@ export default function ProjectsPage() {
       const res = await projectsApi.getAll(workspaceId);
       setProjects(res.data.data ?? []);
       setShowCreate(false);
-      setForm({ name: '', description: '', color: '#6366f1', priority: 'medium', workspaceId });
+      setForm({ name: '', description: '', workspaceId });
       showToast.success('Project created successfully!');
     } catch (e: any) {
       if (e.response?.status === 429) {
@@ -165,28 +165,6 @@ export default function ProjectsPage() {
               <div>
                 <label style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Description</label>
                 <textarea className="input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="What is this project about?" rows={3} style={{ resize: 'none' }} id="project-desc" maxLength={200} />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
-                <div>
-                  <label style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Priority</label>
-                  <select className="input" value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                    <option value="critical">Critical</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', fontSize: 13, color: 'var(--text-muted)', fontWeight: 600, marginBottom: 8, textTransform: 'uppercase', letterSpacing: '0.07em' }}>Color</label>
-                  <div style={{ display: 'flex', gap: 8, paddingTop: 4 }}>
-                    {['#6366f1','#22c55e','#f59e0b','#ef4444','#ec4899','#3b82f6'].map(c => (
-                      <button key={c} onClick={() => setForm(f => ({ ...f, color: c }))} style={{
-                        width: 28, height: 28, borderRadius: '50%', background: c, cursor: 'pointer',
-                        border: form.color === c ? '2px solid white' : '2px solid transparent',
-                      }} />
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -328,20 +306,14 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
 
   const cardContent = (
     <>
-      {/* Top accent */}
-      <div style={{ height: 4, borderRadius: 4, background: project.color, margin: '-24px -24px 20px', borderTopLeftRadius: 12, borderTopRightRadius: 12 }} />
-
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 12 }}>
         <div style={{
           width: 44, height: 44, borderRadius: 12,
-          background: `${project.color}22`, display: 'flex',
+          background: 'rgba(99, 102, 241, 0.12)', display: 'flex',
           alignItems: 'center', justifyContent: 'center', fontSize: 20,
         }}>
           📁
         </div>
-        <span style={{ ...st, padding: '4px 10px', borderRadius: 20, fontSize: 12, fontWeight: 600 }}>
-          {project.status}
-        </span>
       </div>
 
       <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 6 }}>{project.name}</h3>
@@ -352,7 +324,6 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <span className={`badge badge-priority-${project.priority}`}>{project.priority}</span>
         <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {new Date(project.createdAt).toLocaleDateString()}
         </span>
