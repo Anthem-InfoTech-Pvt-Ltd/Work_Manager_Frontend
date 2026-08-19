@@ -401,18 +401,7 @@ export default function PlatformManagementPage() {
         </div>
       </div>
 
-      {/* Stats Summary Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 32 }}>
-        {[
-          { title: 'Total Projects', val: projects.length, color: 'linear-gradient(135deg, #10b981, #047857)' },
-          { title: 'Registered Users', val: users.length, color: 'linear-gradient(135deg, #f59e0b, #d97706)' }
-        ].map((stat, idx) => (
-          <div key={idx} className="card" style={{ padding: 24, background: stat.color, color: '#fff', border: 'none' }}>
-            <p style={{ fontSize: 13, textTransform: 'uppercase', opacity: 0.8, fontWeight: 600, letterSpacing: '0.05em' }}>{stat.title}</p>
-            <p style={{ fontSize: 36, fontWeight: 800, marginTop: 8 }}>{stat.val}</p>
-          </div>
-        ))}
-      </div>
+
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '64px 0' }}>
