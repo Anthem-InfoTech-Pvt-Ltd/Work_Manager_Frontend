@@ -40,6 +40,8 @@ export default function BoardPageClient() {
   }
 
   const [board, setBoard] = useState<Board | null>(null);
+  const [currentProject, setCurrentProject] = useState<{ id: number; name: string } | null>(null);
+  const [workspaceProjects, setWorkspaceProjects] = useState<{ id: number; name: string }[]>([]);
   const [views, setViews] = useState<BoardView[]>([]);
   const [activeView, setActiveView] = useState('kanban');
   const [lists, setLists] = useState<List[]>([]);
@@ -131,7 +133,17 @@ export default function BoardPageClient() {
       if (b && b.projectId) {
         try {
           const projRes = await projectsApi.getById(b.projectId);
-          setProjectOwnerId(projRes.data.data?.ownerId ?? null);
+          const projData = projRes.data.data;
+          if (projData) {
+            setCurrentProject({ id: projData.id, name: projData.name });
+            setProjectOwnerId(projData.ownerId ?? null);
+            if (projData.workspaceId) {
+              try {
+                const allProjsRes = await projectsApi.getAll(projData.workspaceId);
+                setWorkspaceProjects(allProjsRes.data.data || []);
+              } catch {}
+            }
+          }
         } catch (err) {
           console.error('Failed to load project details', err);
         }
@@ -319,36 +331,76 @@ export default function BoardPageClient() {
       <div style={{
         padding: '16px 24px', borderBottom: '1px solid var(--border)',
         display: 'flex', alignItems: 'center', gap: 16, background: 'var(--bg-secondary)',
+        flexWrap: 'wrap'
       }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>Project Stages & Tasks</h2>
-        <div style={{ display: 'flex', gap: 4 }}>
-          {['kanban', 'table', 'calendar'].map(vt => (
-            <button key={vt}
-              onClick={() => setActiveView(vt)}
+        {/* Project Name & Switcher */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
+          <span style={{ fontSize: 16 }}>📁</span>
+          {workspaceProjects.length > 1 ? (
+            <select
+              value={currentProject?.id || ''}
+              onChange={async (e) => {
+                const selectedPid = parseInt(e.target.value);
+                if (!isNaN(selectedPid)) {
+                  try {
+                    const bRes = await boardsApi.getByProject(selectedPid);
+                    const bList = bRes.data.data || [];
+                    if (bList.length > 0) {
+                      window.location.href = `/boards/${bList[0].id}`;
+                    } else {
+                      showToast.error('No boards found for this project');
+                    }
+                  } catch {
+                    showToast.error('Failed to switch project');
+                  }
+                }
+              }}
               style={{
-                padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
-                cursor: 'pointer', border: 'none', transition: 'all 0.2s', textTransform: 'capitalize',
-                background: activeView === vt ? 'var(--accent)' : 'var(--bg-hover)',
-                color: activeView === vt ? '#fff' : 'var(--text-secondary)',
+                fontSize: 16, fontWeight: 700, background: 'var(--bg-card)',
+                color: 'var(--text-primary)', border: '1px solid var(--border)',
+                borderRadius: 8, padding: '4px 10px', cursor: 'pointer', outline: 'none'
               }}
             >
-              {vt === 'kanban' ? '📋 Kanban' : vt === 'table' ? '📊 Table' : '📅 Calendar'}
-            </button>
-          ))}
+              {workspaceProjects.map(p => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          ) : (
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)' }}>
+              {currentProject?.name || 'Project'}
+            </h2>
+          )}
         </div>
-        <button
-          onClick={handleOpenMembers}
-          style={{
-            marginLeft: 'auto',
-            padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
-            cursor: 'pointer', border: 'none', transition: 'all 0.2s',
-            background: 'var(--bg-hover)',
-            color: 'var(--text-secondary)',
-            display: 'flex', alignItems: 'center', gap: 6
-          }}
-        >
-          👥 Members
-        </button>
+
+        {/* Right action group: View Switcher Dropdown & Members */}
+        <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <select
+            value={activeView}
+            onChange={e => setActiveView(e.target.value)}
+            style={{
+              padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+              cursor: 'pointer', border: '1px solid var(--border)', transition: 'all 0.2s',
+              background: 'var(--bg-card)', color: 'var(--text-primary)', outline: 'none'
+            }}
+          >
+            <option value="kanban">📋 Kanban View</option>
+            <option value="table">📊 Table View</option>
+            <option value="calendar">📅 Calendar View</option>
+          </select>
+
+          <button
+            onClick={handleOpenMembers}
+            style={{
+              padding: '6px 14px', borderRadius: 8, fontSize: 13, fontWeight: 500,
+              cursor: 'pointer', border: 'none', transition: 'all 0.2s',
+              background: 'var(--bg-hover)',
+              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 6
+            }}
+          >
+            👥 Members
+          </button>
+        </div>
       </div>
 
       {/* Kanban Board */}
