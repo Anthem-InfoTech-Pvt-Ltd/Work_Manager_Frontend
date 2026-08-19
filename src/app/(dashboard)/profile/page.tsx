@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth';
 import { usersApi, authApi } from '@/lib/api';
+import { showToast } from '@/components/shared/ToastProvider';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -33,9 +34,9 @@ export default function ProfilePage() {
     setSaving(true);
     try {
       await usersApi.update(user.id, { firstName, lastName, phone, jobTitle, bio });
-      alert('Profile updated successfully!');
+      showToast.success('Profile updated successfully!');
     } catch {
-      alert('Failed to update profile.');
+      showToast.error('Failed to update profile.');
     } finally {
       setSaving(false);
     }
@@ -44,18 +45,18 @@ export default function ProfilePage() {
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      alert("New passwords do not match.");
+      showToast.error("New passwords do not match.");
       return;
     }
     setChanging(true);
     try {
       await authApi.changePassword({ currentPassword, newPassword });
-      alert("Password changed successfully!");
+      showToast.success("Password changed successfully!");
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to change password.");
+      showToast.error(err.response?.data?.message || "Failed to change password.");
     } finally {
       setChanging(false);
     }

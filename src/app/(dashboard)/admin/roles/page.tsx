@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { rolesApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { showToast } from '@/components/shared/ToastProvider';
 
 interface Role { id: number; name: string; color: string; description?: string; isSystem: boolean; }
 interface Permission { id: number; module: string; action: string; key: string; description?: string; }
@@ -48,7 +49,7 @@ export default function RolesPage() {
   const savePermissions = async () => {
     if (!selected) return;
     await rolesApi.setPermissions(selected.id, selectedPerms);
-    alert('Permissions saved!');
+    showToast.success('Permissions saved!');
   };
 
   const groupedPerms = perms.reduce((acc: Record<string, Permission[]>, p) => {

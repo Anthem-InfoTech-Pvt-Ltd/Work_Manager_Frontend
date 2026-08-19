@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { planApi } from '@/lib/api';
 import { ShieldAlert, Edit2, Check } from 'lucide-react';
+import { showToast } from '@/components/shared/ToastProvider';
 
 interface Plan {
   id: number;
@@ -67,9 +68,10 @@ export default function PlansPage() {
       setEditingPlanId(null);
       setEditingForm(null);
       await loadPlans();
+      showToast.success('Plan limits updated successfully.');
     } catch (e) {
       console.error(e);
-      alert('Failed to update plan limits.');
+      showToast.error('Failed to update plan limits.');
     } finally {
       setSavingPlanId(null);
     }

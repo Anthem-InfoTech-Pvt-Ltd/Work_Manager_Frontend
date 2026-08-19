@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { planApi } from '@/lib/api';
 import { ShieldAlert } from 'lucide-react';
+import { showToast } from '@/components/shared/ToastProvider';
 
 interface Plan {
   id: number;
@@ -56,9 +57,10 @@ export default function SubscriptionsPage() {
     try {
       await planApi.assignWorkspacePlan(workspaceId, planId);
       await loadData();
+      showToast.success('Workspace plan assigned successfully.');
     } catch (e) {
       console.error(e);
-      alert('Failed to assign workspace plan.');
+      showToast.error('Failed to assign workspace plan.');
     } finally {
       setAssigningWorkspaceId(null);
     }
