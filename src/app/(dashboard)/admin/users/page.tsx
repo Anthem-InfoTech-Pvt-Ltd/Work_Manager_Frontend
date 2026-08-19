@@ -205,7 +205,7 @@ export default function UserManagementPage() {
         <div>
           <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>User Management</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-            Manage organization members, assign roles, and update access permissions.
+            Manage organization members and update user details.
           </p>
         </div>
         <button
@@ -241,7 +241,7 @@ export default function UserManagementPage() {
           </span>
           <input
             type="text"
-            placeholder="Search by name, email, or role..."
+            placeholder="Search by name or email..."
             value={searchTerm}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
@@ -285,7 +285,6 @@ export default function UserManagementPage() {
               <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
                 <th style={{ padding: '16px 24px' }}>User</th>
                 <th style={{ padding: '16px 24px' }}>Email Address</th>
-                <th style={{ padding: '16px 24px' }}>System Role</th>
                 <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
@@ -317,11 +316,6 @@ export default function UserManagementPage() {
                     </td>
                     <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: 14 }}>
                       {user.email}
-                    </td>
-                    <td style={{ padding: '16px 24px' }}>
-                      <span style={getRoleBadgeStyle(user.role)}>
-                        {user.role.replace('_', ' ')}
-                      </span>
                     </td>
                     <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                       {user.role.toLowerCase() !== 'super_admin' && (
@@ -406,7 +400,7 @@ export default function UserManagementPage() {
               <div>
                 <h3 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)' }}>Edit User Details</h3>
                 <p style={{ color: 'var(--text-muted)', fontSize: 13, marginTop: 4 }}>
-                  Updating credentials and role permissions for {editingUser.email}
+                  Updating user profile details for {editingUser.email}
                 </p>
               </div>
               <button
