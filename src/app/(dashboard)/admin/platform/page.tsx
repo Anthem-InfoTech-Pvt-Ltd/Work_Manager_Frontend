@@ -488,7 +488,6 @@ export default function PlatformManagementPage() {
                 <thead>
                   <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
                     <th style={{ padding: '16px 24px' }}>Project Name</th>
-                    <th style={{ padding: '16px 24px' }}>Workspace</th>
                     <th style={{ padding: '16px 24px' }}>Owner</th>
                     <th style={{ padding: '16px 24px' }}>Created Date</th>
                     <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
@@ -503,7 +502,6 @@ export default function PlatformManagementPage() {
                           {p.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{p.description}</p>}
                         </div>
                       </td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{p.workspaceName}</td>
                       <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{p.ownerName}</td>
                       <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
                         {new Date(p.createdAt).toLocaleDateString()}
@@ -681,19 +679,6 @@ export default function PlatformManagementPage() {
                   onChange={e => setProjectForm({ ...projectForm, description: e.target.value })}
                   style={{ width: '100%', height: 80, padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)', resize: 'none' }}
                 />
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Workspace</label>
-                <select
-                  required
-                  value={projectForm.workspaceId}
-                  onChange={e => setProjectForm({ ...projectForm, workspaceId: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                >
-                  {workspaces.map(w => (
-                    <option key={w.id} value={w.id}>{w.name}</option>
-                  ))}
-                </select>
               </div>
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
