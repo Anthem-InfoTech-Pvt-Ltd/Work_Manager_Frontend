@@ -7,6 +7,7 @@ import { boardsApi, listsApi, tasksApi, projectsApi, usersApi, invitationsApi } 
 import TaskDetailDrawer from '@/components/board/TaskDetailDrawer';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
+import { showToast } from '@/components/shared/ToastProvider';
 
 interface Task {
   id: number; title: string; priority: string; status: string;
@@ -92,9 +93,10 @@ export default function BoardPageClient() {
       });
       setGeneratedLink(res.data.data.inviteLink);
       setInviteEmail('');
+      showToast.success('Invitation link generated!');
     } catch (e: any) {
       console.error(e);
-      alert(e.response?.data?.message || 'Failed to generate invitation');
+      showToast.error(e.response?.data?.message || 'Failed to generate invitation');
     } finally {
       setInviting(false);
     }
@@ -785,33 +787,41 @@ export default function BoardPageClient() {
                   No members in this project yet.
                 </p>
               ) : (
-                projectMembers.map(m => (
-                  <div key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 10 }}>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)' }}>{m.userName}</p>
-                      <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.userEmail}</p>
+                projectMembers.map(m => {
+                  const isProjectOwner = m.userId === board.ownerId;
+                  return (
+                    <div key={m.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg-secondary)', borderRadius: 10 }}>
+                      <div>
+                        <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {m.userName}
+                          {isProjectOwner && <span style={{ fontSize: 10, background: 'rgba(99,102,241,0.15)', color: 'var(--accent)', padding: '2px 6px', borderRadius: 10 }}>Owner</span>}
+                        </p>
+                        <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>{m.userEmail}</p>
+                      </div>
+                      {isOwner && !isProjectOwner && (
+                        <button
+                          onClick={async () => {
+                            try {
+                              await projectsApi.removeMember(board.projectId, m.userId);
+                              const res = await projectsApi.getMembers(board.projectId);
+                              setProjectMembers(res.data.data ?? []);
+                              showToast.success('Member removed');
+                            } catch (e: any) {
+                              console.error(e);
+                              showToast.error(e.response?.data?.message || 'Failed to remove member');
+                            }
+                          }}
+                          style={{
+                            background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
+                            fontSize: 12, fontWeight: 600, padding: '4px 8px'
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
-                    {isOwner && (
-                      <button
-                        onClick={async () => {
-                          try {
-                            await projectsApi.removeMember(board.projectId, m.userId);
-                            const res = await projectsApi.getMembers(board.projectId);
-                            setProjectMembers(res.data.data ?? []);
-                          } catch (e) {
-                            console.error(e);
-                          }
-                        }}
-                        style={{
-                          background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
-                          fontSize: 12, fontWeight: 600, padding: '4px 8px'
-                        }}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 

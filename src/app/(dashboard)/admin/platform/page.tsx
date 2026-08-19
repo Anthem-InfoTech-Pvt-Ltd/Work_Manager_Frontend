@@ -834,21 +834,29 @@ export default function PlatformManagementPage() {
               {workspaceMembers.length === 0 ? (
                 <p style={{ padding: 16, textAlign: 'center', color: 'var(--text-muted)' }}>No members in this {memberModalType}.</p>
               ) : (
-                workspaceMembers.map(member => (
-                  <div key={member.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
-                    <div>
-                      <p style={{ fontWeight: 600, fontSize: 14 }}>{member.userName}</p>
-                      <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{member.userEmail}</p>
+                workspaceMembers.map(member => {
+                  const isOwner = (selectedProject && member.userId === selectedProject.ownerId) || (selectedWorkspace && member.userId === selectedWorkspace.ownerId);
+                  return (
+                    <div key={member.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
+                      <div>
+                        <p style={{ fontWeight: 600, fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
+                          {member.userName}
+                          {isOwner && <span style={{ fontSize: 10, background: 'rgba(99,102,241,0.15)', color: 'var(--accent)', padding: '2px 6px', borderRadius: 10 }}>Owner</span>}
+                        </p>
+                        <p style={{ fontSize: 12, color: 'var(--text-muted)' }}>{member.userEmail}</p>
+                      </div>
+                      {!isOwner && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveWorkspaceMember(member.userId)}
+                          style={{ padding: '4px 8px', borderRadius: 6, background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: 11, cursor: 'pointer' }}
+                        >
+                          Remove
+                        </button>
+                      )}
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveWorkspaceMember(member.userId)}
-                      style={{ padding: '4px 8px', borderRadius: 6, background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: 11, cursor: 'pointer' }}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
