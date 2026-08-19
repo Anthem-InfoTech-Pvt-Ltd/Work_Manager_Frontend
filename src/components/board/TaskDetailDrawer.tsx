@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
 import RichTextEditor from '@/components/shared/RichTextEditor';
 import { Paperclip } from 'lucide-react';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface Task {
   id: number; title: string; description?: string; priority: string;
@@ -107,6 +108,18 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
   const [saving, setSaving] = useState(false);
   const [projectMembers, setProjectMembers] = useState<any[]>([]);
   const [projectOwnerId, setProjectOwnerId] = useState<number | null>(null);
+
+  // Confirmation Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const isOwner = user?.roles?.includes('Super Admin') || (projectOwnerId && user?.id === projectOwnerId) || (boardOwnerId && user?.id === boardOwnerId);
 
@@ -276,13 +289,22 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
   };
 
   const deleteTask = async () => {
-    if (!confirm('Are you sure you want to delete this task?')) return;
-    try {
-      await tasksApi.delete(taskId);
-      onClose();
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'You do not have permission to delete this task.');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Task?',
+      message: 'Are you sure you want to delete this task? This action cannot be undone.',
+      onConfirm: async () => {
+        try {
+          await tasksApi.delete(taskId);
+          showToast.success('Task deleted successfully');
+          onClose();
+        } catch (err: any) {
+          showToast.error(err.response?.data?.message || 'You do not have permission to delete this task.');
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const createChecklist = async () => {
@@ -863,6 +885,15 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
           <div style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>Task not found</div>
         )}
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </>
   );
 }

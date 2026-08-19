@@ -7,7 +7,7 @@ import { boardsApi, listsApi, tasksApi, projectsApi, usersApi, invitationsApi } 
 import TaskDetailDrawer from '@/components/board/TaskDetailDrawer';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
-import { showToast } from '@/components/shared/ToastProvider';
+import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface Task {
   id: number; title: string; priority: string; status: string;
@@ -63,6 +63,18 @@ export default function BoardPageClient() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviting, setInviting] = useState(false);
   const [generatedLink, setGeneratedLink] = useState('');
+
+  // Confirmation Modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   const handleOpenMembers = async () => {
     if (!board?.projectId) return;
@@ -247,15 +259,23 @@ export default function BoardPageClient() {
   };
 
   const deleteList = async (listId: number, listName: string) => {
-    if (confirm(`Are you sure you want to delete column "${listName}"? All tasks inside it will be permanently deleted.`)) {
-      try {
-        await listsApi.delete(listId);
-        loadBoard();
-      } catch (e) {
-        console.error(e);
-        alert('Failed to delete column');
-      }
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Column?',
+      message: `Are you sure you want to delete column "${listName}"? All tasks inside it will be permanently deleted.`,
+      onConfirm: async () => {
+        try {
+          await listsApi.delete(listId);
+          loadBoard();
+          showToast.success(`Column "${listName}" deleted.`);
+        } catch (e: any) {
+          console.error(e);
+          showToast.error(e.response?.data?.message || 'Failed to delete column');
+        } finally {
+          setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        }
+      },
+    });
   };
 
   const addTask = async (listId: number) => {
@@ -831,6 +851,15 @@ export default function BoardPageClient() {
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }
