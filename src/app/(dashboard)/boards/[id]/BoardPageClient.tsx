@@ -350,7 +350,7 @@ export default function BoardPageClient() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingRight: 16, borderRight: '1px solid var(--border)' }}>
           <span style={{ fontSize: 16 }}>📁</span>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            {currentProject?.name || 'Project'}
+            Project: {currentProject?.name || 'Project'}
           </h2>
 
           {workspaceProjects.length > 1 && (
