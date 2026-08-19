@@ -199,6 +199,18 @@ export default function BoardPageClient() {
         const destList = next.find(l => l.id === destListId);
         if (destList) {
           task.listId = destListId;
+          const lname = destList.name.toLowerCase().trim();
+          if (lname.includes('backlog') || lname.includes('to do') || lname.includes('todo')) {
+            task.status = 'todo';
+          } else if (lname.includes('progress') || lname.includes('doing')) {
+            task.status = 'in_progress';
+          } else if (lname.includes('review') || lname.includes('test')) {
+            task.status = 'review';
+          } else if (lname.includes('done') || lname.includes('completed')) {
+            task.status = 'done';
+          } else {
+            task.status = lname.replace(/\s+/g, '_');
+          }
           destList.tasks!.splice(destination.index, 0, task);
         }
       }
@@ -214,6 +226,7 @@ export default function BoardPageClient() {
 
     try {
       await tasksApi.move(taskId, destListId, newPos);
+      loadBoard(true);
     } catch { loadBoard(true); }
   };
 
