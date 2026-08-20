@@ -25,15 +25,6 @@ export default function Header() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [workspaces, setWorkspaces] = useState<{ id: number; name: string }[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      workspacesApi.getAll()
-        .then(res => setWorkspaces(res.data.data || []))
-        .catch(err => console.error(err));
-    }
-  }, [user?.id]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'light';

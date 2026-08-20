@@ -53,17 +53,16 @@ export default function ProjectsPage() {
   };
 
   useEffect(() => {
-    const isSuperAdmin = user?.roles?.includes('Super Admin');
-    if (!isSuperAdmin && !workspaceId) return;
     setLoading(true);
 
     const fetchProjects = async () => {
       try {
+        const isSuperAdmin = user?.roles?.includes('Super Admin');
         if (isSuperAdmin) {
           const res = await adminApi.getPlatformSummary();
           setProjects(res.data.data?.projects ?? []);
         } else {
-          const res = await projectsApi.getAll(workspaceId!);
+          const res = await projectsApi.getAll();
           setProjects(res.data.data ?? []);
         }
       } catch (e) {
@@ -74,7 +73,7 @@ export default function ProjectsPage() {
     };
 
     fetchProjects();
-  }, [workspaceId, user?.id]);
+  }, [user?.id]);
 
   useEffect(() => {
     if (workspaceId) {
@@ -83,14 +82,14 @@ export default function ProjectsPage() {
   }, [workspaceId]);
 
   const createProject = async () => {
-    if (!form.name.trim() || !workspaceId) return;
+    if (!form.name.trim()) return;
     setSaving(true);
     try {
-      await projectsApi.create({ ...form, workspaceId });
-      const res = await projectsApi.getAll(workspaceId);
+      await projectsApi.create(form);
+      const res = await projectsApi.getAll();
       setProjects(res.data.data ?? []);
       setShowCreate(false);
-      setForm({ name: '', description: '', workspaceId });
+      setForm({ name: '', description: '', workspaceId: 1 });
       showToast.success('Project created successfully!');
     } catch (e: any) {
       if (e.response?.status === 429) {

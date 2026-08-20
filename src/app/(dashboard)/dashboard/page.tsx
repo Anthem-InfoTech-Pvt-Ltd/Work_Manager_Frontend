@@ -46,10 +46,7 @@ export default function DashboardPage() {
   const [themeMode, setThemeMode] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    const isSuperAdmin = user?.roles?.includes('Super Admin');
-    if (!isSuperAdmin && !workspaceId) return;
-
-    const cacheKey = `dashboard_stats_${user?.id}_${workspaceId}`;
+    const cacheKey = `dashboard_stats_${user?.id}`;
     const cachedStats = getCachedData<DashboardStats>(cacheKey, 60000);
 
     if (cachedStats) {

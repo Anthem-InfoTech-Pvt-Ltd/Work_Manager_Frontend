@@ -26,10 +26,7 @@ export default function CalendarPage() {
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const loadEvents = async () => {
-    const isSuperAdmin = user?.roles?.includes('Super Admin');
-    if (!isSuperAdmin && !workspaceId) return;
-
-    const cacheKey = `calendar_events_${user?.id}_${workspaceId}`;
+    const cacheKey = `calendar_events_${user?.id}`;
     const cachedEvents = getCachedData<Event[]>(cacheKey, 60000);
 
     if (cachedEvents) {

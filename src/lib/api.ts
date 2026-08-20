@@ -47,23 +47,22 @@ export const authApi = {
   resetPassword: (data: object) => api.post('/auth/reset-password', data),
 };
 
-// ── Workspaces ────────────────────────────────────────────
 export const workspacesApi = {
-  getAll: () => api.get('/workspaces'),
-  create: (data: { name: string; ownerId?: number }) => api.post('/workspaces', data),
-  update: (id: number, data: { name: string; ownerId?: number }) => api.put(`/workspaces/${id}`, data),
-  delete: (id: number) => api.delete(`/workspaces/${id}`),
+  getAll: () => dummyResolve([]),
+  create: (..._args: any[]) => dummyResolve({}),
+  update: (..._args: any[]) => dummyResolve({}),
+  delete: (..._args: any[]) => dummyResolve(true),
   archive: (..._args: any[]) => dummyResolve(true),
   restore: (..._args: any[]) => dummyResolve(true),
-  getMembers: (id: number) => api.get(`/workspaces/${id}/members`),
-  addMember: (id: number, data: { userId: number }) => api.post(`/workspaces/${id}/members`, data),
-  removeMember: (id: number, userId: number) => api.delete(`/workspaces/${id}/members/${userId}`),
+  getMembers: (..._args: any[]) => dummyResolve([]),
+  addMember: (..._args: any[]) => dummyResolve(true),
+  removeMember: (..._args: any[]) => dummyResolve(true),
   updateMemberRole: (..._args: any[]) => dummyResolve(true),
 };
 
 // ── Projects ──────────────────────────────────────────────
 export const projectsApi = {
-  getAll: (workspaceId: number) => api.get(`/projects?workspaceId=${workspaceId}`),
+  getAll: (workspaceId?: number) => api.get('/projects'),
   getById: (id: number) => api.get(`/projects/${id}`),
   create: (data: object) => api.post('/projects', data),
   update: (id: number, data: object) => api.put(`/projects/${id}`, data),
