@@ -134,14 +134,14 @@ export default function BoardPageClient() {
       
       if (b && b.projectId) {
         try {
-          const projRes = await projectsApi.getById(b.projectId);
-          const projData = projRes.data.data;
-          if (projData) {
-            setCurrentProject({ id: projData.id, name: projData.name });
-            setProjectOwnerId(projData.ownerId ?? null);
-          }
           const allProjsRes = await projectsApi.getAll();
-          setWorkspaceProjects(allProjsRes.data.data || []);
+          const allProjs = allProjsRes.data.data || [];
+          setWorkspaceProjects(allProjs);
+          const currentProj = allProjs.find((p: any) => p.id === b.projectId);
+          if (currentProj) {
+            setCurrentProject({ id: currentProj.id, name: currentProj.name });
+            setProjectOwnerId(currentProj.ownerId ?? null);
+          }
         } catch (err) {
           console.error('Failed to load project details', err);
         }
