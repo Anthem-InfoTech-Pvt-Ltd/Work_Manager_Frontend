@@ -427,16 +427,14 @@ export default function BoardPageClient() {
                 <div className="kanban-column-header">
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
                     <div style={{ width: 10, height: 10, borderRadius: '50%', background: list.color, flexShrink: 0 }} />
-                    {editingListId === list.id ? (
+                    {isOwner && editingListId === list.id ? (
                       <input
-                        className="input"
+                        className="input input-sm"
                         style={{
-                          fontSize: 13,
-                          height: 26,
-                          width: 120,
-                          padding: '2px 8px',
-                          background: 'var(--bg-primary)',
-                          border: '1px solid var(--border)',
+                          width: '100%',
+                          fontSize: 14,
+                          fontWeight: 600,
+                          padding: '2px 6px',
                           borderRadius: 6,
                           color: 'var(--text-primary)',
                         }}
@@ -452,12 +450,14 @@ export default function BoardPageClient() {
                       />
                     ) : (
                       <span
-                        style={{ fontWeight: 600, fontSize: 14, cursor: 'pointer', flexGrow: 1 }}
+                        style={{ fontWeight: 600, fontSize: 14, cursor: isOwner ? 'pointer' : 'default', flexGrow: 1 }}
                         onClick={() => {
-                          setEditingListId(list.id);
-                          setEditingListName(list.name);
+                          if (isOwner) {
+                            setEditingListId(list.id);
+                            setEditingListName(list.name);
+                          }
                         }}
-                        title="Click to rename"
+                        title={isOwner ? "Click to rename" : ""}
                       >
                         {list.name}
                       </span>
@@ -473,22 +473,22 @@ export default function BoardPageClient() {
                     )}
 
                     {/* Column controls */}
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
-                      <button
-                        onClick={() => moveList(list.id, 'left')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
-                        title="Move Left"
-                      >
-                        ←
-                      </button>
-                      <button
-                        onClick={() => moveList(list.id, 'right')}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
-                        title="Move Right"
-                      >
-                        →
-                      </button>
-                      {isOwner && (
+                    {isOwner && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, marginLeft: 'auto' }}>
+                        <button
+                          onClick={() => moveList(list.id, 'left')}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
+                          title="Move Left"
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={() => moveList(list.id, 'right')}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '2px', fontSize: 13 }}
+                          title="Move Right"
+                        >
+                          →
+                        </button>
                         <button
                           onClick={() => deleteList(list.id, list.name)}
                           style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '2px', fontSize: 16, lineHeight: 1 }}
@@ -496,8 +496,8 @@ export default function BoardPageClient() {
                         >
                           ×
                         </button>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                   <button
                     onClick={() => setAddingTaskListId(list.id)}
@@ -615,43 +615,45 @@ export default function BoardPageClient() {
             ))}
 
             {/* Add List */}
-            <div style={{ flexShrink: 0 }}>
-              {addingList ? (
-                <div style={{
-                  width: 300, background: 'var(--bg-secondary)',
-                  border: '1px solid var(--border)', borderRadius: 12, padding: 16,
-                }}>
-                  <input
-                    className="input"
-                    style={{ marginBottom: 12 }}
-                    placeholder="List name..."
-                    value={newListName}
-                    onChange={e => setNewListName(e.target.value)}
-                    onKeyDown={e => { if (e.key === 'Enter') addList(); if (e.key === 'Escape') setAddingList(false); }}
-                    autoFocus
-                    maxLength={50}
-                  />
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    <button className="btn btn-primary btn-sm" onClick={addList}>Add List</button>
-                    <button className="btn btn-ghost btn-sm" onClick={() => setAddingList(false)}>Cancel</button>
+            {isOwner && (
+              <div style={{ flexShrink: 0 }}>
+                {addingList ? (
+                  <div style={{
+                    width: 300, background: 'var(--bg-secondary)',
+                    border: '1px solid var(--border)', borderRadius: 12, padding: 16,
+                  }}>
+                    <input
+                      className="input"
+                      style={{ marginBottom: 12 }}
+                      placeholder="List name..."
+                      value={newListName}
+                      onChange={e => setNewListName(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') addList(); if (e.key === 'Escape') setAddingList(false); }}
+                      autoFocus
+                      maxLength={50}
+                    />
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      <button className="btn btn-primary btn-sm" onClick={addList}>Add List</button>
+                      <button className="btn btn-ghost btn-sm" onClick={() => setAddingList(false)}>Cancel</button>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <button
-                  onClick={() => setAddingList(true)}
-                  style={{
-                    width: 300, padding: '12px 16px', borderRadius: 12,
-                    border: '2px dashed var(--border)', background: 'transparent',
-                    color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14,
-                    transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 8,
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)'; (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
-                >
-                  + Add a list
-                </button>
-              )}
-            </div>
+                ) : (
+                  <button
+                    onClick={() => setAddingList(true)}
+                    style={{
+                      width: 300, padding: '12px 16px', borderRadius: 12,
+                      border: '2px dashed var(--border)', background: 'transparent',
+                      color: 'var(--text-muted)', cursor: 'pointer', fontSize: 14,
+                      transition: 'all 0.2s', display: 'flex', alignItems: 'center', gap: 8,
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)'; (e.currentTarget as HTMLElement).style.color = 'var(--accent)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'; (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
+                  >
+                    + Add a list
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </DragDropContext>
       )}
