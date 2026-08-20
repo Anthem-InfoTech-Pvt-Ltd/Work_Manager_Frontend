@@ -139,14 +139,9 @@ export default function BoardPageClient() {
           if (projData) {
             setCurrentProject({ id: projData.id, name: projData.name });
             setProjectOwnerId(projData.ownerId ?? null);
-            setProjectWorkspaceId(projData.workspaceId ?? null);
-            if (projData.workspaceId) {
-              try {
-                const allProjsRes = await projectsApi.getAll(projData.workspaceId);
-                setWorkspaceProjects(allProjsRes.data.data || []);
-              } catch {}
-            }
           }
+          const allProjsRes = await projectsApi.getAll();
+          setWorkspaceProjects(allProjsRes.data.data || []);
         } catch (err) {
           console.error('Failed to load project details', err);
         }
