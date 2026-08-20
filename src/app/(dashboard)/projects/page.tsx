@@ -7,7 +7,7 @@ import { showToast } from '@/components/shared/ToastProvider';
 import Link from 'next/link';
 
 interface Project {
-  id: number; name: string; description?: string; color: string; status: string; priority: string; createdAt: string; ownerId: number;
+  id: number; name: string; description?: string; color: string; status: string; priority: string; createdAt: string; ownerId: number; defaultBoardId?: number;
 }
 
 const statusBadge: Record<string, { bg: string; color: string }> = {
@@ -291,6 +291,7 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
   const [boards, setBoards] = useState<{ id: number; name: string }[]>([]);
 
   const loadBoards = async () => {
+    if (project.defaultBoardId) return;
     try {
       const res = await boardsApi.getByProject(project.id);
       setBoards(res.data.data ?? []);
@@ -299,10 +300,10 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
 
   useEffect(() => {
     loadBoards();
-  }, [project.id]);
+  }, [project.id, project.defaultBoardId]);
 
   const st = statusBadge[project.status] ?? statusBadge.active;
-  const defaultBoardId = boards[0]?.id;
+  const defaultBoardId = project.defaultBoardId || boards[0]?.id;
 
   const cardContent = (
     <>

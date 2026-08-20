@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { projectsApi, boardsApi, listsApi, tasksApi } from '@/lib/api';
+import { projectsApi, boardsApi, listsApi, tasksApi, dashboardApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { ConfirmModal } from '@/components/shared/ToastProvider';
 
@@ -38,76 +38,10 @@ export default function ArchivePage() {
   };
 
   const loadArchivedItems = async () => {
-    if (!workspaceId) return;
     setLoading(true);
     try {
-      const list: ArchivedItem[] = [];
-      
-      // 1. Get all projects in workspace
-      const projectsRes = await projectsApi.getAll(workspaceId);
-      const projects = projectsRes.data.data || [];
-
-      for (const p of projects) {
-        // If project itself is archived/deleted
-        if (p.isArchived) {
-          list.push({
-            id: p.id,
-            title: p.name,
-            type: 'project',
-            description: p.description,
-            context: 'Workspace #1'
-          });
-        }
-
-        // 2. Get boards in project
-        const boardsRes = await boardsApi.getByProject(p.id);
-        const boards = boardsRes.data.data || [];
-
-        for (const b of boards) {
-          if (b.isArchived) {
-            list.push({
-              id: b.id,
-              title: b.name,
-              type: 'board',
-              description: b.description,
-              context: `Project: ${p.name}`
-            });
-          }
-
-          // 3. Get lists in board
-          const listsRes = await listsApi.getByBoard(b.id);
-          const lists = listsRes.data.data || [];
-
-          for (const l of lists) {
-            if (l.isArchived) {
-              list.push({
-                id: l.id,
-                title: l.name,
-                type: 'list',
-                context: `Board: ${b.name}`
-              });
-            }
-          }
-
-          // 4. Get tasks (including archived)
-          const tasksRes = await tasksApi.getByBoard(b.id, { includeArchived: true });
-          const tasks = tasksRes.data.data || [];
-
-          for (const t of tasks) {
-            if (t.isArchived) {
-              list.push({
-                id: t.id,
-                title: t.title,
-                type: 'task',
-                description: t.description,
-                context: `Board: ${b.name}`
-              });
-            }
-          }
-        }
-      }
-
-      setItems(list);
+      const res = await dashboardApi.getArchivedItems();
+      setItems(res.data.data || []);
     } catch (err) {
       showToast('Error loading archived items');
     } finally {

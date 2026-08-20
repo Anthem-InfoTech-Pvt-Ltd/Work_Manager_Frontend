@@ -262,6 +262,7 @@ export const planApi = {
 export const dashboardApi = {
   getStats: () => api.get('/dashboard/stats'),
   getCalendarEvents: () => api.get('/dashboard/calendar-events'),
+  getArchivedItems: () => api.get('/dashboard/archived-items'),
 };
 
 export const getAttachmentUrl = (url: string | undefined | null): string => {
