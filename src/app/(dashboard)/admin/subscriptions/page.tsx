@@ -11,12 +11,13 @@ interface Plan {
   name: string;
 }
 
-interface Workspace {
-  id: number;
-  name: string;
-  ownerName?: string;
-  planName?: string;
-  memberCount?: number;
+interface UserSubscription {
+  userId: number;
+  ownerName: string;
+  email: string;
+  memberCount: number;
+  planName: string;
+  planId: number;
 }
 
 export default function SubscriptionsPage() {
@@ -24,21 +25,21 @@ export default function SubscriptionsPage() {
   const userRole = user?.roles?.[0] ?? 'Admin';
 
   const [plans, setPlans] = useState<Plan[]>([]);
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [userSubs, setUserSubs] = useState<UserSubscription[]>([]);
   const [loading, setLoading] = useState(true);
-  const [assigningWorkspaceId, setAssigningWorkspaceId] = useState<number | null>(null);
+  const [assigningUserId, setAssigningUserId] = useState<number | null>(null);
 
   const isSuperAdmin = userRole === 'Super Admin';
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const [plansRes, workspacesRes] = await Promise.all([
+      const [plansRes, userSubsRes] = await Promise.all([
         planApi.getPlans(),
-        planApi.getWorkspaces(),
+        planApi.getUserSubscriptions(),
       ]);
       setPlans(plansRes.data.data ?? []);
-      setWorkspaces(workspacesRes.data.data ?? []);
+      setUserSubs(userSubsRes.data.data ?? []);
     } catch (e) {
       console.error('Failed to load subscription details', e);
     } finally {
@@ -52,17 +53,17 @@ export default function SubscriptionsPage() {
     }
   }, [isSuperAdmin]);
 
-  const handleAssignPlan = async (workspaceId: number, planId: number) => {
-    setAssigningWorkspaceId(workspaceId);
+  const handleAssignPlan = async (userId: number, planId: number) => {
+    setAssigningUserId(userId);
     try {
-      await planApi.assignWorkspacePlan(workspaceId, planId);
+      await planApi.assignUserPlan(userId, planId);
       await loadData();
-      showToast.success('Workspace plan assigned successfully.');
+      showToast.success('User subscription plan assigned successfully.');
     } catch (e) {
       console.error(e);
-      showToast.error('Failed to assign workspace plan.');
+      showToast.error('Failed to assign user subscription plan.');
     } finally {
-      setAssigningWorkspaceId(null);
+      setAssigningUserId(null);
     }
   };
 
@@ -104,35 +105,36 @@ export default function SubscriptionsPage() {
               <thead>
                 <tr style={{ borderBottom: '1.5px solid var(--border)' }}>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Owner Account</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Active Members</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Current Plan</th>
                   <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Assign Subscription</th>
                 </tr>
               </thead>
               <tbody>
-                {workspaces.map(w => (
-                  <tr key={w.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
-                    <td style={{ padding: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{w.ownerName || w.name}</td>
-                    <td style={{ padding: '16px' }}>{w.memberCount ?? 0} members</td>
+                {userSubs.map(u => (
+                  <tr key={u.userId} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
+                    <td style={{ padding: '16px' }}>
+                      <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{u.ownerName || 'User'}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{u.email}</div>
+                    </td>
                     <td style={{ padding: '16px' }}>
                       <span style={{
                         padding: '4px 10px',
                         borderRadius: 20,
                         fontSize: 12,
                         fontWeight: 600,
-                        background: w.planName === 'Enterprise' ? 'rgba(139,92,246,0.15)' : w.planName === 'Premium' ? 'rgba(59,130,246,0.15)' : 'rgba(107,114,128,0.15)',
-                        color: w.planName === 'Enterprise' ? '#a78bfa' : w.planName === 'Premium' ? '#60a5fa' : '#9ca3af'
+                        background: u.planName === 'Enterprise' ? 'rgba(139,92,246,0.15)' : u.planName === 'Premium' ? 'rgba(59,130,246,0.15)' : 'rgba(107,114,128,0.15)',
+                        color: u.planName === 'Enterprise' ? '#a78bfa' : u.planName === 'Premium' ? '#60a5fa' : '#9ca3af'
                       }}>
-                        {w.planName || 'Free'}
+                        {u.planName || 'Free'}
                       </span>
                     </td>
                     <td style={{ padding: '16px', textAlign: 'right' }}>
                       <select
                         className="input"
                         style={{ width: 140, display: 'inline-block', padding: '4px 8px', fontSize: 13 }}
-                        value={plans.find(p => p.name === w.planName)?.id || 1}
-                        disabled={assigningWorkspaceId === w.id}
-                        onChange={(e) => handleAssignPlan(w.id, parseInt(e.target.value))}
+                        value={u.planId || 1}
+                        disabled={assigningUserId === u.userId}
+                        onChange={(e) => handleAssignPlan(u.userId, parseInt(e.target.value))}
                       >
                         {plans.map(p => (
                           <option key={p.id} value={p.id}>{p.name}</option>
@@ -141,9 +143,9 @@ export default function SubscriptionsPage() {
                     </td>
                   </tr>
                 ))}
-                {workspaces.length === 0 && (
+                {userSubs.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                    <td colSpan={3} style={{ padding: '32px', textAlign: 'center', color: 'var(--text-muted)' }}>
                       No accounts found.
                     </td>
                   </tr>

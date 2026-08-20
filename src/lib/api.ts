@@ -267,6 +267,9 @@ export const planApi = {
   getWorkspaces: () => api.get('/planmanagement/workspaces'),
   assignWorkspacePlan: (workspaceId: number, planId: number) => 
     api.put(`/planmanagement/workspaces/${workspaceId}/plan`, { planId }),
+  getUserSubscriptions: () => api.get('/planmanagement/users'),
+  assignUserPlan: (userId: number, planId: number) =>
+    api.put(`/planmanagement/users/${userId}/plan`, { planId }),
 };
 
 export const getAttachmentUrl = (url: string | undefined | null): string => {
