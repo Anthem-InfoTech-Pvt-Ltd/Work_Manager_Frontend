@@ -74,7 +74,7 @@ export default function ProjectsPage() {
     };
 
     fetchProjects();
-  }, [user, workspaceId]);
+  }, [workspaceId, user?.id]);
 
   useEffect(() => {
     if (workspaceId) {
