@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { notificationsApi, searchApi, workspacesApi } from '@/lib/api';
+import { notificationsApi, searchApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 
 interface SearchResult {

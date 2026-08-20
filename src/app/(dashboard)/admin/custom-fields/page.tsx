@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { projectsApi, customFieldsApi, workspacesApi } from '@/lib/api';
+import { projectsApi, customFieldsApi } from '@/lib/api';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface Workspace {
@@ -59,16 +59,10 @@ export default function CustomFieldsPage() {
   });
 
   useEffect(() => {
-    workspacesApi.getAll()
-      .then(res => {
-        const list = res.data.data || [];
-        setWorkspaces(list);
-        if (list.length > 0) {
-          setSelectedWorkspaceId(list[0].id);
-        }
-        setLoadingWorkspaces(false);
-      })
-      .catch(() => setLoadingWorkspaces(false));
+    setLoadingWorkspaces(false);
+    projectsApi.getAll()
+      .then(res => setProjects(res.data.data || []))
+      .catch(err => console.error(err));
   }, []);
 
   useEffect(() => {

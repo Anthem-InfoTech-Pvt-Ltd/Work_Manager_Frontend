@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { authApi, workspacesApi } from './api';
+import { authApi } from './api';
 
 interface User {
   id: number;

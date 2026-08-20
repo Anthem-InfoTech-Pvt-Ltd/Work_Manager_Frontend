@@ -47,18 +47,7 @@ export const authApi = {
   resetPassword: (data: object) => api.post('/auth/reset-password', data),
 };
 
-export const workspacesApi = {
-  getAll: () => dummyResolve([]),
-  create: (..._args: any[]) => dummyResolve({}),
-  update: (..._args: any[]) => dummyResolve({}),
-  delete: (..._args: any[]) => dummyResolve(true),
-  archive: (..._args: any[]) => dummyResolve(true),
-  restore: (..._args: any[]) => dummyResolve(true),
-  getMembers: (..._args: any[]) => dummyResolve([]),
-  addMember: (..._args: any[]) => dummyResolve(true),
-  removeMember: (..._args: any[]) => dummyResolve(true),
-  updateMemberRole: (..._args: any[]) => dummyResolve(true),
-};
+
 
 // ── Projects ──────────────────────────────────────────────
 export const projectsApi = {

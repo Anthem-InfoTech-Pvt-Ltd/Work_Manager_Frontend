@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { adminApi, workspacesApi, projectsApi, boardsApi } from '@/lib/api';
+import { adminApi, projectsApi, boardsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 import { useRouter } from 'next/navigation';
@@ -121,31 +121,6 @@ export default function PlatformManagementPage() {
   // -- WORKSPACE ACTIONS --
   const handleSaveWorkspace = async (e: React.FormEvent) => {
     e.preventDefault();
-    setActionError(null);
-    setSubmitting(true);
-    try {
-      if (editingWorkspace) {
-        const res = await workspacesApi.update(editingWorkspace.id, { name: workspaceName, ownerId: Number(workspaceOwnerId) });
-        if (res.data.success) {
-          setIsWorkspaceModalOpen(false);
-          fetchData();
-        } else {
-          setActionError(res.data.message || 'Failed to update workspace.');
-        }
-      } else {
-        const res = await workspacesApi.create({ name: workspaceName, ownerId: Number(workspaceOwnerId) });
-        if (res.data.success) {
-          setIsWorkspaceModalOpen(false);
-          fetchData();
-        } else {
-          setActionError(res.data.message || 'Failed to create workspace.');
-        }
-      }
-    } catch (err: any) {
-      setActionError(err.response?.data?.message || 'Server error occurred.');
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   const [confirmState, setConfirmState] = useState<{
@@ -160,25 +135,6 @@ export default function PlatformManagementPage() {
   });
 
   const handleDeleteWorkspace = async (id: number, name: string) => {
-    setConfirmState({
-      isOpen: true,
-      title: 'Delete Workspace',
-      message: `Are you sure you want to delete workspace "${name}"? All projects, boards, and tasks under this workspace will be deleted.`,
-      onConfirm: async () => {
-        setConfirmState(prev => ({ ...prev, isOpen: false }));
-        try {
-          const res = await workspacesApi.delete(id);
-          if (res.data.success) {
-            showToast.success('Workspace deleted successfully.');
-            fetchData();
-          } else {
-            showToast.error(res.data.message || 'Failed to delete workspace.');
-          }
-        } catch (err: any) {
-          showToast.error(err.response?.data?.message || 'Server error.');
-        }
-      },
-    });
   };
 
   // -- MEMBERS MANAGEMENT --
@@ -203,7 +159,7 @@ export default function PlatformManagementPage() {
     try {
       let res;
       if (type === 'workspace') {
-        res = await workspacesApi.getMembers(item.id);
+        return;
       } else if (type === 'project') {
         res = await projectsApi.getMembers(item.id);
       } else {
@@ -224,8 +180,7 @@ export default function PlatformManagementPage() {
     try {
       let res;
       if (memberModalType === 'workspace') {
-        if (!selectedWorkspace) return;
-        res = await workspacesApi.addMember(selectedWorkspace.id, { userId: Number(addingMemberUserId) });
+        return;
       } else if (memberModalType === 'project') {
         if (!selectedProject) return;
         res = await projectsApi.addMember(selectedProject.id, Number(addingMemberUserId));
@@ -249,8 +204,7 @@ export default function PlatformManagementPage() {
     try {
       let res;
       if (memberModalType === 'workspace') {
-        if (!selectedWorkspace) return;
-        res = await workspacesApi.removeMember(selectedWorkspace.id, userId);
+        return;
       } else if (memberModalType === 'project') {
         if (!selectedProject) return;
         res = await projectsApi.removeMember(selectedProject.id, userId);
