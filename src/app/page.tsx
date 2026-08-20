@@ -58,8 +58,7 @@ export default function LandingPage() {
               fontWeight: 600,
               fontSize: 14,
               textDecoration: 'none',
-              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)',
-              transition: 'transform 0.2s'
+              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
             }}>
               Go to Dashboard →
             </Link>
@@ -71,8 +70,7 @@ export default function LandingPage() {
                 color: 'var(--text-secondary)',
                 textDecoration: 'none',
                 padding: '8px 16px',
-                borderRadius: 6,
-                transition: 'background 0.2s'
+                borderRadius: 6
               }}>
                 Sign In
               </Link>
@@ -113,7 +111,7 @@ export default function LandingPage() {
           fontWeight: 600,
           marginBottom: 24
         }}>
-          <span>🚀 Fast, High-Performance Work Management Platform</span>
+          <span>🚀 High-Performance Project & Team Collaboration</span>
         </div>
 
         <h1 style={{
@@ -174,7 +172,7 @@ export default function LandingPage() {
       <section style={{
         maxWidth: 1200,
         margin: '0 auto',
-        padding: '60px 24px 90px'
+        padding: '40px 24px 90px'
       }}>
         <div style={{ textAlign: 'center', marginBottom: 48 }}>
           <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 12 }}>
@@ -187,16 +185,15 @@ export default function LandingPage() {
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
           gap: 24
         }}>
-          {/* Feature 1 */}
+          {/* Feature 1: Interactive Kanban Boards */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
             borderRadius: 16,
-            padding: 32,
-            transition: 'transform 0.2s, box-shadow 0.2s'
+            padding: 32
           }}>
             <div style={{
               width: 48,
@@ -216,12 +213,17 @@ export default function LandingPage() {
               </svg>
             </div>
             <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Interactive Kanban Boards</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 }}>
-              Organize tasks across custom stages (To Do, In Progress, Review, Done). Drag and move cards easily as work progresses.
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
+              Organize tasks across custom stages like To Do, In Progress, Review, Testing, and Done. Move cards seamlessly as work progresses.
             </p>
+            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
+              <li>Customizable board lists & workflow columns</li>
+              <li>Drag-and-drop task organization</li>
+              <li>Priority flags (Critical, High, Medium, Low)</li>
+            </ul>
           </div>
 
-          {/* Feature 2 */}
+          {/* Feature 2: Smart Calendar View */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
@@ -247,12 +249,17 @@ export default function LandingPage() {
               </svg>
             </div>
             <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Smart Calendar View</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 }}>
-              Track project deadlines, upcoming deliverables, and milestones across a clean monthly calendar interface.
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
+              Track project deadlines, upcoming deliverables, and team milestones across a clean monthly calendar interface.
             </p>
+            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
+              <li>Unified view of task due dates across all projects</li>
+              <li>Filter deadlines by priority and assigned project</li>
+              <li>Instant task preview upon selecting any event</li>
+            </ul>
           </div>
 
-          {/* Feature 3 */}
+          {/* Feature 3: Team Collaboration & Permissions */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
@@ -273,17 +280,22 @@ export default function LandingPage() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M23 21v-2a4 4 0 0 1 0 3.87"/>
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Team Collaboration</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 }}>
-              Invite team members directly to projects and boards with custom role permissions (Manage Tasks, Manage Members, Owner).
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Team Collaboration & Invites</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
+              Invite teammates directly to projects and boards with email notifications and custom role permissions.
             </p>
+            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
+              <li>Send email invitations with 1-click registration links</li>
+              <li>Granular permissions (Manage Members, Delete Tasks)</li>
+              <li>Assign tasks to team members with real-time updates</li>
+            </ul>
           </div>
 
-          {/* Feature 4 */}
+          {/* Feature 4: Admin Platform Control */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
@@ -294,21 +306,26 @@ export default function LandingPage() {
               width: 48,
               height: 48,
               borderRadius: 12,
-              background: 'rgba(245, 158, 11, 0.1)',
-              color: '#f59e0b',
+              background: 'rgba(236, 72, 153, 0.1)',
+              color: '#ec4899',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               marginBottom: 20
             }}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>High Performance Backend</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6 }}>
-              Powered by optimized SQL Server stored procedures and client-side caching for fast page switches and zero latency.
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Admin & Platform Control</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
+              Super Admins gain full platform visibility over projects, users, subscriptions, and system-wide settings.
             </p>
+            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
+              <li>Manage all user roles and permissions</li>
+              <li>Platform summary and quota management</li>
+              <li>Archived items management & retrieval</li>
+            </ul>
           </div>
         </div>
       </section>
