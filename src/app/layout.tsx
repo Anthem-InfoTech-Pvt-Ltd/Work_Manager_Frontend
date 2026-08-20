@@ -7,8 +7,13 @@ import { GlobalToastContainer } from '@/components/shared/ToastProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'WorkManager — Enterprise Work Management Platform',
-  description: 'Dynamic, configurable work management platform for enterprise teams.',
+  title: 'WorkManager — Modern Project & Task Management Platform',
+  description: 'Plan projects, track tasks on interactive Kanban boards, and collaborate seamlessly with your team.',
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
