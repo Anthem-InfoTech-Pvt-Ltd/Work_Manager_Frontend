@@ -47,6 +47,7 @@ export default function BoardPageClient() {
   const [lists, setLists] = useState<List[]>([]);
   const [loading, setLoading] = useState(true);
   const [projectOwnerId, setProjectOwnerId] = useState<number | null>(null);
+  const [projectWorkspaceId, setProjectWorkspaceId] = useState<number | null>(null);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [addingList, setAddingList] = useState(false);
   const [newListName, setNewListName] = useState('');
@@ -95,13 +96,14 @@ export default function BoardPageClient() {
   };
 
   const handleSendInvite = async () => {
-    if (!inviteEmail.trim() || !workspaceId || !board) return;
+    const inviteWsId = projectWorkspaceId || workspaceId;
+    if (!inviteEmail.trim() || !inviteWsId || !board) return;
     setInviting(true);
     setGeneratedLink('');
     try {
       const res = await invitationsApi.create({
         email: inviteEmail.trim(),
-        workspaceId,
+        workspaceId: inviteWsId,
         projectId: board.projectId,
         boardId: board.id
       });
@@ -137,6 +139,7 @@ export default function BoardPageClient() {
           if (projData) {
             setCurrentProject({ id: projData.id, name: projData.name });
             setProjectOwnerId(projData.ownerId ?? null);
+            setProjectWorkspaceId(projData.workspaceId ?? null);
             if (projData.workspaceId) {
               try {
                 const allProjsRes = await projectsApi.getAll(projData.workspaceId);
