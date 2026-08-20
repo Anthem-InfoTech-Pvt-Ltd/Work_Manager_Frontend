@@ -9,9 +9,6 @@ export default function ProfilePage() {
   const { user } = useAuth();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
-  const [jobTitle, setJobTitle] = useState('');
-  const [bio, setBio] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Password change states
@@ -24,7 +21,6 @@ export default function ProfilePage() {
     if (user) {
       setFirstName(user.firstName || '');
       setLastName(user.lastName || '');
-      setJobTitle(user.jobTitle || '');
     }
   }, [user]);
 
@@ -33,7 +29,7 @@ export default function ProfilePage() {
     if (!user) return;
     setSaving(true);
     try {
-      await usersApi.update(user.id, { firstName, lastName, phone, jobTitle, bio });
+      await usersApi.update(user.id, { firstName, lastName });
       showToast.success('Profile updated successfully!');
     } catch {
       showToast.error('Failed to update profile.');
@@ -100,21 +96,6 @@ export default function ProfilePage() {
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Last Name</label>
               <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} required maxLength={50} />
             </div>
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Job Title</label>
-            <input className="input" value={jobTitle} onChange={e => setJobTitle(e.target.value)} placeholder="e.g. Senior Software Engineer" maxLength={50} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Phone Number</label>
-            <input className="input" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" maxLength={15} />
-          </div>
-
-          <div>
-            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Bio / About</label>
-            <textarea className="input" rows={4} value={bio} onChange={e => setBio(e.target.value)} placeholder="Tell your team about yourself..." maxLength={200} />
           </div>
 
           <button className="btn btn-primary" style={{ marginTop: 12, justifyContent: 'center' }} disabled={saving}>
