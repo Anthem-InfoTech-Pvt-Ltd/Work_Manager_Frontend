@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminApi, projectsApi, boardsApi, tasksApi } from '@/lib/api';
+import { adminApi, projectsApi, boardsApi, tasksApi, activitiesApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateIndian } from '@/lib/format';
 import {
@@ -51,9 +51,14 @@ export default function DashboardPage() {
 
     const fetchStats = async () => {
       try {
-        const projectsRes = isSuperAdmin ? await adminApi.getPlatformSummary() : await projectsApi.getAll(workspaceId!);
+        const [projectsRes, activitiesRes] = await Promise.all([
+          isSuperAdmin ? adminApi.getPlatformSummary() : projectsApi.getAll(workspaceId!),
+          activitiesApi.getRecent(10).catch(() => ({ data: { data: [] } }))
+        ]);
+
         const projectsList = isSuperAdmin ? (projectsRes.data.data.projects || []) : (projectsRes.data.data || []);
         const globalBoardsList = isSuperAdmin ? (projectsRes.data.data.boards || []) : null;
+        const recentActivities = activitiesRes.data.data || [];
         
         let totalTasks = 0;
         let overdueTasks = 0;
@@ -108,7 +113,7 @@ export default function DashboardPage() {
           inProgressTasks,
           tasksByStatus,
           tasksByPriority,
-          recentActivities: []
+          recentActivities
         });
       } catch (err) {
         console.error('Error fetching dashboard stats:', err);
