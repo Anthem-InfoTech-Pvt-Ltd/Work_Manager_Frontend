@@ -4,11 +4,11 @@
  */
 export function formatDateIndian(dateInput: string | Date | undefined | null): string {
   if (!dateInput) return '—';
-  
+
   try {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     if (isNaN(date.getTime())) return '—';
-    
+
     // Format options for Indian style: "26 January 2026"
     return date.toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -26,11 +26,11 @@ export function formatDateIndian(dateInput: string | Date | undefined | null): s
  */
 export function formatTime12h(dateInput: string | Date | undefined | null): string {
   if (!dateInput) return '—';
-  
+
   try {
     const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     if (isNaN(date.getTime())) return '—';
-    
+
     // Format options for 12-hour format: "2:30 PM"
     return date.toLocaleTimeString('en-IN', {
       hour: 'numeric',
@@ -128,4 +128,5 @@ export function formatActivityText(type: string, data?: string): string {
 
   return data;
 }
+
 
