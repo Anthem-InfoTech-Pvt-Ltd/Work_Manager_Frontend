@@ -16,9 +16,9 @@ export default function LandingPage() {
         top: 0,
         zIndex: 50,
         backdropFilter: 'blur(12px)',
-        background: 'rgba(255, 255, 255, 0.85)',
+        background: 'rgba(255, 255, 255, 0.88)',
         borderBottom: '1px solid var(--border)',
-        padding: '16px 32px',
+        padding: '18px 48px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between'
@@ -26,16 +26,16 @@ export default function LandingPage() {
         {/* Brand Logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 40,
-            height: 40,
+            width: 44,
+            height: 44,
             background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            borderRadius: 10,
+            borderRadius: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+            boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
           }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
               <rect x="3" y="3" width="7" height="7" rx="1.5"/>
               <rect x="14" y="3" width="7" height="7" rx="1.5"/>
               <rect x="3" y="14" width="7" height="7" rx="1.5"/>
@@ -43,20 +43,28 @@ export default function LandingPage() {
             </svg>
           </div>
           <div>
-            <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>WorkManager</span>
+            <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>WorkManager</span>
           </div>
         </div>
 
-        {/* Navigation Links & Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        {/* Navigation Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
+          <a href="#features" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Features</a>
+          <a href="#views" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Views</a>
+          <a href="#collaboration" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Collaboration</a>
+          <a href="#faq" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQ</a>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {user ? (
             <Link href="/dashboard" style={{
-              padding: '10px 22px',
-              borderRadius: 8,
+              padding: '12px 24px',
+              borderRadius: 10,
               background: 'var(--accent)',
               color: '#ffffff',
               fontWeight: 600,
-              fontSize: 14,
+              fontSize: 15,
               textDecoration: 'none',
               boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
             }}>
@@ -65,22 +73,22 @@ export default function LandingPage() {
           ) : (
             <>
               <Link href="/login" style={{
-                fontSize: 14,
+                fontSize: 15,
                 fontWeight: 600,
                 color: 'var(--text-secondary)',
                 textDecoration: 'none',
-                padding: '8px 16px',
-                borderRadius: 6
+                padding: '10px 18px',
+                borderRadius: 8
               }}>
                 Sign In
               </Link>
               <Link href="/register" style={{
-                padding: '10px 22px',
-                borderRadius: 8,
+                padding: '12px 24px',
+                borderRadius: 10,
                 background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                 color: '#ffffff',
                 fontWeight: 600,
-                fontSize: 14,
+                fontSize: 15,
                 textDecoration: 'none',
                 boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
               }}>
@@ -93,239 +101,447 @@ export default function LandingPage() {
 
       {/* ── Hero Section ────────────────────────────────────────────── */}
       <section style={{
-        maxWidth: 1200,
+        maxWidth: 1280,
         margin: '0 auto',
-        padding: '90px 24px 60px',
+        padding: '110px 32px 80px',
         textAlign: 'center'
       }}>
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 8,
-          padding: '6px 16px',
-          borderRadius: 20,
+          padding: '8px 20px',
+          borderRadius: 24,
           background: 'var(--accent-glow)',
-          border: '1px solid rgba(99, 102, 241, 0.2)',
+          border: '1px solid rgba(99, 102, 241, 0.25)',
           color: 'var(--accent)',
-          fontSize: 13,
+          fontSize: 14,
           fontWeight: 600,
-          marginBottom: 24
+          marginBottom: 28
         }}>
-          <span>🚀 High-Performance Project & Team Collaboration</span>
+          <span>✨ Everything your team needs to plan, track & deliver</span>
         </div>
 
         <h1 style={{
-          fontSize: 52,
+          fontSize: 60,
           fontWeight: 900,
-          lineHeight: 1.15,
-          letterSpacing: '-1.5px',
-          marginBottom: 24,
+          lineHeight: 1.12,
+          letterSpacing: '-2px',
+          marginBottom: 28,
           color: 'var(--text-primary)'
         }}>
-          Manage Projects & Teams with <br/>
+          Organize Your Projects with <br/>
           <span style={{
             background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
-          }}>Speed, Clarity and Precision</span>
+          }}>Complete Clarity & Visual Flow</span>
         </h1>
 
         <p style={{
-          fontSize: 18,
+          fontSize: 20,
           color: 'var(--text-secondary)',
-          maxWidth: 720,
-          margin: '0 auto 36px',
+          maxWidth: 780,
+          margin: '0 auto 42px',
           lineHeight: 1.6
         }}>
-          WorkManager empowers teams to plan projects, track tasks on interactive Kanban boards, schedule calendar deadlines, and collaborate seamlessly in real-time.
+          WorkManager combines Kanban boards, interactive task details, and calendar scheduling into a single powerful platform built for high-performing teams.
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 70 }}>
           <Link href="/register" style={{
-            padding: '14px 32px',
-            borderRadius: 10,
+            padding: '16px 36px',
+            borderRadius: 12,
             background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
             color: '#ffffff',
             fontWeight: 700,
-            fontSize: 16,
+            fontSize: 17,
             textDecoration: 'none',
-            boxShadow: '0 6px 20px rgba(99, 102, 241, 0.4)'
+            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)'
           }}>
-            Create Free Account
+            Get Started for Free
           </Link>
           <Link href="/login" style={{
-            padding: '14px 32px',
-            borderRadius: 10,
+            padding: '16px 36px',
+            borderRadius: 12,
             background: 'var(--bg-secondary)',
             border: '1px solid var(--border)',
             color: 'var(--text-primary)',
             fontWeight: 700,
-            fontSize: 16,
+            fontSize: 17,
             textDecoration: 'none'
           }}>
             Sign In to Account
           </Link>
         </div>
+
+        {/* Product Visual Mock Container */}
+        <div style={{
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
+          borderRadius: 20,
+          padding: 24,
+          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.08)'
+        }}>
+          <div style={{
+            background: 'var(--bg-primary)',
+            borderRadius: 12,
+            padding: '20px 24px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            borderBottom: '1px solid var(--border)',
+            marginBottom: 20
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }}/>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }}/>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }}/>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 12 }}>Project: Product Roadmap 2026</span>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Live Preview</div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, textAlign: 'left' }}>
+            {/* Column 1 */}
+            <div style={{ background: 'var(--bg-primary)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
+                <span>To Do</span>
+                <span style={{ color: 'var(--text-muted)' }}>3</span>
+              </div>
+              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Design System Updates</div>
+                <div style={{ fontSize: 12, color: 'var(--priority-high)', fontWeight: 600 }}>High Priority</div>
+              </div>
+              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>User Onboarding Flow</div>
+                <div style={{ fontSize: 12, color: 'var(--priority-medium)', fontWeight: 600 }}>Medium Priority</div>
+              </div>
+            </div>
+
+            {/* Column 2 */}
+            <div style={{ background: 'var(--bg-primary)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
+                <span>In Progress</span>
+                <span style={{ color: 'var(--text-muted)' }}>2</span>
+              </div>
+              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>API Optimization & Caching</div>
+                <div style={{ fontSize: 12, color: 'var(--priority-critical)', fontWeight: 600 }}>Critical Priority</div>
+              </div>
+              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)' }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Calendar View Redesign</div>
+                <div style={{ fontSize: 12, color: 'var(--priority-low)', fontWeight: 600 }}>Low Priority</div>
+              </div>
+            </div>
+
+            {/* Column 3 */}
+            <div style={{ background: 'var(--bg-primary)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
+                <span>Completed</span>
+                <span style={{ color: 'var(--text-muted)' }}>4</span>
+              </div>
+              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Remove Workspace Layer</div>
+                <div style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>Done</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
-      {/* ── Feature Highlights Grid ─────────────────────────────────── */}
-      <section style={{
-        maxWidth: 1200,
+      {/* ── Feature Highlights Section ──────────────────────────────── */}
+      <section id="features" style={{
+        maxWidth: 1280,
         margin: '0 auto',
-        padding: '40px 24px 90px'
+        padding: '80px 32px'
       }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <h2 style={{ fontSize: 32, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 12 }}>
-            Everything you need to deliver great work
+        <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 16 }}>
+            Designed to Streamline Team Execution
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>
-            Designed for modern teams to stay organized, focused, and productive.
+          <p style={{ color: 'var(--text-secondary)', fontSize: 18, maxWidth: 640, margin: '0 auto' }}>
+            WorkManager provides clear structure without clutter, giving your team full visibility into project progress.
           </p>
         </div>
 
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: 24
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 32
         }}>
-          {/* Feature 1: Interactive Kanban Boards */}
+          {/* Feature 1 */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32
+            borderRadius: 20,
+            padding: 40
           }}>
             <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: 'rgba(99, 102, 241, 0.1)',
+              width: 54,
+              height: 54,
+              borderRadius: 14,
+              background: 'rgba(99, 102, 241, 0.12)',
               color: '#6366f1',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 20
+              marginBottom: 24
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M9 3v18"/>
                 <path d="M15 3v18"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Interactive Kanban Boards</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
-              Organize tasks across custom stages like To Do, In Progress, Review, Testing, and Done. Move cards seamlessly as work progresses.
+            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Interactive Kanban Boards</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
+              Create custom workflow columns (Backlog, To Do, In Progress, Review, Testing, Done). Move cards effortlessly and track status updates instantly.
             </p>
-            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
-              <li>Customizable board lists & workflow columns</li>
-              <li>Drag-and-drop task organization</li>
-              <li>Priority flags (Critical, High, Medium, Low)</li>
-            </ul>
           </div>
 
-          {/* Feature 2: Smart Calendar View */}
+          {/* Feature 2 */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32
+            borderRadius: 20,
+            padding: 40
           }}>
             <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: 'rgba(34, 197, 94, 0.1)',
+              width: 54,
+              height: 54,
+              borderRadius: 14,
+              background: 'rgba(34, 197, 94, 0.12)',
               color: '#22c55e',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 20
+              marginBottom: 24
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
                 <path d="M16 2v4"/>
                 <path d="M8 2v4"/>
                 <path d="M3 10h18"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Smart Calendar View</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
-              Track project deadlines, upcoming deliverables, and team milestones across a clean monthly calendar interface.
+            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Smart Calendar View</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
+              Never miss a deadline. View task due dates across all active projects on an interactive, color-coded monthly calendar.
             </p>
-            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
-              <li>Unified view of task due dates across all projects</li>
-              <li>Filter deadlines by priority and assigned project</li>
-              <li>Instant task preview upon selecting any event</li>
-            </ul>
           </div>
 
-          {/* Feature 3: Team Collaboration & Permissions */}
+          {/* Feature 3 */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32
+            borderRadius: 20,
+            padding: 40
           }}>
             <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: 'rgba(168, 85, 247, 0.1)',
+              width: 54,
+              height: 54,
+              borderRadius: 14,
+              background: 'rgba(168, 85, 247, 0.12)',
               color: '#a855f7',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 20
+              marginBottom: 24
             }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 1 0 3.87"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Team Collaboration & Invites</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
-              Invite teammates directly to projects and boards with email notifications and custom role permissions.
+            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Team Access & Permissions</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
+              Invite teammates directly to projects and boards. Control member capabilities such as task creation, board management, and member administration.
             </p>
-            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
-              <li>Send email invitations with 1-click registration links</li>
-              <li>Granular permissions (Manage Members, Delete Tasks)</li>
-              <li>Assign tasks to team members with real-time updates</li>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Detail Breakdown Section 1: Kanban & Views ────────────────── */}
+      <section id="views" style={{
+        background: 'var(--bg-secondary)',
+        borderTop: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        padding: '90px 32px'
+      }}>
+        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+              Visual Workflow Engine
+            </div>
+            <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 20 }}>
+              Keep Tasks Moving from Ideation to Production
+            </h2>
+            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
+              Break complex projects into manageable task cards. Assign task priorities (Low, Medium, High, Critical), set due dates, add detailed descriptions, and leave comments in real time.
+            </p>
+            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
+                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Priority-based color coding for critical tasks
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
+                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Task assignee avatars and quick filters
+              </li>
+              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
+                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Instant drag-and-drop column positioning
+              </li>
             </ul>
           </div>
 
-          {/* Feature 4: Admin Platform Control */}
           <div style={{
             background: 'var(--bg-card)',
             border: '1px solid var(--border)',
-            borderRadius: 16,
-            padding: 32
+            borderRadius: 20,
+            padding: 32,
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.05)'
           }}>
-            <div style={{
-              width: 48,
-              height: 48,
-              borderRadius: 12,
-              background: 'rgba(236, 72, 153, 0.1)',
-              color: '#ec4899',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 20
-            }}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
+            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Task Details Card</div>
+            <div style={{ background: 'var(--bg-primary)', padding: 20, borderRadius: 12, border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Setup Production Monitoring</div>
+              <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
+                Configure health checks and automated email alerts for backend service uptime.
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
+                  Critical Priority
+                </span>
+                <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>Due: Oct 28</span>
+              </div>
             </div>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10 }}>Admin & Platform Control</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.6, marginBottom: 14 }}>
-              Super Admins gain full platform visibility over projects, users, subscriptions, and system-wide settings.
+          </div>
+        </div>
+      </section>
+
+      {/* ── Detail Breakdown Section 2: Collaboration ───────────────── */}
+      <section id="collaboration" style={{
+        maxWidth: 1280,
+        margin: '0 auto',
+        padding: '90px 32px'
+      }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+          <div style={{
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border)',
+            borderRadius: 20,
+            padding: 36,
+            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.05)'
+          }}>
+            <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Project Members & Permissions</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 14, background: 'var(--bg-primary)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>Alex Morgan</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Project Owner</div>
+                </div>
+                <span style={{ background: 'var(--accent-glow)', color: 'var(--accent)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Full Access</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 14, background: 'var(--bg-primary)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>Dev Team</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Project Member</div>
+                </div>
+                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Can Edit Tasks</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+              Seamless Teamwork
+            </div>
+            <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 20 }}>
+              Collaborate Without Friction
+            </h2>
+            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
+              Send direct email invitations to team members. Maintain granular access controls so everyone knows exactly what they are responsible for.
             </p>
-            <ul style={{ paddingLeft: 18, color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
-              <li>Manage all user roles and permissions</li>
-              <li>Platform summary and quota management</li>
-              <li>Archived items management & retrieval</li>
-            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* ── FAQ Section ────────────────────────────────────────────── */}
+      <section id="faq" style={{
+        background: 'var(--bg-secondary)',
+        borderTop: '1px solid var(--border)',
+        padding: '90px 32px'
+      }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 54 }}>
+            <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 12 }}>
+              Frequently Asked Questions
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Everything you need to know about WorkManager.</p>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Is WorkManager free to use?</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes! You can create a free account and start managing projects immediately.</p>
+            </div>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>How many projects and boards can I create?</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>You can create multiple projects and boards to organize your workload efficiently.</p>
+            </div>
+            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Can I invite external team members?</h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes, you can invite team members by email directly to specific projects or boards with custom permissions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Final Call To Action ───────────────────────────────────── */}
+      <section style={{
+        maxWidth: 1280,
+        margin: '0 auto',
+        padding: '100px 32px',
+        textAlign: 'center'
+      }}>
+        <div style={{
+          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+          borderRadius: 28,
+          padding: '70px 32px',
+          color: '#ffffff',
+          boxShadow: '0 20px 50px rgba(99, 102, 241, 0.3)'
+        }}>
+          <h2 style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-1px', marginBottom: 16 }}>
+            Ready to Organize Your Work?
+          </h2>
+          <p style={{ fontSize: 18, opacity: 0.9, maxWidth: 600, margin: '0 auto 36px', lineHeight: 1.6 }}>
+            Join WorkManager today and start managing your projects with clarity and speed.
+          </p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+            <Link href="/register" style={{
+              padding: '16px 36px',
+              borderRadius: 12,
+              background: '#ffffff',
+              color: '#4f46e5',
+              fontWeight: 800,
+              fontSize: 16,
+              textDecoration: 'none',
+              boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)'
+            }}>
+              Get Started Free
+            </Link>
+            <Link href="/login" style={{
+              padding: '16px 36px',
+              borderRadius: 12,
+              background: 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.3)',
+              color: '#ffffff',
+              fontWeight: 700,
+              fontSize: 16,
+              textDecoration: 'none'
+            }}>
+              Sign In
+            </Link>
           </div>
         </div>
       </section>
@@ -333,7 +549,7 @@ export default function LandingPage() {
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer style={{
         borderTop: '1px solid var(--border)',
-        padding: '32px 24px',
+        padding: '40px 32px',
         textAlign: 'center',
         color: 'var(--text-muted)',
         fontSize: 14
