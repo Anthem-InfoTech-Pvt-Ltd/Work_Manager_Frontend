@@ -35,9 +35,10 @@ export default function CalendarPage() {
     if (cachedEvents) {
       setRealEvents(cachedEvents);
       setLoading(false);
-    } else {
-      setLoading(true);
+      return;
     }
+
+    setLoading(true);
 
     try {
       const res = await dashboardApi.getCalendarEvents();

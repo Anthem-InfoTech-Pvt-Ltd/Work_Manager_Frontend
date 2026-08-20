@@ -33,7 +33,7 @@ export default function Header() {
         .then(res => setWorkspaces(res.data.data || []))
         .catch(err => console.error(err));
     }
-  }, [user]);
+  }, [user?.id]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' || 'light';

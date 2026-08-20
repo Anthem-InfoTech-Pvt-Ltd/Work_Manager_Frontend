@@ -55,9 +55,10 @@ export default function DashboardPage() {
     if (cachedStats) {
       setStats(cachedStats);
       setLoading(false);
-    } else {
-      setLoading(true);
+      return;
     }
+
+    setLoading(true);
 
     const fetchStats = async () => {
       try {
