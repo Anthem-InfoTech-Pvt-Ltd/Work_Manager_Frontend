@@ -227,9 +227,9 @@ export default function CalendarPage() {
 
         {/* Sidebar details */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className="card" style={{ padding: 24 }}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Upcoming Events</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column', maxHeight: 600 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, flexShrink: 0 }}>Upcoming Events</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4 }}>
               {(() => {
                 const currentMonthEvents = events.filter(e => {
                   const [y, m] = e.date.split('-').map(Number);
