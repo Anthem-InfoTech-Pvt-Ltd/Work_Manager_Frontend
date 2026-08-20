@@ -53,7 +53,7 @@ export default function CalendarPage() {
 
   useEffect(() => {
     loadEvents();
-  }, [user, workspaceId]);
+  }, [workspaceId, user?.id]);
 
   const events = [...realEvents];
 

@@ -90,7 +90,7 @@ export default function DashboardPage() {
     };
 
     fetchStats();
-  }, [workspaceId, user]);
+  }, [workspaceId, user?.id]);
 
   useEffect(() => {
     const checkTheme = () => {
