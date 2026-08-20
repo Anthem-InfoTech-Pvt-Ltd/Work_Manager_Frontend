@@ -226,10 +226,10 @@ export default function CalendarPage() {
         </div>
 
         {/* Sidebar details */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column', maxHeight: 600 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <div className="card" style={{ padding: 24, display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 16, flexShrink: 0 }}>Upcoming Events</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', paddingRight: 4 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, overflowY: 'auto', flex: 1, paddingRight: 4 }}>
               {(() => {
                 const currentMonthEvents = events.filter(e => {
                   const [y, m] = e.date.split('-').map(Number);
