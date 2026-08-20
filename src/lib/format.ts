@@ -89,3 +89,43 @@ export function formatDateTimeDDMMYYYY12h(dateInput: string | Date | undefined |
     return '';
   }
 }
+
+/**
+ * Formats activity type and JSON data into clean human-readable text
+ * Example: type "task_moved", data '{"from":"Testing","to":"Done"}' -> "moved task from Testing to Done"
+ */
+export function formatActivityText(type: string, data?: string): string {
+  if (!data) {
+    if (type === 'task_archived') return 'archived task';
+    if (type === 'task_created') return 'created task';
+    return type.replace(/_/g, ' ');
+  }
+
+  if (data.startsWith('{') && data.endsWith('}')) {
+    try {
+      const parsed = JSON.parse(data);
+      if (type === 'task_created') {
+        return 'created task';
+      }
+      if (type === 'task_status_changed') {
+        const from = (parsed.from || '').replace(/_/g, ' ');
+        const to = (parsed.to || '').replace(/_/g, ' ');
+        return `changed status from "${from}" to "${to}"`;
+      }
+      if (type === 'task_moved') {
+        if (parsed.from && parsed.to) {
+          return `moved task from "${parsed.from}" to "${parsed.to}"`;
+        }
+        if (parsed.to) {
+          return `moved task to "${parsed.to}"`;
+        }
+        return 'moved task';
+      }
+    } catch {
+      return data;
+    }
+  }
+
+  return data;
+}
+

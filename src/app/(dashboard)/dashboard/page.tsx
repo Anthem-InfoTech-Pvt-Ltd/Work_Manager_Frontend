@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { adminApi, projectsApi, boardsApi, tasksApi, activitiesApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
-import { formatDateIndian } from '@/lib/format';
+import { formatDateIndian, formatActivityText } from '@/lib/format';
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
   CategoryScale, LinearScale, BarElement, Title
@@ -182,7 +182,6 @@ export default function DashboardPage() {
 
   return (
     <div style={{ padding: '32px 32px 64px', maxWidth: 1400, margin: '0 auto' }}>
-      {/* Greeting */}
       <div style={{ marginBottom: 32 }}>
         <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>
           Good day, {user?.firstName}! 👋
@@ -192,7 +191,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
         {statCards.map(({ key, label, icon, color }) => (
           <div key={key} className="stat-card fade-in" style={{ '--accent': color } as React.CSSProperties}>
@@ -216,9 +214,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      {/* Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
-        {/* Status Donut */}
         <div className="card" style={{ padding: 28 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 24 }}>Tasks by Status</h3>
           {loading ? <div className="skeleton" style={{ height: 250 }} /> : (
@@ -232,7 +228,6 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Priority Bar */}
         <div className="card" style={{ padding: 28 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 24 }}>Tasks by Priority</h3>
           {loading ? <div className="skeleton" style={{ height: 250 }} /> : (
@@ -247,7 +242,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Recent Activity */}
       <div className="card" style={{ padding: 28 }}>
         <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Recent Activity</h3>
         {loading ? (
@@ -281,8 +275,7 @@ export default function DashboardPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 600 }}>{a.userName}</span>
-                    {' '}{a.type.replace(/_/g, ' ')}{' '}
-                    {a.data && <span style={{ color: 'var(--text-secondary)' }}>{a.data}</span>}
+                    {' '}{formatActivityText(a.type, a.data)}
                   </p>
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
