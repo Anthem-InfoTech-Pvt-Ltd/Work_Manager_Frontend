@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
-import { projectsApi, boardsApi, tasksApi, adminApi } from '@/lib/api';
+import { projectsApi, boardsApi, tasksApi, adminApi, dashboardApi } from '@/lib/api';
+import { getCachedData, setCachedData } from '@/lib/cache';
 
 interface Event {
   id: number;
@@ -27,61 +28,22 @@ export default function CalendarPage() {
   const loadEvents = async () => {
     const isSuperAdmin = user?.roles?.includes('Super Admin');
     if (!isSuperAdmin && !workspaceId) return;
-    setLoading(true);
+
+    const cacheKey = `calendar_events_${user?.id}_${workspaceId}`;
+    const cachedEvents = getCachedData<Event[]>(cacheKey, 60000);
+
+    if (cachedEvents) {
+      setRealEvents(cachedEvents);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
+
     try {
-      const list: Event[] = [];
-
-      if (isSuperAdmin) {
-        const summaryRes = await adminApi.getPlatformSummary();
-        const projects = summaryRes.data.data.projects || [];
-        const globalBoards = summaryRes.data.data.boards || [];
-
-        for (const p of projects) {
-          const projectBoards = globalBoards.filter((b: any) => b.projectId === p.id);
-          for (const b of projectBoards) {
-            const tasksRes = await tasksApi.getByBoard(b.id);
-            const tasks = tasksRes.data.data || [];
-            for (const t of tasks) {
-              if (t.dueDate) {
-                list.push({
-                  id: t.id,
-                  title: t.title,
-                  date: t.dueDate.split('T')[0],
-                  project: p.name,
-                  color: p.color || '#6366f1',
-                  priority: t.priority
-                });
-              }
-            }
-          }
-        }
-      } else {
-        const projectsRes = await projectsApi.getAll(workspaceId!);
-        const projects = projectsRes.data.data || [];
-
-        for (const p of projects) {
-          const boardsRes = await boardsApi.getByProject(p.id);
-          const boards = boardsRes.data.data || [];
-          for (const b of boards) {
-            const tasksRes = await tasksApi.getByBoard(b.id);
-            const tasks = tasksRes.data.data || [];
-            for (const t of tasks) {
-              if (t.dueDate) {
-                list.push({
-                  id: t.id,
-                  title: t.title,
-                  date: t.dueDate.split('T')[0],
-                  project: p.name,
-                  color: p.color || '#6366f1',
-                  priority: t.priority
-                });
-              }
-            }
-          }
-        }
-      }
-
-      setRealEvents(list);
+      const res = await dashboardApi.getCalendarEvents();
+      const eventsList = res.data.data || [];
+      setRealEvents(eventsList);
+      setCachedData(cacheKey, eventsList);
     } catch (e) {
       console.error(e);
     } finally {

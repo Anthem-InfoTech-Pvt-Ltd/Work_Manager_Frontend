@@ -135,19 +135,6 @@ export const commentsApi = {
 };
 
 // ── Dummy / Removed APIs to maintain compilation ──────────
-export const dashboardApi = {
-  getStats: (..._args: any[]) => dummyResolve({
-    totalProjects: 0,
-    totalTasks: 0,
-    overdueTasks: 0,
-    completedToday: 0,
-    inProgressTasks: 0,
-    totalMembers: 0,
-    tasksByStatus: [],
-    tasksByPriority: [],
-    recentActivities: [],
-  })
-};
 export const rolesApi = {
   getAll: (..._args: any[]) => dummyResolve([
     { id: 1, name: 'Super Admin' },
@@ -270,6 +257,11 @@ export const planApi = {
   getUserSubscriptions: () => api.get('/planmanagement/users'),
   assignUserPlan: (userId: number, planId: number) =>
     api.put(`/planmanagement/users/${userId}/plan`, { planId }),
+};
+
+export const dashboardApi = {
+  getStats: () => api.get('/dashboard/stats'),
+  getCalendarEvents: () => api.get('/dashboard/calendar-events'),
 };
 
 export const getAttachmentUrl = (url: string | undefined | null): string => {

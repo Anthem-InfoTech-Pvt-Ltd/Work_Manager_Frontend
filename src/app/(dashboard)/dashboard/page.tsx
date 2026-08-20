@@ -1,9 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminApi, projectsApi, boardsApi, tasksApi, activitiesApi } from '@/lib/api';
+import { adminApi, projectsApi, boardsApi, tasksApi, activitiesApi, dashboardApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { formatDateIndian, formatActivityText } from '@/lib/format';
+import { getCachedData, setCachedData } from '@/lib/cache';
 import {
   Chart as ChartJS, ArcElement, Tooltip, Legend,
   CategoryScale, LinearScale, BarElement, Title
@@ -47,83 +48,49 @@ export default function DashboardPage() {
   useEffect(() => {
     const isSuperAdmin = user?.roles?.includes('Super Admin');
     if (!isSuperAdmin && !workspaceId) return;
-    setLoading(true);
+
+    const cacheKey = `dashboard_stats_${user?.id}_${workspaceId}`;
+    const cachedStats = getCachedData<DashboardStats>(cacheKey, 60000);
+
+    if (cachedStats) {
+      setStats(cachedStats);
+      setLoading(false);
+    } else {
+      setLoading(true);
+    }
 
     const fetchStats = async () => {
       try {
-        const [projectsRes, activitiesRes] = await Promise.all([
-          isSuperAdmin ? adminApi.getPlatformSummary() : projectsApi.getAll(workspaceId!),
+        const [statsRes, activitiesRes] = await Promise.all([
+          dashboardApi.getStats(),
           activitiesApi.getRecent(10).catch(() => ({ data: { data: [] } }))
         ]);
 
-        const projectsList = isSuperAdmin ? (projectsRes.data.data.projects || []) : (projectsRes.data.data || []);
-        const globalBoardsList = isSuperAdmin ? (projectsRes.data.data.boards || []) : null;
+        const s = statsRes.data.data;
         const recentActivities = activitiesRes.data.data || [];
-        
-        let totalTasks = 0;
-        let overdueTasks = 0;
-        let completedToday = 0;
-        let inProgressTasks = 0;
-        const statusMap: Record<string, number> = {};
-        const priorityMap: Record<string, number> = {};
 
-        const todayStr = new Date().toISOString().split('T')[0];
-
-        for (const p of projectsList) {
-          const boardsList = globalBoardsList
-            ? globalBoardsList.filter((b: any) => b.projectId === p.id)
-            : (await boardsApi.getByProject(p.id)).data.data || [];
-
-          for (const b of boardsList) {
-            const tasksRes = await tasksApi.getByBoard(b.id);
-            const tasksList = tasksRes.data.data || [];
-            for (const t of tasksList) {
-              totalTasks++;
-
-              const status = t.status || 'todo';
-              statusMap[status] = (statusMap[status] || 0) + 1;
-              if (status === 'in_progress') {
-                inProgressTasks++;
-              }
-              if (status === 'done') {
-                completedToday++;
-              }
-
-              const priority = t.priority || 'low';
-              priorityMap[priority] = (priorityMap[priority] || 0) + 1;
-
-              if (t.dueDate) {
-                const dueDateStr = t.dueDate.split('T')[0];
-                if (dueDateStr < todayStr && status !== 'done' && status !== 'cancelled') {
-                  overdueTasks++;
-                }
-              }
-            }
-          }
-        }
-
-        const tasksByStatus = Object.entries(statusMap).map(([status, count]) => ({ status, count }));
-        const tasksByPriority = Object.entries(priorityMap).map(([priority, count]) => ({ priority, count }));
-
-        setStats({
-          totalProjects: projectsList.length,
-          totalTasks,
-          overdueTasks,
-          completedToday,
-          inProgressTasks,
-          tasksByStatus,
-          tasksByPriority,
+        const newStats: DashboardStats = {
+          totalProjects: s.totalProjects,
+          totalTasks: s.totalTasks,
+          overdueTasks: s.overdueTasks,
+          completedToday: s.completedTasks,
+          inProgressTasks: s.inProgressTasks,
+          tasksByStatus: s.tasksByStatus || [],
+          tasksByPriority: s.tasksByPriority || [],
           recentActivities
-        });
-      } catch (err) {
-        console.error('Error fetching dashboard stats:', err);
+        };
+
+        setStats(newStats);
+        setCachedData(cacheKey, newStats);
+      } catch (e) {
+        console.error('Failed to fetch dashboard stats', e);
       } finally {
         setLoading(false);
       }
     };
 
     fetchStats();
-  }, [user, workspaceId]);
+  }, [workspaceId, user]);
 
   useEffect(() => {
     const checkTheme = () => {
