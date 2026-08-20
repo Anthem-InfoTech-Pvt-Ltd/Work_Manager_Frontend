@@ -269,37 +269,85 @@ export default function CalendarPage() {
               })()}
             </div>
           </div>
-
-          {/* Selected Event detail overlay/card */}
-          {selectedEvent && (
-            <div className="card fade-in" style={{ padding: 24, borderLeft: `4px solid ${selectedEvent.color}` }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 14 }}>
-                <h4 style={{ fontSize: 15, fontWeight: 700 }}>Event Details</h4>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: 16 }}
-                >×</button>
-              </div>
-              <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 12, color: 'var(--text-primary)' }}>{selectedEvent.title}</h3>
-              
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, fontSize: 13 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Date:</span>
-                  <span style={{ fontWeight: 600 }}>{formatDateIndian(selectedEvent.date)}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Project:</span>
-                  <span style={{ fontWeight: 600, color: selectedEvent.color }}>{selectedEvent.project}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'var(--text-secondary)' }}>Priority:</span>
-                  <span className={`badge badge-priority-${selectedEvent.priority}`}>{selectedEvent.priority}</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Selected Event Detail Modal */}
+      {selectedEvent && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.6)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 16
+          }}
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div
+            className="card fade-in"
+            style={{
+              width: '100%',
+              maxWidth: 450,
+              padding: 28,
+              borderLeft: `4px solid ${selectedEvent.color}`,
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2)'
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h4 style={{ fontSize: 16, fontWeight: 700 }}>Event Details</h4>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                style={{
+                  background: 'var(--bg-hover)',
+                  border: 'none',
+                  color: 'var(--text-muted)',
+                  cursor: 'pointer',
+                  fontSize: 18,
+                  width: 28,
+                  height: 28,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <h3 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, color: 'var(--text-primary)' }}>
+              {selectedEvent.title}
+            </h3>
+            
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, fontSize: 14 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Date:</span>
+                <span style={{ fontWeight: 600 }}>{formatDateIndian(selectedEvent.date)}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: 8, borderBottom: '1px solid var(--border)' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Project:</span>
+                <span style={{ fontWeight: 600, color: selectedEvent.color }}>{selectedEvent.project}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: 'var(--text-secondary)' }}>Priority:</span>
+                <span className={`badge badge-priority-${selectedEvent.priority}`}>{selectedEvent.priority}</span>
+              </div>
+            </div>
+
+            <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
+              <button className="btn btn-secondary btn-sm" onClick={() => setSelectedEvent(null)}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
