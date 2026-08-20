@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
-import { projectsApi, boardsApi, tasksApi } from '@/lib/api';
+import { projectsApi, boardsApi, tasksApi, adminApi } from '@/lib/api';
 
 interface Event {
   id: number;
@@ -15,7 +15,7 @@ interface Event {
 }
 
 export default function CalendarPage() {
-  const { workspaceId } = useAuth();
+  const { user, workspaceId } = useAuth();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [initialDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -24,47 +24,63 @@ export default function CalendarPage() {
 
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // Lock mock events to the initial month when the page loaded
-  const getMockEvents = () => {
-    const y = initialDate.getFullYear();
-    const m = String(initialDate.getMonth() + 1).padStart(2, '0');
-    return [
-      { id: -1, title: '🚀 Setup Authentication System', date: `${y}-${m}-12`, project: 'Work Manager Platform', color: '#6366f1', priority: 'high' },
-      { id: -2, title: '🎨 Build Kanban Board UI', date: `${y}-${m}-20`, project: 'Work Manager Platform', color: '#22c55e', priority: 'high' },
-      { id: -3, title: '📋 Design Database Schema', date: `${y}-${m}-05`, project: 'Work Manager Platform', color: '#f59e0b', priority: 'critical' },
-      { id: -4, title: '🔧 Integration Testing', date: `${y}-${m}-28`, project: 'Work Manager Platform', color: '#ec4899', priority: 'medium' },
-      { id: -5, title: '🛡️ Role & Permission Audit', date: `${y}-${m}-15`, project: 'Internal Security', color: '#ef4444', priority: 'critical' },
-    ];
-  };
-
   const loadEvents = async () => {
-    if (!workspaceId) return;
+    const isSuperAdmin = user?.roles?.includes('Super Admin');
+    if (!isSuperAdmin && !workspaceId) return;
     setLoading(true);
     try {
-      const projectsRes = await projectsApi.getAll(workspaceId);
-      const projects = projectsRes.data.data || [];
       const list: Event[] = [];
 
-      for (const p of projects) {
-        const boardsRes = await boardsApi.getByProject(p.id);
-        const boards = boardsRes.data.data || [];
-        for (const b of boards) {
-          const tasksRes = await tasksApi.getByBoard(b.id);
-          const tasks = tasksRes.data.data || [];
-          for (const t of tasks) {
-            if (t.dueDate) {
-              list.push({
-                id: t.id,
-                title: t.title,
-                date: t.dueDate.split('T')[0],
-                project: p.name,
-                color: p.color || '#6366f1',
-                priority: t.priority
-              });
+      if (isSuperAdmin) {
+        const summaryRes = await adminApi.getPlatformSummary();
+        const projects = summaryRes.data.data.projects || [];
+        const globalBoards = summaryRes.data.data.boards || [];
+
+        for (const p of projects) {
+          const projectBoards = globalBoards.filter((b: any) => b.projectId === p.id);
+          for (const b of projectBoards) {
+            const tasksRes = await tasksApi.getByBoard(b.id);
+            const tasks = tasksRes.data.data || [];
+            for (const t of tasks) {
+              if (t.dueDate) {
+                list.push({
+                  id: t.id,
+                  title: t.title,
+                  date: t.dueDate.split('T')[0],
+                  project: p.name,
+                  color: p.color || '#6366f1',
+                  priority: t.priority
+                });
+              }
+            }
+          }
+        }
+      } else {
+        const projectsRes = await projectsApi.getAll(workspaceId!);
+        const projects = projectsRes.data.data || [];
+
+        for (const p of projects) {
+          const boardsRes = await boardsApi.getByProject(p.id);
+          const boards = boardsRes.data.data || [];
+          for (const b of boards) {
+            const tasksRes = await tasksApi.getByBoard(b.id);
+            const tasks = tasksRes.data.data || [];
+            for (const t of tasks) {
+              if (t.dueDate) {
+                list.push({
+                  id: t.id,
+                  title: t.title,
+                  date: t.dueDate.split('T')[0],
+                  project: p.name,
+                  color: p.color || '#6366f1',
+                  priority: t.priority
+                });
+              }
             }
           }
         }
       }
+
       setRealEvents(list);
     } catch (e) {
       console.error(e);
@@ -75,7 +91,7 @@ export default function CalendarPage() {
 
   useEffect(() => {
     loadEvents();
-  }, [workspaceId]);
+  }, [user, workspaceId]);
 
   const events = [...realEvents];
 
