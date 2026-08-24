@@ -224,28 +224,15 @@ export default function Header() {
             boxShadow: '0 24px 48px rgba(0,0,0,0.5)', zIndex: 100,
             overflow: 'hidden',
           }}>
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontWeight: 600 }}>Notifications</span>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <button
-                  onClick={async () => {
-                    try {
-                      await notificationsApi.sendTest('Real-time Alert ⚡', 'Testing real-time notifications with SignalR!');
-                    } catch {}
-                  }}
-                  style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(99,102,241,0.1)', border: '1px solid var(--accent)', padding: '2px 8px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
-                  title="Send instant real-time notification to test"
-                >
-                  + Test
-                </button>
-                <button onClick={() => {
-                  notificationsApi.markAllRead();
-                  setUnreadCount(0);
-                  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-                }} style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                  Mark all read
-                </button>
-              </div>
+              <button onClick={() => {
+                notificationsApi.markAllRead();
+                setUnreadCount(0);
+                setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+              }} style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                Mark all read
+              </button>
             </div>
             <div style={{ maxHeight: 320, overflowY: 'auto' }}>
               {notifications.length === 0 ? (
