@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { notificationsApi, searchApi } from '@/lib/api';
+import { notificationsApi, invitationsApi, searchApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { subscribeNotifications } from '@/lib/signalr';
 
@@ -267,6 +267,45 @@ export default function Header() {
                     )}
                   </div>
                   <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{n.message}</p>
+                  
+                  {/* Interactive Accept Button for Invitations */}
+                  {(n as any).type === 'invitation' && (
+                    <button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          if (n.targetUrl) {
+                            await invitationsApi.accept(n.targetUrl);
+                          }
+                          notificationsApi.markRead(n.id);
+                          setUnreadCount(prev => Math.max(0, prev - 1));
+                          setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, isRead: true, type: 'accepted' } : item));
+                          setShowNotifications(false);
+                          window.location.href = '/projects';
+                        } catch (err: any) {
+                          alert(err.response?.data?.message || 'Failed to accept invitation');
+                        }
+                      }}
+                      style={{
+                        marginTop: 8,
+                        padding: '6px 14px',
+                        background: 'linear-gradient(135deg, #6366f1, #4f46e5)',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: 6,
+                        fontSize: 12,
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        boxShadow: '0 2px 8px rgba(99,102,241,0.3)',
+                      }}
+                    >
+                      Accept Invitation ✓
+                    </button>
+                  )}
+
                   <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
                     {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(n.createdAt).toLocaleDateString()}
                   </p>
