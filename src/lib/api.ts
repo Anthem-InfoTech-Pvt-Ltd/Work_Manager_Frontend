@@ -213,7 +213,9 @@ export const activitiesApi = {
   getByUser: (..._args: any[]) => dummyResolve([]),
   getByWorkspace: (..._args: any[]) => dummyResolve([]),
 };
-export const searchApi = { query: (..._args: any[]) => dummyResolve([]) };
+export const searchApi = {
+  query: (q: string) => api.get(`/search?q=${encodeURIComponent(q)}`),
+};
 export const settingsApi = {
   getAll: (..._args: any[]) => dummyResolve([]),
   save: (..._args: any[]) => dummyResolve(true),
