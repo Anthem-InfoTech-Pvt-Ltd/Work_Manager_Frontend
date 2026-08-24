@@ -135,10 +135,11 @@ export const rolesApi = {
   setPermissions: (..._args: any[]) => dummyResolve(true),
 };
 export const notificationsApi = {
-  getAll: (..._args: any[]) => dummyResolve([]),
-  getUnreadCount: (..._args: any[]) => dummyResolve({ unreadCount: 0 }),
-  markRead: (..._args: any[]) => dummyResolve(true),
-  markAllRead: (..._args: any[]) => dummyResolve(true),
+  getAll: (unreadOnly = false, limit = 50) => api.get(`/notifications?unreadOnly=${unreadOnly}&limit=${limit}`),
+  getUnreadCount: () => api.get('/notifications/unread-count'),
+  markRead: (id: number) => api.put(`/notifications/${id}/read`),
+  markAllRead: () => api.put('/notifications/read-all'),
+  sendTest: (title?: string, message?: string) => api.post('/notifications/test', { title, message }),
 };
 export const usersApi = {
   getAll: (workspaceId?: number) => api.get(workspaceId ? `/users?workspaceId=${workspaceId}` : '/users'),

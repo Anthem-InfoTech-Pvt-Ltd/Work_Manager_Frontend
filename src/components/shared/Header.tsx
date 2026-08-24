@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { notificationsApi, searchApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { subscribeNotifications } from '@/lib/signalr';
 
 interface SearchResult {
   id: number;
@@ -23,7 +24,7 @@ export default function Header() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>([]);
+  const [notifications, setNotifications] = useState<{ id: number; title: string; message: string; isRead: boolean; targetUrl?: string; createdAt: string }[]>([]);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
@@ -72,16 +73,33 @@ export default function Header() {
   };
 
   useEffect(() => {
+    // Initial fetch of unread count
     notificationsApi.getUnreadCount()
-      .then(res => setUnreadCount(res.data.data))
+      .then(res => {
+        const count = res.data.data?.unreadCount ?? res.data.data;
+        if (typeof count === 'number') setUnreadCount(count);
+      })
       .catch(() => {});
+
+    // Subscribe to real-time SignalR notifications
+    const unsubscribe = subscribeNotifications((newNotif) => {
+      setUnreadCount(prev => prev + 1);
+      setNotifications(prev => [newNotif, ...prev]);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleNotifClick = () => {
-    setShowNotifications(!showNotifications);
-    if (!showNotifications) {
+    const nextShow = !showNotifications;
+    setShowNotifications(nextShow);
+    if (nextShow) {
       notificationsApi.getAll(false)
-        .then(res => setNotifications(res.data.data))
+        .then(res => {
+          if (Array.isArray(res.data.data)) {
+            setNotifications(res.data.data);
+          }
+        })
         .catch(() => {});
     }
   };
@@ -206,16 +224,30 @@ export default function Header() {
             boxShadow: '0 24px 48px rgba(0,0,0,0.5)', zIndex: 100,
             overflow: 'hidden',
           }}>
-            <div style={{ padding: '16px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ padding: '14px 20px', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontWeight: 600 }}>Notifications</span>
-              <button onClick={() => {
-                notificationsApi.markAllRead();
-                setUnreadCount(0);
-              }} style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
-                Mark all read
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <button
+                  onClick={async () => {
+                    try {
+                      await notificationsApi.sendTest('Real-time Alert ⚡', 'Testing real-time notifications with SignalR!');
+                    } catch {}
+                  }}
+                  style={{ fontSize: 11, color: 'var(--accent)', background: 'rgba(99,102,241,0.1)', border: '1px solid var(--accent)', padding: '2px 8px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+                  title="Send instant real-time notification to test"
+                >
+                  + Test
+                </button>
+                <button onClick={() => {
+                  notificationsApi.markAllRead();
+                  setUnreadCount(0);
+                  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+                }} style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                  Mark all read
+                </button>
+              </div>
             </div>
-            <div style={{ maxHeight: 300, overflowY: 'auto' }}>
+            <div style={{ maxHeight: 320, overflowY: 'auto' }}>
               {notifications.length === 0 ? (
                 <div style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
                   <p style={{ fontSize: 24, marginBottom: 8 }}>🔔</p>
@@ -224,17 +256,32 @@ export default function Header() {
               ) : notifications.map(n => (
                 <div key={n.id} style={{
                   padding: '14px 20px', borderBottom: '1px solid var(--border)',
-                  background: n.isRead ? 'transparent' : 'rgba(99,102,241,0.05)',
+                  background: n.isRead ? 'transparent' : 'rgba(99,102,241,0.06)',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
-                onMouseLeave={e => (e.currentTarget.style.background = n.isRead ? 'transparent' : 'rgba(99,102,241,0.05)')}
-                onClick={() => { notificationsApi.markRead(n.id); }}
+                onMouseLeave={e => (e.currentTarget.style.background = n.isRead ? 'transparent' : 'rgba(99,102,241,0.06)')}
+                onClick={() => {
+                  if (!n.isRead) {
+                    notificationsApi.markRead(n.id);
+                    setUnreadCount(prev => Math.max(0, prev - 1));
+                    setNotifications(prev => prev.map(item => item.id === n.id ? { ...item, isRead: true } : item));
+                  }
+                  if (n.targetUrl) {
+                    setShowNotifications(false);
+                    window.location.href = n.targetUrl;
+                  }
+                }}
                 >
-                  <p style={{ fontSize: 14, fontWeight: 500, marginBottom: 4 }}>{n.title}</p>
-                  <p style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{n.message}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>{n.title}</p>
+                    {!n.isRead && (
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--accent)' }} />
+                    )}
+                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.4 }}>{n.message}</p>
                   <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 6 }}>
-                    {new Date(n.createdAt).toLocaleDateString()}
+                    {new Date(n.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(n.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))}
