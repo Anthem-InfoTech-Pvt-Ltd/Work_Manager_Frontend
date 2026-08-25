@@ -42,7 +42,8 @@ export const authApi = {
   register: (data: { email: string; password: string; firstName: string; lastName: string; inviteToken?: string }) =>
     api.post('/auth/register', data),
   me: () => api.get('/auth/me'),
-  changePassword: (..._args: any[]) => dummyResolve(true),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    api.post('/auth/change-password', data),
   forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }),
   resetPassword: (data: object) => api.post('/auth/reset-password', data),
 };
