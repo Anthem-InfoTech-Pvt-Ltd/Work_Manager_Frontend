@@ -108,13 +108,15 @@ export default function Header() {
   return (
     <header style={{
       height: 64, background: 'var(--bg-secondary)',
+      backdropFilter: 'blur(12px)',
       borderBottom: '1px solid var(--border)',
       display: 'flex', alignItems: 'center',
       padding: '0 28px', gap: 20, position: 'sticky', top: 0, zIndex: 30,
+      boxShadow: '0 4px 20px rgba(99, 102, 241, 0.05)',
     }}>
       {/* Page title */}
       <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 16 }}>
-        <h2 style={{ fontSize: 18, fontWeight: 600 }}>{getTitle()}</h2>
+        <h2 className="text-gradient" style={{ fontSize: 20, fontWeight: 700 }}>{getTitle()}</h2>
       </div>
 
       {/* Global search */}
@@ -339,11 +341,11 @@ export default function Header() {
 
       {/* User Avatar */}
       <div style={{
-        width: 36, height: 36, borderRadius: '50%',
-        background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        width: 38, height: 38, borderRadius: '50%',
+        background: 'linear-gradient(135deg, #6366f1, #a855f7, #ec4899)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 13, fontWeight: 700, color: '#fff', cursor: 'pointer',
-        boxShadow: '0 0 12px rgba(99,102,241,0.4)',
+        fontSize: 14, fontWeight: 700, color: '#fff', cursor: 'pointer',
+        boxShadow: '0 4px 14px rgba(168, 85, 247, 0.4)',
       }}>
         {user?.firstName?.[0]}{user?.lastName?.[0]}
       </div>

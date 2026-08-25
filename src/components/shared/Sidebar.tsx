@@ -66,16 +66,16 @@ export default function Sidebar() {
         display: 'flex',
         alignItems: 'center',
         gap: 12,
-        padding: '9px 12px',
-        borderRadius: 10,
+        padding: '10px 14px',
+        borderRadius: 12,
         fontSize: 14,
-        fontWeight: 500,
+        fontWeight: 600,
         color: isActive(item.href) ? '#fff' : 'var(--text-secondary)',
-        background: isActive(item.href) ? 'var(--accent)' : 'transparent',
+        background: isActive(item.href) ? 'var(--gradient-primary)' : 'transparent',
         textDecoration: 'none',
-        transition: 'all 0.15s',
+        transition: 'all 0.2s ease',
         position: 'relative',
-        boxShadow: isActive(item.href) ? '0 0 16px var(--accent-glow)' : 'none',
+        boxShadow: isActive(item.href) ? '0 4px 16px rgba(168, 85, 247, 0.4)' : 'none',
       }}
       onMouseEnter={e => { if (!isActive(item.href)) (e.currentTarget as HTMLElement).style.background = 'var(--bg-hover)'; }}
       onMouseLeave={e => { if (!isActive(item.href)) (e.currentTarget as HTMLElement).style.background = 'transparent'; }}
@@ -84,8 +84,9 @@ export default function Sidebar() {
       <span>{item.label}</span>
       {item.badge && (
         <span style={{
-          marginLeft: 'auto', background: 'var(--danger)', color: '#fff',
-          borderRadius: 20, padding: '2px 7px', fontSize: 11, fontWeight: 700,
+          marginLeft: 'auto', background: 'var(--gradient-accent)', color: '#fff',
+          borderRadius: 20, padding: '2px 8px', fontSize: 11, fontWeight: 700,
+          boxShadow: '0 2px 8px rgba(244, 63, 94, 0.4)',
         }}>
           {item.badge}
         </span>
@@ -99,42 +100,42 @@ export default function Sidebar() {
       <div style={{ padding: '20px 16px', borderBottom: '1px solid var(--border)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div style={{
-            width: 40, height: 40, borderRadius: 12,
-            background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+            width: 42, height: 42, borderRadius: 12,
+            background: 'linear-gradient(135deg, #6366f1, #a855f7, #ec4899)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 0 16px rgba(99,102,241,0.4)', flexShrink: 0,
+            boxShadow: '0 4px 18px rgba(168, 85, 247, 0.45)', flexShrink: 0,
           }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1"/>
-              <rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/>
-              <rect x="14" y="14" width="7" height="7" rx="1"/>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
             </svg>
           </div>
           <div>
-            <p style={{ fontWeight: 700, fontSize: 15, letterSpacing: '-0.3px' }}>WorkManager</p>
-            <p style={{ fontSize: 11, color: 'var(--text-muted)' }}>Enterprise Platform</p>
+            <p className="text-gradient" style={{ fontWeight: 800, fontSize: 16, letterSpacing: '-0.3px' }}>WorkManager</p>
+            <p style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 500 }}>Enterprise Platform</p>
           </div>
         </div>
       </div>
 
       {/* Navigation */}
-      <div style={{ flex: 1, padding: '12px 10px', overflowY: 'auto' }}>
+      <div style={{ flex: 1, padding: '14px 12px', overflowY: 'auto' }}>
         <div style={{ marginBottom: 24 }}>
-          <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '4px 12px', marginBottom: 6 }}>
+          <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.12em', padding: '4px 12px', marginBottom: 8 }}>
             Main
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
             {navItems.map(item => <NavLink key={item.href} item={item} />)}
           </div>
         </div>
 
         {visibleAdminItems.length > 0 && (
           <div>
-            <p style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', padding: '4px 12px', marginBottom: 6 }}>
+            <p style={{ fontSize: 11, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: '0.12em', padding: '4px 12px', marginBottom: 8 }}>
               Admin
             </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               {visibleAdminItems.map(item => <NavLink key={item.href} item={item} />)}
             </div>
           </div>
@@ -142,21 +143,22 @@ export default function Sidebar() {
       </div>
 
       {/* User profile */}
-      <div style={{ padding: '12px 10px', borderTop: '1px solid var(--border)' }}>
+      <div style={{ padding: '14px 12px', borderTop: '1px solid var(--border)' }}>
         <Link href="/profile" style={{ textDecoration: 'none', color: 'inherit', flex: 1, minWidth: 0 }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '10px 12px', borderRadius: 10,
-            cursor: 'pointer', transition: 'background 0.15s',
+            padding: '10px 12px', borderRadius: 12,
+            cursor: 'pointer', transition: 'all 0.15s ease',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
           onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
             <div style={{
-              width: 36, height: 36, borderRadius: '50%',
-              background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+              width: 38, height: 38, borderRadius: '50%',
+              background: 'linear-gradient(135deg, #6366f1, #a855f7, #ec4899)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 14, fontWeight: 700, color: '#fff', flexShrink: 0,
+              boxShadow: '0 2px 12px rgba(168, 85, 247, 0.4)',
             }}>
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </div>
@@ -167,8 +169,9 @@ export default function Sidebar() {
               {userRole === 'Super Admin' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 2 }}>
                   <span style={{
-                    fontSize: 10, fontWeight: 700, padding: '1px 6px', borderRadius: 4,
-                    background: 'rgba(99,102,241,0.15)', color: 'var(--accent)', textTransform: 'uppercase'
+                    fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 12,
+                    background: 'var(--gradient-primary)', color: '#fff', textTransform: 'uppercase',
+                    boxShadow: '0 2px 6px rgba(99,102,241,0.3)',
                   }}>
                     {userRole}
                   </span>
@@ -179,12 +182,12 @@ export default function Sidebar() {
         </Link>
         <button
           onClick={logout}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 6, transition: 'color 0.15s' }}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 8, transition: 'all 0.15s ease' }}
           onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
           onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
           title="Sign out"
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
