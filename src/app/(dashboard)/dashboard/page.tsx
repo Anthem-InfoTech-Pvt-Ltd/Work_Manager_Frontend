@@ -123,24 +123,26 @@ export default function DashboardPage() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
-      legend: { labels: { color: themeMode === 'dark' ? '#9898b8' : '#475569', font: { size: 12 } } },
+      legend: { labels: { color: themeMode === 'dark' ? '#c4b5fd' : '#4c4f69', font: { size: 12, weight: 600 as const } } },
     },
   };
 
   const barOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
     },
     scales: {
       x: { 
-        ticks: { color: themeMode === 'dark' ? '#9898b8' : '#475569' }, 
-        grid: { color: themeMode === 'dark' ? '#2d2d45' : '#e2e8f0' } 
+        ticks: { color: themeMode === 'dark' ? '#c4b5fd' : '#4c4f69' }, 
+        grid: { color: themeMode === 'dark' ? '#373168' : '#c7d2fe' } 
       },
       y: { 
-        ticks: { color: themeMode === 'dark' ? '#9898b8' : '#475569' }, 
-        grid: { color: themeMode === 'dark' ? '#2d2d45' : '#e2e8f0' } 
+        ticks: { color: themeMode === 'dark' ? '#c4b5fd' : '#4c4f69' }, 
+        grid: { color: themeMode === 'dark' ? '#373168' : '#c7d2fe' } 
       },
     },
   };
@@ -179,27 +181,31 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
-        <div className="card" style={{ padding: 28 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 24 }}>Tasks by Status</h3>
-          {loading ? <div className="skeleton" style={{ height: 250 }} /> : (
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32, alignItems: 'stretch' }}>
+        <div className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Tasks by Status</h3>
+          {loading ? <div className="skeleton" style={{ height: 280 }} /> : (
             statusChartData && statusChartData.labels.length > 0 ? (
-              <Doughnut data={statusChartData} options={{ ...chartOptions, cutout: '65%' }} />
+              <div style={{ height: 280, width: '100%', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Doughnut data={statusChartData} options={{ ...chartOptions, cutout: '65%' }} />
+              </div>
             ) : (
-              <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                 No data yet
               </div>
             )
           )}
         </div>
 
-        <div className="card" style={{ padding: 28 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 24 }}>Tasks by Priority</h3>
-          {loading ? <div className="skeleton" style={{ height: 250 }} /> : (
+        <div className="card" style={{ padding: 28, display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Tasks by Priority</h3>
+          {loading ? <div className="skeleton" style={{ height: 280 }} /> : (
             priorityChartData && priorityChartData.labels.length > 0 ? (
-              <Bar data={priorityChartData} options={barOptions} />
+              <div style={{ height: 280, width: '100%', position: 'relative' }}>
+                <Bar data={priorityChartData} options={barOptions} />
+              </div>
             ) : (
-              <div style={{ height: 250, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+              <div style={{ height: 280, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
                 No data yet
               </div>
             )
