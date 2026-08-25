@@ -145,8 +145,8 @@ export default function RolesPage() {
             }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 24 }}>Create New Role</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <input className="input" placeholder="Role name" value={newRole.name} onChange={e => setNewRole(n => ({ ...n, name: e.target.value }))} autoFocus />
-                <input className="input" placeholder="Description (optional)" value={newRole.description} onChange={e => setNewRole(n => ({ ...n, description: e.target.value }))} />
+                <input className="input" placeholder="Role name" value={newRole.name} onChange={e => setNewRole(n => ({ ...n, name: e.target.value }))} autoFocus maxLength={50} />
+                <input className="input" placeholder="Description (optional)" value={newRole.description} onChange={e => setNewRole(n => ({ ...n, description: e.target.value }))} maxLength={50} />
                 <div>
                   <p style={{ fontSize: 13, color: 'var(--text-muted)', marginBottom: 8 }}>Color</p>
                   <div style={{ display: 'flex', gap: 8 }}>

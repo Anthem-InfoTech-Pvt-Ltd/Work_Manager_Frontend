@@ -123,6 +123,7 @@ export default function Header() {
           style={{ width: 280, paddingLeft: 38, background: 'var(--bg-primary)', border: '1px solid var(--border)' }}
           placeholder="Search tasks, projects..."
           value={searchQuery}
+          maxLength={50}
           onChange={async (e) => {
             const val = e.target.value;
             setSearchQuery(val);

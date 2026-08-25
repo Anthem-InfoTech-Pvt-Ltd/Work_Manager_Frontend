@@ -427,7 +427,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                       onKeyDown={e => { if (e.key === 'Enter') { saveField('title', titleValue); setEditingTitle(false); } }}
                       style={{ fontSize: 20, fontWeight: 700, padding: '4px 8px' }}
                       autoFocus
-                      maxLength={100}
+                      maxLength={50}
                     />
                   ) : (
                     <h2
@@ -663,7 +663,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                           value={newItemTitle[c.id] || ''}
                           onChange={e => setNewItemTitle({ ...newItemTitle, [c.id]: e.target.value })}
                           onKeyDown={e => e.key === 'Enter' && addChecklistItem(c.id)}
-                          maxLength={100}
+                          maxLength={50}
                         />
                         <button className="btn btn-secondary btn-sm" onClick={() => addChecklistItem(c.id)}>Add</button>
                       </div>
@@ -712,7 +712,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                         style={{ fontSize: 13 }}
                         value={logDesc}
                         onChange={e => setLogDesc(e.target.value)}
-                        maxLength={200}
+                        maxLength={50}
                       />
                       <button className="btn btn-primary btn-sm" onClick={submitTimeLog} disabled={!logHours}>
                         Log

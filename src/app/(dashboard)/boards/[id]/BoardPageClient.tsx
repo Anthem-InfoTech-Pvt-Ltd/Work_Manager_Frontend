@@ -430,6 +430,7 @@ export default function BoardPageClient() {
                     {isOwner && editingListId === list.id ? (
                       <input
                         className="input input-sm"
+                        maxLength={50}
                         style={{
                           width: '100%',
                           fontSize: 14,
@@ -515,6 +516,7 @@ export default function BoardPageClient() {
                       style={{ marginBottom: 8, fontSize: 13 }}
                       placeholder="Task title..."
                       value={newTaskTitle}
+                      maxLength={50}
                       onChange={e => setNewTaskTitle(e.target.value)}
                       onKeyDown={e => { if (e.key === 'Enter') addTask(list.id); if (e.key === 'Escape') setAddingTaskListId(null); }}
                       autoFocus
@@ -855,7 +857,7 @@ export default function BoardPageClient() {
                     value={inviteEmail}
                     onChange={e => setInviteEmail(e.target.value)}
                     style={{ flex: 1 }}
-                    maxLength={100}
+                    maxLength={50}
                   />
                   <button
                     className="btn btn-primary"

@@ -284,6 +284,7 @@ export default function UserManagementPage() {
             type="text"
             placeholder="Search by name or email..."
             value={searchTerm}
+            maxLength={50}
             onChange={e => setSearchTerm(e.target.value)}
             style={{
               width: '100%',

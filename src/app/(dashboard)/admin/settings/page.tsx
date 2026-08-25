@@ -223,6 +223,7 @@ export default function SettingsPage() {
                   className="input"
                   value={getSettingValue('app.name')}
                   onChange={e => handleValueChange('app.name', e.target.value)}
+                  maxLength={50}
                   style={{ width: '100%', background: 'var(--bg-primary)' }}
                 />
               </div>
@@ -235,6 +236,7 @@ export default function SettingsPage() {
                   className="input"
                   value={getSettingValue('app.version')}
                   disabled
+                  maxLength={50}
                   style={{ width: '100%', background: 'var(--bg-hover)', color: 'var(--text-muted)' }}
                 />
               </div>
@@ -283,6 +285,7 @@ export default function SettingsPage() {
                   className="input"
                   value={getSettingValue('attachment.allowed_types')}
                   onChange={e => handleValueChange('attachment.allowed_types', e.target.value)}
+                  maxLength={50}
                   style={{ width: '100%', background: 'var(--bg-primary)', fontFamily: 'monospace', fontSize: 12 }}
                   placeholder="e.g. image/*,application/pdf,.doc,.docx"
                 />
