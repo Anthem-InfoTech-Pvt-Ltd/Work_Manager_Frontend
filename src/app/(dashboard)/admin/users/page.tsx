@@ -66,6 +66,7 @@ export default function UserManagementPage() {
 
       if (res.data.success) {
         setCreateSuccess(true);
+        showToast.success('User created successfully.');
         setTimeout(() => {
           setIsCreating(false);
           setNewFirstName('');
@@ -76,10 +77,14 @@ export default function UserManagementPage() {
           fetchUsers();
         }, 1000);
       } else {
-        setCreateError(res.data.message || 'Failed to create user.');
+        const errMsg = res.data.message || 'Failed to create user.';
+        setCreateError(errMsg);
+        showToast.error(errMsg);
       }
     } catch (err: any) {
-      setCreateError(err.response?.data?.message || 'An error occurred while creating the user.');
+      const errMsg = err.response?.data?.message || 'An error occurred while creating the user.';
+      setCreateError(errMsg);
+      showToast.error(errMsg);
     } finally {
       setCreateSaving(false);
     }
@@ -133,15 +138,20 @@ export default function UserManagementPage() {
 
       if (res.data.success) {
         setSaveSuccess(true);
+        showToast.success('User updated successfully.');
         setTimeout(() => {
           closeEditModal();
           fetchUsers();
         }, 1000);
       } else {
-        setSaveError(res.data.message || 'Failed to update user.');
+        const errMsg = res.data.message || 'Failed to update user.';
+        setSaveError(errMsg);
+        showToast.error(errMsg);
       }
     } catch (err: any) {
-      setSaveError(err.response?.data?.message || 'An error occurred while updating the user.');
+      const errMsg = err.response?.data?.message || 'An error occurred while updating the user.';
+      setSaveError(errMsg);
+      showToast.error(errMsg);
     } finally {
       setSaving(false);
     }
