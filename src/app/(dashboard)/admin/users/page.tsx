@@ -13,6 +13,8 @@ interface User {
   role: string;
 }
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,14 +56,23 @@ export default function UserManagementPage() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Regex check for email format
+    if (!EMAIL_REGEX.test(newEmail.trim())) {
+      const errMsg = 'Please enter a valid email address.';
+      setCreateError(errMsg);
+      showToast.error(errMsg);
+      return;
+    }
+
     try {
       setCreateSaving(true);
       setCreateError(null);
       const res = await authApi.register({
-        email: newEmail,
+        email: newEmail.trim(),
         password: newPassword,
-        firstName: newFirstName,
-        lastName: newLastName,
+        firstName: newFirstName.trim(),
+        lastName: newLastName.trim(),
       });
 
       if (res.data.success) {
@@ -131,8 +142,8 @@ export default function UserManagementPage() {
       setSaving(true);
       setSaveError(null);
       const res = await usersApi.update(editingUser.id, {
-        firstName,
-        lastName,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
         role: 'admin', // Always use 'admin' role and don't allow modifying it
       });
 
@@ -450,6 +461,7 @@ export default function UserManagementPage() {
                 <input
                   type="text"
                   required
+                  maxLength={50}
                   value={firstName}
                   onChange={e => setFirstName(e.target.value)}
                   style={{
@@ -467,6 +479,7 @@ export default function UserManagementPage() {
                 <input
                   type="text"
                   required
+                  maxLength={50}
                   value={lastName}
                   onChange={e => setLastName(e.target.value)}
                   style={{
@@ -561,6 +574,7 @@ export default function UserManagementPage() {
                 <input
                   type="text"
                   required
+                  maxLength={50}
                   value={newFirstName}
                   onChange={e => setNewFirstName(e.target.value)}
                   style={{
@@ -578,6 +592,7 @@ export default function UserManagementPage() {
                 <input
                   type="text"
                   required
+                  maxLength={50}
                   value={newLastName}
                   onChange={e => setNewLastName(e.target.value)}
                   style={{
@@ -595,6 +610,7 @@ export default function UserManagementPage() {
                 <input
                   type="email"
                   required
+                  maxLength={50}
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
                   style={{
@@ -612,6 +628,7 @@ export default function UserManagementPage() {
                 <input
                   type="password"
                   required
+                  maxLength={50}
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
                   style={{
