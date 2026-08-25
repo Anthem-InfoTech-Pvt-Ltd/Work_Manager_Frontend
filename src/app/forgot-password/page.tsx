@@ -13,15 +13,23 @@ export default function ForgotPasswordPage() {
   const [successMsg, setSuccessMsg] = useState('');
   const [token, setToken] = useState('');
 
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccessMsg('');
     setToken('');
+
+    if (!EMAIL_REGEX.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const res = await authApi.forgotPassword(email);
+      const res = await authApi.forgotPassword(email.trim());
       if (res.data.success) {
         setSuccessMsg(res.data.message);
         // Save token to state so user can copy it or click the direct button
@@ -104,6 +112,7 @@ export default function ForgotPasswordPage() {
                 onChange={e => setEmail(e.target.value)}
                 placeholder="admin@workmanager.com"
                 required
+                maxLength={50}
               />
             </div>
 

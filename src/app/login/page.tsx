@@ -43,12 +43,20 @@ function LoginForm() {
     }
   }, [token, inviteToken, router]);
 
+  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    if (!EMAIL_REGEX.test(email.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
     setLoading(true);
     try {
-      const { boardId } = await login(email, password, inviteToken);
+      const { boardId } = await login(email.trim(), password, inviteToken);
       if (boardId) {
         router.push(`/boards/${boardId}`);
       } else {
