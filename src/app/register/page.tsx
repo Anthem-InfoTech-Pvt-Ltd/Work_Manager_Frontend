@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi, invitationsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
+import { showToast } from '@/components/shared/ToastProvider';
 
 export default function RegisterPage() {
   return (
@@ -53,7 +54,9 @@ function RegisterForm() {
     setError('');
 
     if (!EMAIL_REGEX.test(email.trim())) {
-      setError('Please enter a valid email address.');
+      const errMsg = 'Please enter a valid email address.';
+      setError(errMsg);
+      showToast.error(errMsg);
       return;
     }
 
@@ -69,6 +72,7 @@ function RegisterForm() {
       });
 
       if (res.data.success) {
+        showToast.success('Account created successfully!');
         const { token, user, boardId, workspaceId } = res.data.data;
         localStorage.setItem('wm_token', token);
         localStorage.setItem('wm_user', JSON.stringify(user));
@@ -81,10 +85,14 @@ function RegisterForm() {
           router.push('/dashboard');
         }
       } else {
-        setError(res.data.message || 'Registration failed');
+        const errMsg = res.data.message || 'Registration failed';
+        setError(errMsg);
+        showToast.error(errMsg);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during registration.');
+      const errMsg = err.response?.data?.message || 'An error occurred during registration.';
+      setError(errMsg);
+      showToast.error(errMsg);
     } finally {
       setLoading(false);
     }

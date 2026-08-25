@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { invitationsApi } from '@/lib/api';
+import { showToast } from '@/components/shared/ToastProvider';
 
 export default function LoginPage() {
   return (
@@ -50,27 +51,30 @@ function LoginForm() {
     setError('');
 
     if (!EMAIL_REGEX.test(email.trim())) {
-      setError('Please enter a valid email address.');
+      const errMsg = 'Please enter a valid email address.';
+      setError(errMsg);
+      showToast.error(errMsg);
       return;
     }
 
     setLoading(true);
     try {
       const { boardId } = await login(email.trim(), password, inviteToken);
+      showToast.success('Logged in successfully!');
       if (boardId) {
         router.push(`/boards/${boardId}`);
       } else {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      console.error(err);
+      let errMsg = 'Invalid email or password';
       if (err.response?.data?.message) {
-        setError(err.response.data.message);
+        errMsg = err.response.data.message;
       } else if (err.message) {
-        setError(err.message); // E.g. "Network Error"
-      } else {
-        setError('Invalid email or password');
+        errMsg = err.message;
       }
+      setError(errMsg);
+      showToast.error(errMsg);
     } finally {
       setLoading(false);
     }

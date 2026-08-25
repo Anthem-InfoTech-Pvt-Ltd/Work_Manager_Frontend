@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { notificationsApi, invitationsApi, searchApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { subscribeNotifications } from '@/lib/signalr';
+import { showToast } from '@/components/shared/ToastProvider';
 
 interface SearchResult {
   id: number;
@@ -284,7 +285,7 @@ export default function Header() {
                           setShowNotifications(false);
                           window.location.href = '/projects';
                         } catch (err: any) {
-                          alert(err.response?.data?.message || 'Failed to accept invitation');
+                          showToast.error(err.response?.data?.message || 'Failed to accept invitation');
                         }
                       }}
                       style={{

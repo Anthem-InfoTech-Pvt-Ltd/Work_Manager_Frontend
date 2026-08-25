@@ -491,19 +491,6 @@ export default function UserManagementPage() {
                 />
               </div>
 
-
-              {saveError && (
-                <div style={{ color: 'var(--danger)', fontSize: 13, background: 'rgba(239,68,68,0.08)', padding: 12, borderRadius: 6 }}>
-                  ⚠️ {saveError}
-                </div>
-              )}
-
-              {saveSuccess && (
-                <div style={{ color: 'var(--success)', fontSize: 13, background: 'rgba(16,185,129,0.08)', padding: 12, borderRadius: 6 }}>
-                  ✓ Changes saved successfully!
-                </div>
-              )}
-
               {/* Action Buttons */}
               <div style={{ marginTop: 'auto', display: 'flex', gap: 12 }}>
                 <button
@@ -639,18 +626,6 @@ export default function UserManagementPage() {
                   }}
                 />
               </div>
-
-              {createError && (
-                <div style={{ color: 'var(--danger)', fontSize: 13, background: 'rgba(239,68,68,0.08)', padding: 12, borderRadius: 6 }}>
-                  ⚠️ {createError}
-                </div>
-              )}
-
-              {createSuccess && (
-                <div style={{ color: 'var(--success)', fontSize: 13, background: 'rgba(16,185,129,0.08)', padding: 12, borderRadius: 6 }}>
-                  ✓ User created successfully!
-                </div>
-              )}
 
               {/* Action Buttons */}
               <div style={{ marginTop: 'auto', display: 'flex', gap: 12 }}>
