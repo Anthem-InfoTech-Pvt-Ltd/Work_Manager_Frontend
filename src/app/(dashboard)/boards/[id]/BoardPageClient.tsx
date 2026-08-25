@@ -23,9 +23,9 @@ interface BoardView { id: number; name: string; viewType: string; isDefault: boo
 
 const priorityConfig: Record<string, { color: string; icon: string }> = {
   critical: { color: '#dc2626', icon: '🔴' },
-  high: { color: '#f97316', icon: '🟠' },
-  medium: { color: '#f59e0b', icon: '🟡' },
-  low: { color: '#22c55e', icon: '🟢' },
+  high: { color: '#ea580c', icon: '🟠' },
+  medium: { color: '#d97706', icon: '🟡' },
+  low: { color: '#16a34a', icon: '🟢' },
 };
 
 export default function BoardPageClient() {
@@ -788,18 +788,17 @@ export default function BoardPageClient() {
                           <div
                             key={t.id}
                             onClick={() => setSelectedTaskId(t.id)}
+                            className={`badge-priority-${t.priority}`}
                             style={{
-                              background: priorityConfig[t.priority]?.color ? `${priorityConfig[t.priority].color}1c` : 'rgba(99,102,241,0.1)',
-                              color: priorityConfig[t.priority]?.color ?? 'var(--accent)',
-                              fontSize: 10,
-                              padding: '3px 6px',
-                              borderRadius: 4,
+                              fontSize: 11,
+                              padding: '3px 8px',
+                              borderRadius: 6,
                               cursor: 'pointer',
                               textOverflow: 'ellipsis',
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               fontWeight: 600,
-                              borderLeft: `2.5px solid ${priorityConfig[t.priority]?.color ?? 'var(--accent)'}`,
+                              borderLeft: `3px solid ${priorityConfig[t.priority]?.color ?? 'var(--accent)'}`,
                             }}
                           >
                             {t.title}
