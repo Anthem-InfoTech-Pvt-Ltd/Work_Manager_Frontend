@@ -679,7 +679,7 @@ export default function BoardPageClient() {
                 >
                   <td style={{ padding: '12px 16px', fontWeight: 500 }}>{t.title}</td>
                   <td style={{ padding: '12px 16px' }}>
-                    <span className={`badge badge-status-${t.status}`}>{t.status.replace('_', ' ')}</span>
+                    <span className={`badge badge-status-${t.status.toLowerCase().replace(/[\s_]+/g, '_')}`}>{t.status.replace('_', ' ')}</span>
                   </td>
                   <td style={{ padding: '12px 16px' }}>
                     <span className={`badge badge-priority-${t.priority}`}>{t.priority}</span>
