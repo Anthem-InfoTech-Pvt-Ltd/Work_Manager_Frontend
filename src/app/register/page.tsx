@@ -154,14 +154,14 @@ function RegisterForm() {
           </div>
 
           <button className="btn btn-primary" style={{ marginTop: 8, justifyContent: 'center' }} disabled={loading}>
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
           Already have an account?{' '}
           <Link href={inviteToken ? `/login?invite=${inviteToken}` : "/login"} style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-            Sign In
+            Login
           </Link>
         </p>
       </div>

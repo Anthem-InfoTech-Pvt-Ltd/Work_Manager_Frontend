@@ -96,32 +96,6 @@ function ResetPasswordForm() {
 
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Email Address</label>
-          <input
-            type="email"
-            className="input"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            placeholder="admin@workmanager.com"
-            required
-            maxLength={50}
-          />
-        </div>
-
-        <div>
-          <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Reset Token</label>
-          <input
-            type="text"
-            className="input"
-            value={token}
-            onChange={e => setToken(e.target.value)}
-            placeholder="Enter token code"
-            required
-            maxLength={50}
-          />
-        </div>
-
-        <div>
           <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>New Password</label>
           <input
             type="password"
@@ -155,7 +129,7 @@ function ResetPasswordForm() {
       <p style={{ textAlign: 'center', marginTop: 28, fontSize: 13, color: 'var(--text-secondary)' }}>
         Back to{' '}
         <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-          Sign In
+          Login
         </Link>
       </p>
     </div>

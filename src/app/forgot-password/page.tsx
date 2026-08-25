@@ -30,10 +30,8 @@ export default function ForgotPasswordPage() {
     try {
       const res = await authApi.forgotPassword(email.trim());
       if (res.data.success) {
-        const msg = res.data.message || 'Password reset link has been sent to your email.';
-        showToast.success(msg);
-        const resetToken = res.data.data;
-        router.push(`/reset-password?email=${encodeURIComponent(email.trim())}&token=${encodeURIComponent(resetToken || '')}`);
+        showToast.success('Password reset link has been sent to your email.');
+        setEmail('');
       } else {
         const errMsg = res.data.message || 'Request failed.';
         setError(errMsg);
@@ -66,7 +64,7 @@ export default function ForgotPasswordPage() {
             </svg>
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>Forgot Password</h1>
-          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>We'll help you reset your account credentials</p>
+          <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>We'll send you a password reset link</p>
         </div>
 
         {error && (
@@ -93,14 +91,14 @@ export default function ForgotPasswordPage() {
           </div>
 
           <button className="btn btn-primary" style={{ justifyContent: 'center' }} disabled={loading}>
-            {loading ? 'Sending Request...' : 'Request Reset Token'}
+            {loading ? 'Sending...' : 'Send Email'}
           </button>
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 28, fontSize: 13, color: 'var(--text-secondary)' }}>
           Back to{' '}
           <Link href="/login" style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-            Sign In
+            Login
           </Link>
         </p>
       </div>

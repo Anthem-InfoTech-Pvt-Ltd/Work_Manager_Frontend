@@ -136,7 +136,7 @@ function LoginForm() {
           padding: 40,
           boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
         }}>
-          <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 8 }}>Sign in</h2>
+          <h2 style={{ fontSize: 22, fontWeight: 600, marginBottom: 8 }}>Login</h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginBottom: 32 }}>
             Welcome back! Please enter your details.
           </p>
@@ -201,16 +201,16 @@ function LoginForm() {
                   <svg style={{ animation: 'spin 1s linear infinite' }} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
                   </svg>
-                  Signing in...
+                  Logging in...
                 </span>
-              ) : 'Sign In'}
+              ) : 'Login'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: 24, fontSize: 13, color: 'var(--text-secondary)' }}>
             Don't have an account?{' '}
             <Link href={inviteToken ? `/register?invite=${inviteToken}` : "/register"} style={{ color: 'var(--accent)', fontWeight: 600, textDecoration: 'none' }}>
-              Sign Up
+              Register
             </Link>
           </p>
 
