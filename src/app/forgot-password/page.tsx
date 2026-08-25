@@ -4,25 +4,24 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
+import { showToast } from '@/components/shared/ToastProvider';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
-  const [token, setToken] = useState('');
 
   const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSuccessMsg('');
-    setToken('');
 
     if (!EMAIL_REGEX.test(email.trim())) {
-      setError('Please enter a valid email address.');
+      const errMsg = 'Please enter a valid email address.';
+      setError(errMsg);
+      showToast.error(errMsg);
       return;
     }
 
@@ -31,14 +30,19 @@ export default function ForgotPasswordPage() {
     try {
       const res = await authApi.forgotPassword(email.trim());
       if (res.data.success) {
-        setSuccessMsg(res.data.message);
-        // Save token to state so user can copy it or click the direct button
-        setToken(res.data.data);
+        const msg = res.data.message || 'Password reset link has been sent to your email.';
+        showToast.success(msg);
+        const resetToken = res.data.data;
+        router.push(`/reset-password?email=${encodeURIComponent(email.trim())}&token=${encodeURIComponent(resetToken || '')}`);
       } else {
-        setError(res.data.message || 'Request failed.');
+        const errMsg = res.data.message || 'Request failed.';
+        setError(errMsg);
+        showToast.error(errMsg);
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred. Make sure email exists.');
+      const errMsg = err.response?.data?.message || 'An error occurred. Make sure email exists.';
+      setError(errMsg);
+      showToast.error(errMsg);
     } finally {
       setLoading(false);
     }
@@ -74,53 +78,24 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        {successMsg ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div style={{
-              padding: '16px', borderRadius: 8, background: 'rgba(34, 197, 94, 0.1)',
-              border: '1px solid rgba(34, 197, 94, 0.2)', color: '#4ade80', fontSize: 14, lineHeight: 1.5
-            }}>
-              <strong>Success!</strong><br />
-              {successMsg}
-            </div>
-
-            {token && (
-              <div style={{ padding: '16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
-                <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>Your Demo Reset Token:</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                  <code style={{ fontSize: 15, fontWeight: 700, letterSpacing: 1, color: 'var(--accent)' }}>{token}</code>
-                </div>
-              </div>
-            )}
-
-            <button
-              onClick={() => router.push(`/reset-password?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`)}
-              className="btn btn-primary"
-              style={{ justifyContent: 'center', padding: '11px 20px' }}
-            >
-              Proceed to Reset Password →
-            </button>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div>
+            <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Email Address</label>
+            <input
+              type="email"
+              className="input"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="admin@workmanager.com"
+              required
+              maxLength={50}
+            />
           </div>
-        ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div>
-              <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Email Address</label>
-              <input
-                type="email"
-                className="input"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="admin@workmanager.com"
-                required
-                maxLength={50}
-              />
-            </div>
 
-            <button className="btn btn-primary" style={{ justifyContent: 'center' }} disabled={loading}>
-              {loading ? 'Sending Request...' : 'Request Reset Token'}
-            </button>
-          </form>
-        )}
+          <button className="btn btn-primary" style={{ justifyContent: 'center' }} disabled={loading}>
+            {loading ? 'Sending Request...' : 'Request Reset Token'}
+          </button>
+        </form>
 
         <p style={{ textAlign: 'center', marginTop: 28, fontSize: 13, color: 'var(--text-secondary)' }}>
           Back to{' '}
