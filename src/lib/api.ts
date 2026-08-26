@@ -252,7 +252,7 @@ export const planApi = {
 };
 
 export const dashboardApi = {
-  getStats: () => api.get('/dashboard/stats'),
+  getStats: (projectId?: number) => api.get(projectId ? `/dashboard/stats?projectId=${projectId}` : '/dashboard/stats'),
   getCalendarEvents: () => api.get('/dashboard/calendar-events'),
   getArchivedItems: () => api.get('/dashboard/archived-items'),
 };
