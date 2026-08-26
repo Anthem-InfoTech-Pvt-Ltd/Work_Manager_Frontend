@@ -40,7 +40,7 @@ interface DashboardStats {
   tasksByStatus: { status: string; count: number }[];
   tasksByPriority: { priority: string; count: number }[];
   tasks: ProjectTaskSummary[];
-  recentActivities: { id: number; userName: string; type: string; data?: string; createdAt: string }[];
+  recentActivities: { id: number; userName: string; taskTitle?: string; type: string; data?: string; createdAt: string }[];
 }
 
 const statCards = [
@@ -435,7 +435,7 @@ export default function DashboardPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 600 }}>{a.userName}</span>
-                    {' '}{formatActivityText(a.type, a.data)}
+                    {' '}{formatActivityText(a.type, a.data, a.taskTitle)}
                   </p>
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>

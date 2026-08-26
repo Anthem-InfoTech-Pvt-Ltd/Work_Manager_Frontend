@@ -94,32 +94,34 @@ export function formatDateTimeDDMMYYYY12h(dateInput: string | Date | undefined |
  * Formats activity type and JSON data into clean human-readable text
  * Example: type "task_moved", data '{"from":"Testing","to":"Done"}' -> "moved task from Testing to Done"
  */
-export function formatActivityText(type: string, data?: string): string {
+export function formatActivityText(type: string, data?: string, taskTitle?: string): string {
+  const taskLabel = taskTitle ? `"${taskTitle}"` : 'task';
+
   if (!data) {
-    if (type === 'task_archived') return 'archived task';
-    if (type === 'task_created') return 'created task';
-    return type.replace(/_/g, ' ');
+    if (type === 'task_archived') return `archived ${taskLabel}`;
+    if (type === 'task_created') return `created ${taskLabel}`;
+    return `${type.replace(/_/g, ' ')} ${taskLabel}`;
   }
 
   if (data.startsWith('{') && data.endsWith('}')) {
     try {
       const parsed = JSON.parse(data);
       if (type === 'task_created') {
-        return 'created task';
+        return `created ${taskLabel}`;
       }
       if (type === 'task_status_changed') {
         const from = (parsed.from || '').replace(/_/g, ' ');
         const to = (parsed.to || '').replace(/_/g, ' ');
-        return `changed status from "${from}" to "${to}"`;
+        return `changed status of ${taskLabel} from "${from}" to "${to}"`;
       }
       if (type === 'task_moved') {
         if (parsed.from && parsed.to) {
-          return `moved task from "${parsed.from}" to "${parsed.to}"`;
+          return `moved ${taskLabel} from "${parsed.from}" to "${parsed.to}"`;
         }
         if (parsed.to) {
-          return `moved task to "${parsed.to}"`;
+          return `moved ${taskLabel} to "${parsed.to}"`;
         }
-        return 'moved task';
+        return `moved ${taskLabel}`;
       }
     } catch {
       return data;
