@@ -44,10 +44,10 @@ interface DashboardStats {
 }
 
 const statCards = [
-  { key: 'totalProjects', label: 'Total Projects', icon: '📁', color: '#6366f1' },
-  { key: 'totalTasks',    label: 'Total Tasks',    icon: '✅', color: '#22c55e' },
-  { key: 'overdueTasks',  label: 'Overdue Tasks',  icon: '⚠️', color: '#ef4444' },
-  { key: 'completedToday',label: 'Done Today',     icon: '🎯', color: '#f59e0b' },
+  { key: 'totalProjects', label: 'Total Projects', icon: '📁', color: '#6366f1', href: '/projects' },
+  { key: 'totalTasks',    label: 'Total Tasks',    icon: '✅', color: '#22c55e', href: '#project-tasks-overview' },
+  { key: 'overdueTasks',  label: 'Overdue Tasks',  icon: '⚠️', color: '#ef4444', href: '#project-tasks-overview' },
+  { key: 'completedToday',label: 'Done Today',     icon: '🎯', color: '#f59e0b', href: '#project-tasks-overview' },
 ];
 
 const statusColors: Record<string, string> = {
@@ -246,8 +246,27 @@ export default function DashboardPage() {
 
       {/* Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 32 }}>
-        {statCards.map(({ key, label, icon, color }) => (
-          <div key={key} className="stat-card fade-in" style={{ '--accent': color } as React.CSSProperties}>
+        {statCards.map(({ key, label, icon, color, href }) => (
+          <Link
+            key={key}
+            href={href}
+            className="stat-card fade-in"
+            style={{
+              '--accent': color,
+              textDecoration: 'none',
+              color: 'inherit',
+              cursor: 'pointer',
+              transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            } as React.CSSProperties}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-3px)';
+              e.currentTarget.style.boxShadow = '0 12px 24px rgba(0, 0, 0, 0.08)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
             <div>
               <p style={{ color: 'var(--text-secondary)', fontSize: 13, marginBottom: 8 }}>{label}</p>
               {loading ? (
@@ -264,7 +283,7 @@ export default function DashboardPage() {
             }}>
               {icon}
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
@@ -306,7 +325,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Project Tasks Overview Section */}
-      <div className="card" style={{ padding: 28, marginBottom: 32 }}>
+      <div id="project-tasks-overview" className="card" style={{ padding: 28, marginBottom: 32 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           <h3 style={{ fontSize: 16, fontWeight: 600 }}>
             Project Tasks Overview <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>({selectedProjectName})</span>
