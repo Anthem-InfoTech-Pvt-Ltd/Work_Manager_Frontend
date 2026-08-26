@@ -324,106 +324,108 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Project Tasks Overview Section */}
-      <div id="project-tasks-overview" className="card" style={{ padding: 28, marginBottom: 32 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <h3 style={{ fontSize: 16, fontWeight: 600 }}>
-            Project Tasks Overview <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>({selectedProjectName})</span>
-          </h3>
-          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
-            Showing {stats?.tasks.length ?? 0} task{(stats?.tasks.length ?? 0) !== 1 ? 's' : ''}
-          </span>
-        </div>
+      {/* Project Tasks Overview Section (Only shown when a specific project is selected) */}
+      {selectedProjectId !== 'all' && (
+        <div id="project-tasks-overview" className="card" style={{ padding: 28, marginBottom: 32 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+            <h3 style={{ fontSize: 16, fontWeight: 600 }}>
+              Project Tasks Overview <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>({selectedProjectName})</span>
+            </h3>
+            <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>
+              Showing {stats?.tasks.length ?? 0} task{(stats?.tasks.length ?? 0) !== 1 ? 's' : ''}
+            </span>
+          </div>
 
-        {loading ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {[1, 2, 3, 4].map(i => <div key={i} className="skeleton" style={{ height: 48 }} />)}
-          </div>
-        ) : !stats?.tasks || stats.tasks.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
-            <p style={{ fontSize: 36, marginBottom: 8 }}>📝</p>
-            <p style={{ fontSize: 15, fontWeight: 600 }}>No tasks found</p>
-            <p style={{ fontSize: 13 }}>There are no active tasks in {selectedProjectName}.</p>
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 14 }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                  <th style={{ padding: '12px 16px', fontWeight: 600 }}>Task Title</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600 }}>Project</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600 }}>Status</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600 }}>Priority</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600 }}>Assignee</th>
-                  <th style={{ padding: '12px 16px', fontWeight: 600, textAlign: 'right' }}>Due Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {stats.tasks.map(t => {
-                  return (
-                    <tr 
-                      key={t.id} 
-                      style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
-                    >
-                      <td style={{ padding: '14px 16px', fontWeight: 600 }}>
-                        <Link 
-                          href={`/boards/${t.boardId}?task=${t.id}`}
-                          style={{ color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.15s' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}
-                        >
-                          {t.title}
-                        </Link>
-                      </td>
-                      <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>
-                        <Link
-                          href={`/boards/${t.boardId}`}
-                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.15s' }}
-                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
-                        >
-                          📁 {t.projectName}
-                        </Link>
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span className={`badge badge-status-${t.status}`}>
-                          {t.status.replace('_', ' ').toUpperCase()}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 16px' }}>
-                        <span className={`badge badge-priority-${t.priority}`}>
-                          {t.priority.toUpperCase()}
-                        </span>
-                      </td>
-                      <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>
-                        {t.assigneeName ? (
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <div style={{
-                              width: 26, height: 26, borderRadius: '50%', background: 'var(--accent)',
-                              color: '#fff', fontSize: 11, fontWeight: 700, display: 'flex',
-                              alignItems: 'center', justifyContent: 'center'
-                            }}>
-                              {t.assigneeName[0].toUpperCase()}
+          {loading ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {[1, 2, 3, 4].map(i => <div key={i} className="skeleton" style={{ height: 48 }} />)}
+            </div>
+          ) : !stats?.tasks || stats.tasks.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '40px 0', color: 'var(--text-muted)' }}>
+              <p style={{ fontSize: 36, marginBottom: 8 }}>📝</p>
+              <p style={{ fontSize: 15, fontWeight: 600 }}>No tasks found</p>
+              <p style={{ fontSize: 13 }}>There are no active tasks in {selectedProjectName}.</p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: 14 }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-muted)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Task Title</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Project</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Status</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Priority</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600 }}>Assignee</th>
+                    <th style={{ padding: '12px 16px', fontWeight: 600, textAlign: 'right' }}>Due Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stats.tasks.map(t => {
+                    return (
+                      <tr 
+                        key={t.id} 
+                        style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                        onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                      >
+                        <td style={{ padding: '14px 16px', fontWeight: 600 }}>
+                          <Link 
+                            href={`/boards/${t.boardId}?task=${t.id}`}
+                            style={{ color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.15s' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                          >
+                            {t.title}
+                          </Link>
+                        </td>
+                        <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>
+                          <Link
+                            href={`/boards/${t.boardId}`}
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.15s' }}
+                            onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                            onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+                          >
+                            📁 {t.projectName}
+                          </Link>
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <span className={`badge badge-status-${t.status}`}>
+                            {(t.status || 'todo').replace(/_/g, ' ')}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px' }}>
+                          <span className={`badge badge-priority-${t.priority}`}>
+                            {t.priority || 'medium'}
+                          </span>
+                        </td>
+                        <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>
+                          {t.assigneeName ? (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                              <div style={{
+                                width: 26, height: 26, borderRadius: '50%', background: 'var(--accent)',
+                                color: '#fff', fontSize: 11, fontWeight: 700, display: 'flex',
+                                alignItems: 'center', justifyContent: 'center'
+                              }}>
+                                {t.assigneeName[0].toUpperCase()}
+                              </div>
+                              <span>{t.assigneeName}</span>
                             </div>
-                            <span>{t.assigneeName}</span>
-                          </div>
-                        ) : (
-                          <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Unassigned</span>
-                        )}
-                      </td>
-                      <td style={{ padding: '14px 16px', textAlign: 'right', color: 'var(--text-muted)', fontSize: 13 }}>
-                        {t.dueDate ? formatDateIndian(t.dueDate) : '—'}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+                          ) : (
+                            <span style={{ color: 'var(--text-muted)', fontStyle: 'italic' }}>Unassigned</span>
+                          )}
+                        </td>
+                        <td style={{ padding: '14px 16px', textAlign: 'right', color: 'var(--text-muted)', fontSize: 13 }}>
+                          {t.dueDate ? formatDateIndian(t.dueDate) : '—'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Recent Activity */}
       <div className="card" style={{ padding: 28 }}>
