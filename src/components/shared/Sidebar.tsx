@@ -142,12 +142,12 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* User profile */}
-      <div style={{ padding: '14px 12px', borderTop: '1px solid var(--border)' }}>
-        <Link href="/profile" style={{ textDecoration: 'none', color: 'inherit', flex: 1, minWidth: 0 }}>
+      {/* User profile & Logout */}
+      <div style={{ padding: '14px 12px', borderTop: '1px solid var(--border)', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        <Link href="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div style={{
             display: 'flex', alignItems: 'center', gap: 12,
-            padding: '10px 12px', borderRadius: 12,
+            padding: '8px 10px', borderRadius: 12,
             cursor: 'pointer', transition: 'all 0.15s ease',
           }}
           onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
@@ -180,16 +180,44 @@ export default function Sidebar() {
             </div>
           </div>
         </Link>
+
         <button
           onClick={logout}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: 8, borderRadius: 8, transition: 'all 0.15s ease' }}
-          onMouseEnter={e => (e.currentTarget.style.color = 'var(--danger)')}
-          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+          style={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+            padding: '10px 14px',
+            borderRadius: 10,
+            background: 'rgba(239, 68, 68, 0.08)',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            color: '#ef4444',
+            fontSize: 13,
+            fontWeight: 600,
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.background = '#ef4444';
+            e.currentTarget.style.color = '#ffffff';
+            e.currentTarget.style.borderColor = '#ef4444';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(239, 68, 68, 0.3)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.background = 'rgba(239, 68, 68, 0.08)';
+            e.currentTarget.style.color = '#ef4444';
+            e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.2)';
+            e.currentTarget.style.boxShadow = 'none';
+          }}
           title="Sign out"
+          id="sidebar-logout-btn"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
+          <span>Sign Out</span>
         </button>
       </div>
     </div>
