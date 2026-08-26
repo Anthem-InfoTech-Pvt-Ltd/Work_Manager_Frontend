@@ -208,7 +208,8 @@ export const timeTrackingApi = {
 };
 export const activitiesApi = {
   getByTask: (taskId: number) => api.get(`/activities?taskId=${taskId}`),
-  getRecent: (limit: number = 10) => api.get(`/activities/recent?limit=${limit}`),
+  getRecent: (limit: number = 10, projectId?: number) => 
+    api.get(projectId ? `/activities/recent?limit=${limit}&projectId=${projectId}` : `/activities/recent?limit=${limit}`),
   getByProject: (..._args: any[]) => dummyResolve([]),
   getByBoard: (..._args: any[]) => dummyResolve([]),
   getByUser: (..._args: any[]) => dummyResolve([]),

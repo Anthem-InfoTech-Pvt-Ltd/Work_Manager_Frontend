@@ -120,7 +120,7 @@ export default function DashboardPage() {
       try {
         const [statsRes, activitiesRes] = await Promise.all([
           dashboardApi.getStats(pIdParam),
-          activitiesApi.getRecent(10).catch(() => ({ data: { data: [] } }))
+          activitiesApi.getRecent(10, pIdParam).catch(() => ({ data: { data: [] } }))
         ]);
 
         const s = statsRes.data.data;
@@ -427,7 +427,9 @@ export default function DashboardPage() {
 
       {/* Recent Activity */}
       <div className="card" style={{ padding: 28 }}>
-        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>Recent Activity</h3>
+        <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 20 }}>
+          Recent Activity {selectedProjectId !== 'all' && <span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-muted)' }}>({selectedProjectName})</span>}
+        </h3>
         {loading ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 44 }} />)}
