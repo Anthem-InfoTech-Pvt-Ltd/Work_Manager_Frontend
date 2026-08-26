@@ -40,7 +40,7 @@ interface DashboardStats {
   tasksByStatus: { status: string; count: number }[];
   tasksByPriority: { priority: string; count: number }[];
   tasks: ProjectTaskSummary[];
-  recentActivities: { id: number; userName: string; taskTitle?: string; type: string; data?: string; createdAt: string }[];
+  recentActivities: { id: number; userName: string; taskId?: number; boardId?: number; taskTitle?: string; type: string; data?: string; createdAt: string }[];
 }
 
 const statCards = [
@@ -378,9 +378,14 @@ export default function DashboardPage() {
                         </Link>
                       </td>
                       <td style={{ padding: '14px 16px', color: 'var(--text-secondary)' }}>
-                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        <Link
+                          href={`/boards/${t.boardId}`}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', textDecoration: 'none', transition: 'color 0.15s' }}
+                          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-secondary)')}
+                        >
                           📁 {t.projectName}
-                        </span>
+                        </Link>
                       </td>
                       <td style={{ padding: '14px 16px' }}>
                         <span className={`badge badge-status-${t.status}`}>
@@ -454,7 +459,19 @@ export default function DashboardPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <p style={{ fontSize: 14 }}>
                     <span style={{ fontWeight: 600 }}>{a.userName}</span>
-                    {' '}{formatActivityText(a.type, a.data, a.taskTitle)}
+                    {' '}
+                    {a.boardId && a.taskId ? (
+                      <Link 
+                        href={`/boards/${a.boardId}?task=${a.taskId}`}
+                        style={{ color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.15s' }}
+                        onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+                        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-primary)')}
+                      >
+                        {formatActivityText(a.type, a.data, a.taskTitle)}
+                      </Link>
+                    ) : (
+                      formatActivityText(a.type, a.data, a.taskTitle)
+                    )}
                   </p>
                 </div>
                 <span style={{ fontSize: 12, color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>

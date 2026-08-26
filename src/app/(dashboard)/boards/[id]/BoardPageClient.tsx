@@ -167,7 +167,7 @@ export default function BoardPageClient() {
   useEffect(() => {
     if (isNaN(boardId)) return;
     loadBoard().then(() => {
-      const tId = searchParams.get('taskId');
+      const tId = searchParams.get('taskId') || searchParams.get('task');
       if (tId) {
         const parsed = parseInt(tId);
         if (!isNaN(parsed)) {
@@ -175,7 +175,7 @@ export default function BoardPageClient() {
         }
       }
     });
-  }, [loadBoard, boardId]);
+  }, [loadBoard, boardId, searchParams]);
 
   const onDragEnd = async (result: DropResult) => {
     const { source, destination, draggableId } = result;
