@@ -105,88 +105,85 @@ export default function PlansPage() {
       {loading ? (
         <div className="skeleton" style={{ height: 250, borderRadius: 12 }} />
       ) : (
-        <div className="card" style={{ padding: 28 }}>
-          <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span>💎</span> Subscription Plans & Limits
-          </h2>
-
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: 600 }}>
-              <thead>
-                <tr style={{ borderBottom: '1.5px solid var(--border)' }}>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Plan Name</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Projects</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Max Members (Excl. Owner)</th>
-                  <th style={{ padding: '12px 16px', fontSize: 13, fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', textAlign: 'right' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {plans.map(p => {
-                  const isEditing = editingPlanId === p.id;
-                  return (
-                    <tr key={p.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.2s' }}>
-                      <td style={{ padding: '16px', fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</td>
-                      <td style={{ padding: '16px' }}>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            className="input"
-                            style={{ width: 80, padding: '4px 8px' }}
-                            value={editingForm?.maxProjects}
-                            onChange={e => setEditingForm(f => f ? { ...f, maxProjects: parseInt(e.target.value) || 0 } : null)}
-                          />
-                        ) : (
-                          p.maxProjectsPerWorkspace === 0 ? 'Unlimited' : p.maxProjectsPerWorkspace
-                        )}
-                      </td>
-                      <td style={{ padding: '16px' }}>
-                        {isEditing ? (
-                          <input
-                            type="number"
-                            className="input"
-                            style={{ width: 80, padding: '4px 8px' }}
-                            value={editingForm?.maxMembers}
-                            onChange={e => setEditingForm(f => f ? { ...f, maxMembers: parseInt(e.target.value) || 0 } : null)}
-                          />
-                        ) : (
-                          p.maxMembersPerWorkspace === 0 ? 'Unlimited' : p.maxMembersPerWorkspace
-                        )}
-                      </td>
-                      <td style={{ padding: '16px', textAlign: 'right' }}>
-                        {isEditing ? (
-                          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                            <button
-                              className="btn btn-primary"
-                              style={{ padding: '4px 8px', minWidth: 'auto', display: 'flex', alignItems: 'center', gap: 4 }}
-                              onClick={() => handleSavePlan(p.id)}
-                              disabled={savingPlanId === p.id}
-                            >
-                              <Check size={14} /> Save
-                            </button>
-                            <button
-                              className="btn btn-secondary"
-                              style={{ padding: '4px 8px', minWidth: 'auto' }}
-                              onClick={() => { setEditingPlanId(null); setEditingForm(null); }}
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            className="btn btn-ghost"
-                            style={{ padding: '4px 8px', minWidth: 'auto', display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                            onClick={() => handleStartEdit(p)}
-                          >
-                            <Edit2 size={14} /> Edit
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <div className="card table-container" style={{ padding: 0 }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)' }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span>💎</span> Subscription Plans & Limits
+            </h2>
           </div>
+
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Plan Name</th>
+                <th>Max Projects</th>
+                <th>Max Members (Excl. Owner)</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plans.map(p => {
+                const isEditing = editingPlanId === p.id;
+                return (
+                  <tr key={p.id} className="table-row-hover">
+                    <td style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{p.name}</td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          className="input"
+                          style={{ width: 90, padding: '4px 8px' }}
+                          value={editingForm?.maxProjects}
+                          onChange={e => setEditingForm(f => f ? { ...f, maxProjects: parseInt(e.target.value) || 0 } : null)}
+                        />
+                      ) : (
+                        p.maxProjectsPerWorkspace === 0 ? 'Unlimited' : p.maxProjectsPerWorkspace
+                      )}
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          className="input"
+                          style={{ width: 90, padding: '4px 8px' }}
+                          value={editingForm?.maxMembers}
+                          onChange={e => setEditingForm(f => f ? { ...f, maxMembers: parseInt(e.target.value) || 0 } : null)}
+                        />
+                      ) : (
+                        p.maxMembersPerWorkspace === 0 ? 'Unlimited' : p.maxMembersPerWorkspace
+                      )}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      {isEditing ? (
+                        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                          <button
+                            className="btn btn-primary btn-sm"
+                            onClick={() => handleSavePlan(p.id)}
+                            disabled={savingPlanId === p.id}
+                          >
+                            <Check size={14} /> Save
+                          </button>
+                          <button
+                            className="btn btn-secondary btn-sm"
+                            onClick={() => { setEditingPlanId(null); setEditingForm(null); }}
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className="btn btn-secondary btn-sm"
+                          onClick={() => handleStartEdit(p)}
+                        >
+                          <Edit2 size={14} /> Edit
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

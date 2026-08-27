@@ -110,7 +110,7 @@ export default function ArchivePage() {
       )}
 
       <div style={{ marginBottom: 36 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Archive & Recovery Bin</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Archive & Recovery Bin</h1>
         <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
           Browse and restore archived tasks, lists, boards, and projects, or permanently purge them.
         </p>
@@ -181,19 +181,7 @@ export default function ArchivePage() {
                 </button>
                 <button
                   onClick={() => handlePermanentDelete(item)}
-                  style={{
-                    padding: '6px 12px', fontSize: 12, background: 'none',
-                    border: '1px solid #ef4444', color: '#ef4444', borderRadius: 8,
-                    cursor: 'pointer'
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.background = '#ef4444';
-                    e.currentTarget.style.color = '#fff';
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.background = 'none';
-                    e.currentTarget.style.color = '#ef4444';
-                  }}
+                  className="btn btn-danger-outline btn-sm"
                 >
                   Delete
                 </button>

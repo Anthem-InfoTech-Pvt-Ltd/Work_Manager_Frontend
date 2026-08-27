@@ -255,20 +255,7 @@ export default function UserManagementPage() {
             setCreateError(null);
             setCreateSuccess(false);
           }}
-          style={{
-            padding: '10px 20px',
-            borderRadius: 8,
-            background: 'var(--accent)',
-            border: 'none',
-            color: '#fff',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            boxShadow: '0 4px 12px var(--accent-glow)',
-            transition: 'opacity 0.2s',
-          }}
-          onMouseEnter={e => (e.currentTarget.style.opacity = '0.9')}
-          onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          className="btn btn-primary"
         >
           Create User
         </button>
@@ -282,23 +269,12 @@ export default function UserManagementPage() {
           </span>
           <input
             type="text"
+            className="input"
             placeholder="Search by name or email..."
             value={searchTerm}
             maxLength={50}
             onChange={e => setSearchTerm(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 16px 10px 42px',
-              borderRadius: 10,
-              border: '1px solid var(--border)',
-              background: 'var(--bg-card)',
-              color: 'var(--text-primary)',
-              fontSize: 14,
-              outline: 'none',
-              transition: 'border-color 0.2s',
-            }}
-            onFocus={e => (e.target.style.borderColor = 'var(--accent)')}
-            onBlur={e => (e.target.style.borderColor = 'var(--border)')}
+            style={{ paddingLeft: 42 }}
           />
         </div>
       </div>
@@ -321,32 +297,33 @@ export default function UserManagementPage() {
           </div>
         </div>
       ) : (
-        <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="card table-container" style={{ padding: 0 }}>
+          <table className="table">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
-                <th style={{ padding: '16px 24px' }}>User</th>
-                <th style={{ padding: '16px 24px' }}>Email Address</th>
-                <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+              <tr>
+                <th>User</th>
+                <th>Email Address</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={4} style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>
+                  <td colSpan={3} style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>
                     No users match your search criteria.
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map(user => (
-                  <tr key={user.id} style={{ borderBottom: '1px solid var(--border)', transition: 'background 0.15s' }} className="table-row-hover">
-                    <td style={{ padding: '16px 24px' }}>
+                  <tr key={user.id} className="table-row-hover">
+                    <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <div style={{
                           width: 40, height: 40, borderRadius: '50%',
-                          background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                          background: 'var(--gradient-primary)',
                           display: 'flex', alignItems: 'center', justifyContent: 'center',
                           fontSize: 14, fontWeight: 700, color: '#fff',
+                          boxShadow: '0 2px 8px rgba(168, 85, 247, 0.3)',
                         }}>
                           {getInitials(user.fullName)}
                         </div>
@@ -356,59 +333,21 @@ export default function UserManagementPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '16px 24px', color: 'var(--text-secondary)', fontSize: 14 }}>
+                    <td style={{ color: 'var(--text-secondary)' }}>
                       {user.email}
                     </td>
-                    <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                    <td style={{ textAlign: 'right' }}>
                       {user.role.toLowerCase() !== 'super_admin' && (
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
                             onClick={() => openEditModal(user)}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: 6,
-                              background: 'transparent',
-                              border: '1px solid var(--border)',
-                              color: 'var(--text-primary)',
-                              fontSize: 13,
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.borderColor = 'var(--accent)';
-                              e.currentTarget.style.color = 'var(--accent)';
-                              e.currentTarget.style.background = 'rgba(99, 102, 241, 0.05)';
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.borderColor = 'var(--border)';
-                              e.currentTarget.style.color = 'var(--text-primary)';
-                              e.currentTarget.style.background = 'transparent';
-                            }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Edit Profile
                           </button>
                           <button
                             onClick={() => handleDeleteUser(user.id, user.fullName)}
-                            style={{
-                              padding: '6px 12px',
-                              borderRadius: 6,
-                              background: 'transparent',
-                              border: '1px solid var(--border)',
-                              color: 'var(--danger)',
-                              fontSize: 13,
-                              fontWeight: 500,
-                              cursor: 'pointer',
-                              transition: 'all 0.15s',
-                            }}
-                            onMouseEnter={e => {
-                              e.currentTarget.style.borderColor = 'var(--danger)';
-                              e.currentTarget.style.background = 'rgba(239, 68, 68, 0.05)';
-                            }}
-                            onMouseLeave={e => {
-                              e.currentTarget.style.borderColor = 'var(--border)';
-                              e.currentTarget.style.background = 'transparent';
-                            }}
+                            className="btn btn-danger-outline btn-sm"
                           >
                             Delete
                           </button>
@@ -447,7 +386,8 @@ export default function UserManagementPage() {
               </div>
               <button
                 onClick={closeEditModal}
-                style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--text-muted)' }}
+                className="btn btn-ghost btn-sm"
+                style={{ padding: 4, fontSize: 18 }}
               >
                 ✕
               </button>
@@ -463,13 +403,9 @@ export default function UserManagementPage() {
                   type="text"
                   required
                   maxLength={50}
+                  className="input"
                   value={firstName}
                   onChange={e => setFirstName(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -481,13 +417,9 @@ export default function UserManagementPage() {
                   type="text"
                   required
                   maxLength={50}
+                  className="input"
                   value={lastName}
                   onChange={e => setLastName(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -496,24 +428,16 @@ export default function UserManagementPage() {
                 <button
                   type="button"
                   onClick={closeEditModal}
-                  style={{
-                    flex: 1, padding: 12, borderRadius: 8,
-                    background: 'transparent', border: '1px solid var(--border)',
-                    color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 500
-                  }}
+                  className="btn btn-secondary"
+                  style={{ flex: 1 }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  style={{
-                    flex: 1, padding: 12, borderRadius: 8,
-                    background: 'var(--accent)', border: 'none',
-                    color: '#fff', cursor: 'pointer', fontWeight: 600,
-                    boxShadow: '0 4px 12px var(--accent-glow)',
-                    opacity: saving ? 0.7 : 1,
-                  }}
+                  className="btn btn-primary"
+                  style={{ flex: 1 }}
                 >
                   {saving ? 'Saving...' : 'Save Changes'}
                 </button>
@@ -547,7 +471,8 @@ export default function UserManagementPage() {
               </div>
               <button
                 onClick={() => setIsCreating(false)}
-                style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: 'var(--text-muted)' }}
+                className="btn btn-ghost btn-sm"
+                style={{ padding: 4, fontSize: 18 }}
               >
                 ✕
               </button>
@@ -563,13 +488,9 @@ export default function UserManagementPage() {
                   type="text"
                   required
                   maxLength={50}
+                  className="input"
                   value={newFirstName}
                   onChange={e => setNewFirstName(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -581,13 +502,9 @@ export default function UserManagementPage() {
                   type="text"
                   required
                   maxLength={50}
+                  className="input"
                   value={newLastName}
                   onChange={e => setNewLastName(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -599,13 +516,9 @@ export default function UserManagementPage() {
                   type="email"
                   required
                   maxLength={50}
+                  className="input"
                   value={newEmail}
                   onChange={e => setNewEmail(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -617,13 +530,9 @@ export default function UserManagementPage() {
                   type="password"
                   required
                   maxLength={50}
+                  className="input"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  style={{
-                    width: '100%', padding: '10px 14px', borderRadius: 8,
-                    border: '1px solid var(--border)', background: 'var(--bg-body)',
-                    color: 'var(--text-primary)', outline: 'none'
-                  }}
                 />
               </div>
 
@@ -632,24 +541,16 @@ export default function UserManagementPage() {
                 <button
                   type="button"
                   onClick={() => setIsCreating(false)}
-                  style={{
-                    flex: 1, padding: 12, borderRadius: 8,
-                    background: 'transparent', border: '1px solid var(--border)',
-                    color: 'var(--text-primary)', cursor: 'pointer', fontWeight: 500
-                  }}
+                  className="btn btn-secondary"
+                  style={{ flex: 1 }}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={createSaving}
-                  style={{
-                    flex: 1, padding: 12, borderRadius: 8,
-                    background: 'var(--accent)', border: 'none',
-                    color: '#fff', cursor: 'pointer', fontWeight: 600,
-                    boxShadow: '0 4px 12px var(--accent-glow)',
-                    opacity: createSaving ? 0.7 : 1,
-                  }}
+                  className="btn btn-primary"
+                  style={{ flex: 1 }}
                 >
                   {createSaving ? 'Creating...' : 'Create User'}
                 </button>

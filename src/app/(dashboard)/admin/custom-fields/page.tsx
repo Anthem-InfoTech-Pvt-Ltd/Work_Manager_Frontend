@@ -173,7 +173,7 @@ export default function CustomFieldsPage() {
     <div style={{ padding: '32px 32px 64px', maxWidth: 1000, margin: '0 auto' }} className="fade-in">
       <div style={{ marginBottom: 36, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Custom Fields Manager</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Custom Fields Manager</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
             Extend your task details page with custom data fields tailored to your work context.
           </p>
@@ -181,7 +181,7 @@ export default function CustomFieldsPage() {
         <button
           onClick={openCreateModal}
           className="btn btn-primary"
-          style={{ padding: '10px 20px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8 }}
+          style={{ display: 'flex', alignItems: 'center', gap: 8 }}
         >
           <span>＋</span> Add Custom Field
         </button>
@@ -192,10 +192,10 @@ export default function CustomFieldsPage() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>Workspace:</span>
           <select
-            className="input"
+            className="select"
             value={selectedWorkspaceId || ''}
             onChange={e => setSelectedWorkspaceId(Number(e.target.value))}
-            style={{ width: 220, background: 'var(--bg-primary)' }}
+            style={{ width: 220 }}
           >
             {workspaces.map(w => (
               <option key={w.id} value={w.id}>
@@ -211,10 +211,10 @@ export default function CustomFieldsPage() {
             <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Loading projects...</span>
           ) : (
             <select
-              className="input"
+              className="select"
               value={selectedProjectId || ''}
               onChange={e => setSelectedProjectId(Number(e.target.value))}
-              style={{ width: 220, background: 'var(--bg-primary)' }}
+              style={{ width: 220 }}
             >
               {projects.map(p => (
                 <option key={p.id} value={p.id}>

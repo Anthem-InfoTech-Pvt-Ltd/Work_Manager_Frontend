@@ -148,22 +148,29 @@ body {
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 9px 18px;
   border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
   border: none;
   outline: none;
+}
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
 }
 .btn-primary {
   background: var(--gradient-primary);
   color: #fff;
   box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
 }
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 22px rgba(168, 85, 247, 0.5);
   filter: brightness(1.08);
@@ -174,7 +181,7 @@ body {
   border: 1px solid var(--border);
   box-shadow: 0 2px 10px rgba(99, 102, 241, 0.05);
 }
-.btn-secondary:hover {
+.btn-secondary:hover:not(:disabled) {
   border-color: var(--accent);
   background: rgba(99, 102, 241, 0.12);
   transform: translateY(-1px);
@@ -183,7 +190,7 @@ body {
   background: transparent;
   color: var(--text-secondary);
 }
-.btn-ghost:hover {
+.btn-ghost:hover:not(:disabled) {
   background: var(--bg-hover);
   color: var(--text-primary);
 }
@@ -192,15 +199,25 @@ body {
   color: #fff;
   box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
 }
-.btn-danger:hover {
+.btn-danger:hover:not(:disabled) {
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(239, 68, 68, 0.45);
 }
-.btn-sm { padding: 6px 12px; font-size: 13px; border-radius: 8px; }
+.btn-danger-outline {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--border);
+}
+.btn-danger-outline:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
+  border-color: var(--danger);
+}
+.btn-sm { padding: 6px 14px; font-size: 13px; border-radius: 8px; }
+.btn-xs { padding: 4px 10px; font-size: 12px; border-radius: 6px; }
 .btn-icon { padding: 9px; border-radius: 10px; }
 
-/* Inputs */
-.input {
+/* Inputs & Selects */
+.input, .select {
   width: 100%;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
@@ -208,15 +225,50 @@ body {
   color: var(--text-primary);
   padding: 10px 16px;
   font-size: 14px;
+  font-family: inherit;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.04);
 }
-.input:focus {
+.input:focus, .select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 16px rgba(99, 102, 241, 0.15);
 }
 .input::placeholder { color: var(--text-muted); }
+
+/* Table System */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+.table th {
+  padding: 14px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  background: rgba(99, 102, 241, 0.03);
+}
+.table td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+.table tr:last-child td {
+  border-bottom: none;
+}
+.table-row-hover:hover {
+  background: var(--bg-hover) !important;
+}
 
 /* Badges - Vibrant Colorful Pills */
 .badge {

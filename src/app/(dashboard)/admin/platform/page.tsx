@@ -370,9 +370,9 @@ export default function PlatformManagementPage() {
         <div>
           {/* Workspaces Tab */}
           {activeTab === 'workspaces' && (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="card table-container" style={{ padding: 0 }}>
               <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 600, fontSize: 16 }}>All Workspaces</h3>
+                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Workspaces</h3>
                 <button
                   onClick={() => {
                     setEditingWorkspace(null);
@@ -380,40 +380,39 @@ export default function PlatformManagementPage() {
                     setWorkspaceOwnerId(users[0]?.id.toString() || '');
                     setIsWorkspaceModalOpen(true);
                   }}
-                  className="btn-primary"
-                  style={{ padding: '8px 16px', fontSize: 13 }}
+                  className="btn btn-primary btn-sm"
                 >
                   + Add Workspace
                 </button>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table className="table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
-                    <th style={{ padding: '16px 24px' }}>Workspace Name</th>
-                    <th style={{ padding: '16px 24px' }}>Owner</th>
-                    <th style={{ padding: '16px 24px' }}>Members</th>
-                    <th style={{ padding: '16px 24px' }}>Created Date</th>
-                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  <tr>
+                    <th>Workspace Name</th>
+                    <th>Owner</th>
+                    <th>Members</th>
+                    <th>Created Date</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {workspaces.map(ws => (
-                    <tr key={ws.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '16px 24px', fontWeight: 600 }}>{ws.name}</td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{ws.ownerName || '-'}</td>
-                      <td style={{ padding: '16px 24px' }}>
-                        <span style={{ background: 'var(--border)', padding: '4px 8px', borderRadius: 12, fontSize: 12 }}>
+                    <tr key={ws.id} className="table-row-hover">
+                      <td style={{ fontWeight: 600 }}>{ws.name}</td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{ws.ownerName || '-'}</td>
+                      <td>
+                        <span className="badge" style={{ background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>
                           {ws.memberCount} members
                         </span>
                       </td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
+                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
                         {new Date(ws.createdAt).toLocaleDateString()}
                       </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                      <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
                             onClick={() => handleOpenMembersModal('workspace', ws)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Members
                           </button>
@@ -424,13 +423,13 @@ export default function PlatformManagementPage() {
                               setWorkspaceOwnerId(ws.ownerId?.toString() || '');
                               setIsWorkspaceModalOpen(true);
                             }}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteWorkspace(ws.id, ws.name)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', color: 'var(--danger)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-danger-outline btn-sm"
                           >
                             Delete
                           </button>
@@ -445,48 +444,47 @@ export default function PlatformManagementPage() {
 
           {/* Projects Tab */}
           {activeTab === 'projects' && (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="card table-container" style={{ padding: 0 }}>
               <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 600, fontSize: 16 }}>All Projects</h3>
+                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Projects</h3>
                 <button
                   onClick={() => {
                     setEditingProject(null);
                     setProjectForm({ name: '', description: '', workspaceId: workspaces[0]?.id.toString() || '', ownerId: users[0]?.id.toString() || '' });
                     setIsProjectModalOpen(true);
                   }}
-                  className="btn-primary"
-                  style={{ padding: '8px 16px', fontSize: 13 }}
+                  className="btn btn-primary btn-sm"
                 >
                   + Add Project
                 </button>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table className="table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
-                    <th style={{ padding: '16px 24px' }}>Project Name</th>
-                    <th style={{ padding: '16px 24px' }}>Owner</th>
-                    <th style={{ padding: '16px 24px' }}>Created Date</th>
-                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Owner</th>
+                    <th>Created Date</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {projects.map(p => (
-                    <tr key={p.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '16px 24px', fontWeight: 600 }}>
+                    <tr key={p.id} className="table-row-hover">
+                      <td style={{ fontWeight: 600 }}>
                         <div>
                           <span>{p.name}</span>
                           {p.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{p.description}</p>}
                         </div>
                       </td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{p.ownerName}</td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
+                      <td style={{ color: 'var(--text-secondary)' }}>{p.ownerName}</td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
                         {new Date(p.createdAt).toLocaleDateString()}
                       </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                      <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
                             onClick={() => handleOpenMembersModal('project', p)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Members
                           </button>
@@ -496,13 +494,13 @@ export default function PlatformManagementPage() {
                               setProjectForm({ name: p.name, description: p.description || '', workspaceId: p.workspaceId.toString(), ownerId: p.ownerId.toString() });
                               setIsProjectModalOpen(true);
                             }}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteProject(p.id, p.name)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', color: 'var(--danger)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-danger-outline btn-sm"
                           >
                             Delete
                           </button>
@@ -517,50 +515,49 @@ export default function PlatformManagementPage() {
 
           {/* Boards Tab */}
           {activeTab === 'boards' && (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="card table-container" style={{ padding: 0 }}>
               <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 600, fontSize: 16 }}>All Boards</h3>
+                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Boards</h3>
                 <button
                   onClick={() => {
                     setEditingBoard(null);
                     setBoardForm({ name: '', description: '', projectId: projects[0]?.id.toString() || '', ownerId: users[0]?.id.toString() || '' });
                     setIsBoardModalOpen(true);
                   }}
-                  className="btn-primary"
-                  style={{ padding: '8px 16px', fontSize: 13 }}
+                  className="btn btn-primary btn-sm"
                 >
                   + Add Board
                 </button>
               </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <table className="table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-header)', fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
-                    <th style={{ padding: '16px 24px' }}>Board Name</th>
-                    <th style={{ padding: '16px 24px' }}>Project</th>
-                    <th style={{ padding: '16px 24px' }}>Owner</th>
-                    <th style={{ padding: '16px 24px' }}>Created Date</th>
-                    <th style={{ padding: '16px 24px', textAlign: 'right' }}>Actions</th>
+                  <tr>
+                    <th>Board Name</th>
+                    <th>Project</th>
+                    <th>Owner</th>
+                    <th>Created Date</th>
+                    <th style={{ textAlign: 'right' }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {boards.map(b => (
-                    <tr key={b.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                      <td style={{ padding: '16px 24px', fontWeight: 600 }}>
+                    <tr key={b.id} className="table-row-hover">
+                      <td style={{ fontWeight: 600 }}>
                         <div>
                           <span>{b.name}</span>
                           {b.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{b.description}</p>}
                         </div>
                       </td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{b.projectName}</td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>{b.ownerName}</td>
-                      <td style={{ padding: '16px 24px', color: 'var(--text-muted)', fontSize: 13 }}>
+                      <td style={{ color: 'var(--text-secondary)' }}>{b.projectName}</td>
+                      <td style={{ color: 'var(--text-secondary)' }}>{b.ownerName}</td>
+                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
                         {new Date(b.createdAt).toLocaleDateString()}
                       </td>
-                      <td style={{ padding: '16px 24px', textAlign: 'right' }}>
+                      <td style={{ textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: 8 }}>
                           <button
                             onClick={() => handleOpenMembersModal('board', b)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Members
                           </button>
@@ -570,13 +567,13 @@ export default function PlatformManagementPage() {
                               setBoardForm({ name: b.name, description: b.description || '', projectId: b.projectId.toString(), ownerId: b.ownerId.toString() });
                               setIsBoardModalOpen(true);
                             }}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-secondary btn-sm"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDeleteBoard(b.id, b.name)}
-                            style={{ padding: '6px 12px', borderRadius: 6, background: 'transparent', border: '1px solid var(--border)', color: 'var(--danger)', fontSize: 12, cursor: 'pointer' }}
+                            className="btn btn-danger-outline btn-sm"
                           >
                             Delete
                           </button>

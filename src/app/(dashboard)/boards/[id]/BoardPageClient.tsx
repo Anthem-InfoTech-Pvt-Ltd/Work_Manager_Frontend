@@ -660,35 +660,34 @@ export default function BoardPageClient() {
 
       {/* Table View */}
       {activeView === 'table' && (
-        <div style={{ padding: 24 }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+        <div className="table-container" style={{ padding: 24 }}>
+          <table className="table">
             <thead>
-              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+              <tr>
                 {['Task', 'Status', 'Priority', 'Assignee', 'Due Date', 'List'].map(h => (
-                  <th key={h} style={{ padding: '12px 16px', textAlign: 'left', color: 'var(--text-muted)', fontWeight: 600, fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{h}</th>
+                  <th key={h}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {lists.flatMap(l => (l.tasks ?? []).map(t => (
                 <tr key={t.id}
-                  style={{ borderBottom: '1px solid var(--border)', cursor: 'pointer', transition: 'background 0.15s' }}
+                  className="table-row-hover"
+                  style={{ cursor: 'pointer' }}
                   onClick={() => setSelectedTaskId(t.id)}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 >
-                  <td style={{ padding: '12px 16px', fontWeight: 500 }}>{t.title}</td>
-                  <td style={{ padding: '12px 16px' }}>
+                  <td style={{ fontWeight: 500 }}>{t.title}</td>
+                  <td>
                     <span className={`badge badge-status-${t.status.toLowerCase().replace(/[\s_]+/g, '_')}`}>{t.status.replace('_', ' ')}</span>
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
+                  <td>
                     <span className={`badge badge-priority-${t.priority}`}>{t.priority}</span>
                   </td>
-                  <td style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>{t.assigneeName ?? '—'}</td>
-                  <td style={{ padding: '12px 16px', color: t.dueDate && new Date(t.dueDate) < new Date() ? 'var(--danger)' : 'var(--text-secondary)' }}>
+                  <td style={{ color: 'var(--text-secondary)' }}>{t.assigneeName ?? '—'}</td>
+                  <td style={{ color: t.dueDate && new Date(t.dueDate) < new Date() ? 'var(--danger)' : 'var(--text-secondary)' }}>
                     {t.dueDate ? formatDateIndian(t.dueDate) : '—'}
                   </td>
-                  <td style={{ padding: '12px 16px' }}>
+                  <td>
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
                       <div style={{ width: 8, height: 8, borderRadius: '50%', background: l.color }} />
                       {l.name}

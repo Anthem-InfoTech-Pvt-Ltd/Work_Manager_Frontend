@@ -87,12 +87,12 @@ export default function ErrorLogsPage() {
           </Link>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h1 style={{ fontSize: 28, fontWeight: 700 }}>System Error Logs</h1>
-            <span style={{ fontSize: 12, padding: '4px 8px', background: '#ef44441a', color: '#ef4444', borderRadius: '12px', fontWeight: 600 }}>Captured logs</span>
+            <span className="badge badge-priority-critical">Captured logs</span>
           </div>
         </div>
 
         {logs.length > 0 && (
-          <button onClick={clearAllLogs} className="btn btn-secondary btn-sm" style={{ display: 'flex', alignItems: 'center', gap: 8, borderColor: '#ef4444', color: '#ef4444' }}>
+          <button onClick={clearAllLogs} className="btn btn-danger-outline btn-sm">
             <Trash2 size={14} /> Clear All Logs
           </button>
         )}

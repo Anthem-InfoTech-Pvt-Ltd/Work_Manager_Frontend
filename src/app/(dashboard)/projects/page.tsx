@@ -108,7 +108,7 @@ export default function ProjectsPage() {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 32 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Projects</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>Projects</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
             {projects.length} project{projects.length !== 1 ? 's' : ''} total
           </p>
@@ -196,7 +196,7 @@ export default function ProjectsPage() {
               </label>
               <div style={{ display: 'flex', gap: 10 }}>
                 <select
-                  className="input"
+                  className="select"
                   value={selectedAddUserId || ''}
                   onChange={e => setSelectedAddUserId(Number(e.target.value) || null)}
                   style={{ flex: 1 }}
@@ -263,10 +263,7 @@ export default function ProjectsPage() {
                           showToast.error(e.response?.data?.message || 'Failed to remove member');
                         }
                       }}
-                      style={{
-                        background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer',
-                        fontSize: 12, fontWeight: 600, padding: '4px 8px'
-                      }}
+                      className="btn btn-danger-outline btn-xs"
                     >
                       Remove
                     </button>

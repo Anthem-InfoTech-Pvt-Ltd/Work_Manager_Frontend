@@ -95,7 +95,7 @@ export default function SettingsPage() {
 
       <div style={{ marginBottom: 36, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>System Settings</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>System Settings</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 14 }}>
             Configure global work parameters, layout branding, and platform options.
           </p>
@@ -104,7 +104,6 @@ export default function SettingsPage() {
           onClick={handleSave}
           disabled={saving}
           className="btn btn-primary"
-          style={{ padding: '10px 24px', borderRadius: 10, display: 'flex', alignItems: 'center', gap: 8 }}
         >
           {saving ? 'Saving...' : 'Save Settings'}
         </button>
