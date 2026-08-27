@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usersApi, authApi } from '@/lib/api';
+import { usersApi, authApi, planApi } from '@/lib/api';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 
 interface User {
@@ -13,10 +13,27 @@ interface User {
   role: string;
 }
 
+interface Plan {
+  id: number;
+  name: string;
+}
+
+interface UserSubscription {
+  userId: number;
+  ownerName: string;
+  email: string;
+  memberCount: number;
+  planName: string;
+  planId: number;
+}
+
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [userSubs, setUserSubs] = useState<UserSubscription[]>([]);
+  const [assigningUserId, setAssigningUserId] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -104,16 +121,36 @@ export default function UserManagementPage() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const res = await usersApi.getAll();
-      if (res.data.success) {
-        setUsers(res.data.data);
+      const [usersRes, plansRes, subsRes] = await Promise.all([
+        usersApi.getAll(),
+        planApi.getPlans().catch(() => ({ data: { data: [] } })),
+        planApi.getUserSubscriptions().catch(() => ({ data: { data: [] } })),
+      ]);
+      if (usersRes.data.success) {
+        setUsers(usersRes.data.data);
       } else {
-        setError(res.data.message || 'Failed to fetch users.');
+        setError(usersRes.data.message || 'Failed to fetch users.');
       }
+      setPlans(plansRes.data?.data ?? []);
+      setUserSubs(subsRes.data?.data ?? []);
     } catch (err: any) {
       setError(err.response?.data?.message || 'An error occurred while loading users.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAssignPlan = async (userId: number, planId: number) => {
+    setAssigningUserId(userId);
+    try {
+      await planApi.assignUserPlan(userId, planId);
+      showToast.success('Subscription plan updated successfully.');
+      fetchUsers();
+    } catch (e) {
+      console.error(e);
+      showToast.error('Failed to update subscription plan.');
+    } finally {
+      setAssigningUserId(null);
     }
   };
 
@@ -244,9 +281,9 @@ export default function UserManagementPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>User Management</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 6 }}>User Management & Subscriptions</h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: 15 }}>
-            Manage organization members and update user details.
+            Manage organization members, view active subscription plans, and assign account levels.
           </p>
         </div>
         <button
@@ -303,59 +340,89 @@ export default function UserManagementPage() {
               <tr>
                 <th>User</th>
                 <th>Email Address</th>
+                <th>Subscription Plan</th>
                 <th style={{ textAlign: 'right' }}>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={3} style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>
+                  <td colSpan={4} style={{ padding: 48, textAlign: 'center', color: 'var(--text-muted)', fontSize: 14 }}>
                     No users match your search criteria.
                   </td>
                 </tr>
               ) : (
-                filteredUsers.map(user => (
-                  <tr key={user.id} className="table-row-hover">
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div style={{
-                          width: 40, height: 40, borderRadius: '50%',
-                          background: 'var(--gradient-primary)',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center',
-                          fontSize: 14, fontWeight: 700, color: '#fff',
-                          boxShadow: '0 2px 8px rgba(168, 85, 247, 0.3)',
-                        }}>
-                          {getInitials(user.fullName)}
+                filteredUsers.map(user => {
+                  const userSub = userSubs.find(s => s.userId === user.id);
+                  const currentPlanId = userSub?.planId || 1;
+                  const currentPlanName = userSub?.planName || 'Free';
+
+                  return (
+                    <tr key={user.id} className="table-row-hover">
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                          <div style={{
+                            width: 40, height: 40, borderRadius: '50%',
+                            background: 'var(--gradient-primary)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: 14, fontWeight: 700, color: '#fff',
+                            boxShadow: '0 2px 8px rgba(168, 85, 247, 0.3)',
+                          }}>
+                            {getInitials(user.fullName)}
+                          </div>
+                          <div>
+                            <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>{user.fullName}</p>
+                            <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>ID: #{user.id}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: 14 }}>{user.fullName}</p>
-                          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 2 }}>ID: #{user.id}</p>
+                      </td>
+                      <td style={{ color: 'var(--text-secondary)' }}>
+                        {user.email}
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span className="badge" style={{
+                            background: currentPlanName === 'Enterprise' ? 'var(--gradient-primary)' : currentPlanName === 'Premium' ? 'var(--gradient-secondary)' : 'var(--bg-hover)',
+                            color: currentPlanName === 'Enterprise' || currentPlanName === 'Premium' ? '#fff' : 'var(--text-secondary)',
+                          }}>
+                            {currentPlanName}
+                          </span>
+                          {plans.length > 0 && (
+                            <select
+                              className="select"
+                              style={{ width: 140, padding: '4px 8px', fontSize: 12 }}
+                              value={currentPlanId}
+                              disabled={assigningUserId === user.id}
+                              onChange={(e) => handleAssignPlan(user.id, parseInt(e.target.value))}
+                            >
+                              {plans.map(p => (
+                                <option key={p.id} value={p.id}>{p.name}</option>
+                              ))}
+                            </select>
+                          )}
                         </div>
-                      </div>
-                    </td>
-                    <td style={{ color: 'var(--text-secondary)' }}>
-                      {user.email}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>
-                      {user.role.toLowerCase() !== 'super_admin' && (
-                        <div style={{ display: 'inline-flex', gap: 8 }}>
-                          <button
-                            onClick={() => openEditModal(user)}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Edit Profile
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(user.id, user.fullName)}
-                            className="btn btn-danger-outline btn-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        {user.role.toLowerCase() !== 'super_admin' && (
+                          <div style={{ display: 'inline-flex', gap: 8 }}>
+                            <button
+                              onClick={() => openEditModal(user)}
+                              className="btn btn-secondary btn-sm"
+                            >
+                              Edit Profile
+                            </button>
+                            <button
+                              onClick={() => handleDeleteUser(user.id, user.fullName)}
+                              className="btn btn-danger-outline btn-sm"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -23,7 +23,7 @@ export default function AdminPage() {
     { title: 'Archive & Trash Bin', description: 'Recover archived or deleted tasks, lists, boards, and projects, or permanently purge them.', href: '/admin/archive', icon: '🗑️', color: '#f87171' },
     { title: 'System Error Logs', description: 'Monitor, inspect, and analyze system errors and exceptions captured in real time.', href: '/admin/error-logs', icon: '🐞', color: '#ef4444' },
     { title: 'Plan Limits', description: 'Configure subscription tiers, thresholds, and customize limits.', href: '/admin/plans', icon: '💎', color: '#3b82f6' },
-    { title: 'Workspace Subscriptions', description: 'Manage active workspaces, subscription tiers, and plan assignments.', href: '/admin/subscriptions', icon: '🏢', color: '#8b5cf6' },
+    { title: 'User Management & Subscriptions', description: 'Manage organization members, view active subscription plans, and assign account levels.', href: '/admin/users', icon: '🏢', color: '#8b5cf6' },
   ];
 
   const visibleModules = modules.filter(m => {
