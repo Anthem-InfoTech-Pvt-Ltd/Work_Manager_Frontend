@@ -380,27 +380,26 @@ export default function UserManagementPage() {
                         {user.email}
                       </td>
                       <td>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        {plans.length > 0 ? (
+                          <select
+                            className="select"
+                            style={{ width: 140, padding: '6px 12px', fontSize: 13 }}
+                            value={currentPlanId}
+                            disabled={assigningUserId === user.id}
+                            onChange={(e) => handleAssignPlan(user.id, parseInt(e.target.value))}
+                          >
+                            {plans.map(p => (
+                              <option key={p.id} value={p.id}>{p.name}</option>
+                            ))}
+                          </select>
+                        ) : (
                           <span className="badge" style={{
                             background: currentPlanName === 'Enterprise' ? 'var(--gradient-primary)' : currentPlanName === 'Premium' ? 'var(--gradient-secondary)' : 'var(--bg-hover)',
                             color: currentPlanName === 'Enterprise' || currentPlanName === 'Premium' ? '#fff' : 'var(--text-secondary)',
                           }}>
                             {currentPlanName}
                           </span>
-                          {plans.length > 0 && (
-                            <select
-                              className="select"
-                              style={{ width: 140, padding: '4px 8px', fontSize: 12 }}
-                              value={currentPlanId}
-                              disabled={assigningUserId === user.id}
-                              onChange={(e) => handleAssignPlan(user.id, parseInt(e.target.value))}
-                            >
-                              {plans.map(p => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                              ))}
-                            </select>
-                          )}
-                        </div>
+                        )}
                       </td>
                       <td style={{ textAlign: 'right' }}>
                         {user.role.toLowerCase() !== 'super_admin' && (
