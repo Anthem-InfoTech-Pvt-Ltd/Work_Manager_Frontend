@@ -73,7 +73,24 @@ export default function Header() {
     return 'WorkManager';
   };
 
+  const [loadingNotifs, setLoadingNotifs] = useState(false);
+
+  const fetchNotificationList = async () => {
+    try {
+      const res = await notificationsApi.getAll(false);
+      if (Array.isArray(res.data.data)) {
+        setNotifications(res.data.data);
+      }
+    } catch {
+      // ignore
+    } finally {
+      setLoadingNotifs(false);
+    }
+  };
+
   useEffect(() => {
+    setLoadingNotifs(true);
+
     // Initial fetch of unread count
     notificationsApi.getUnreadCount()
       .then(res => {
@@ -82,6 +99,9 @@ export default function Header() {
       })
       .catch(() => {});
 
+    // Initial fetch of notifications list so dropdown opens instantly
+    fetchNotificationList();
+
     // Subscribe to real-time SignalR notifications
     const unsubscribe = subscribeNotifications((newNotif) => {
       setUnreadCount(prev => prev + 1);
@@ -89,19 +109,13 @@ export default function Header() {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [user?.id]);
 
   const handleNotifClick = () => {
     const nextShow = !showNotifications;
     setShowNotifications(nextShow);
     if (nextShow) {
-      notificationsApi.getAll(false)
-        .then(res => {
-          if (Array.isArray(res.data.data)) {
-            setNotifications(res.data.data);
-          }
-        })
-        .catch(() => {});
+      fetchNotificationList();
     }
   };
 
@@ -239,7 +253,13 @@ export default function Header() {
               </button>
             </div>
             <div style={{ maxHeight: 320, overflowY: 'auto' }}>
-              {notifications.length === 0 ? (
+              {loadingNotifs && notifications.length === 0 ? (
+                <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                  <div className="skeleton" style={{ height: 48, borderRadius: 8 }} />
+                  <div className="skeleton" style={{ height: 48, borderRadius: 8 }} />
+                  <div className="skeleton" style={{ height: 48, borderRadius: 8 }} />
+                </div>
+              ) : notifications.length === 0 ? (
                 <div style={{ padding: '32px 20px', textAlign: 'center', color: 'var(--text-muted)' }}>
                   <p style={{ fontSize: 24, marginBottom: 8 }}>🔔</p>
                   <p style={{ fontSize: 14 }}>No notifications</p>
