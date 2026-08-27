@@ -160,15 +160,32 @@ export default function DashboardPage() {
     return () => window.removeEventListener('theme-change', checkTheme);
   }, []);
 
-  const statusChartData = stats ? {
-    labels: stats.tasksByStatus.map(s => s.status.replace('_', ' ').toUpperCase()),
-    datasets: [{
-      data: stats.tasksByStatus.map(s => s.count),
-      backgroundColor: stats.tasksByStatus.map(s => statusColors[s.status] ?? '#6b7280'),
-      borderWidth: 0,
-      hoverOffset: 8,
-    }],
-  } : null;
+  const normalizeStatus = (status: string): string => {
+    if (!status) return 'to_do';
+    const s = status.trim().toLowerCase().replace(/[\s_-]+/g, '_');
+    if (s === 'todo' || s === 'to_do') return 'to_do';
+    if (s === 'in_progress' || s === 'doing') return 'in_progress';
+    if (s === 'done' || s === 'completed') return 'done';
+    return s;
+  };
+
+  const statusChartData = stats ? (() => {
+    const statusMap = new Map<string, number>();
+    (stats.tasksByStatus || []).forEach(s => {
+      const norm = normalizeStatus(s.status);
+      statusMap.set(norm, (statusMap.get(norm) || 0) + s.count);
+    });
+    const items = Array.from(statusMap.entries()).map(([status, count]) => ({ status, count }));
+    return {
+      labels: items.map(s => s.status.replace(/_/g, ' ').toUpperCase()),
+      datasets: [{
+        data: items.map(s => s.count),
+        backgroundColor: items.map(s => statusColors[s.status] ?? '#6b7280'),
+        borderWidth: 0,
+        hoverOffset: 8,
+      }],
+    };
+  })() : null;
 
   const priorityChartData = stats ? {
     labels: stats.tasksByPriority.map(p => p.priority.toUpperCase()),
