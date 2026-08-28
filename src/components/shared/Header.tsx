@@ -57,12 +57,18 @@ export default function Header() {
     '/tasks':                'My Tasks',
     '/calendar':             'Calendar',
     '/members':              'Members',
+    '/profile':              'My Profile',
+    '/admin':                'Admin Control Center',
     '/admin/roles':          'Roles & Permissions',
     '/admin/custom-fields':  'Custom Fields',
     '/admin/settings':       'Settings',
     '/admin/audit':          'Audit Logs',
     '/admin/plans':          'Plan Limits',
     '/admin/subscriptions':  'Account Subscriptions',
+    '/admin/platform':       'Platform Management',
+    '/admin/users':          'User Management',
+    '/admin/error-logs':     'System Error Logs',
+    '/admin/archive':        'Archive & Trash Bin',
   };
 
   const getTitle = () => {

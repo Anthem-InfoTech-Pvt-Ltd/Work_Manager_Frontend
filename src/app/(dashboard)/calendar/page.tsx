@@ -81,7 +81,7 @@ export default function CalendarPage() {
           minHeight: 110,
           minWidth: 0,
           border: '1px solid var(--border)',
-          background: 'rgba(22, 22, 31, 0.2)',
+          background: 'var(--bg-secondary)',
           opacity: 0.3
         }} />
       );

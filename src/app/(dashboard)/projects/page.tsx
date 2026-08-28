@@ -321,6 +321,12 @@ function ProjectBoardNavigator({ project, onManageMembers }: { project: Project;
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{
+          fontSize: 11, fontWeight: 700, padding: '3px 10px', borderRadius: 12,
+          background: st.bg, color: st.color, textTransform: 'capitalize',
+        }}>
+          {project.status || 'active'}
+        </span>
         <span style={{ fontSize: 12, color: 'var(--text-muted)', marginLeft: 'auto' }}>
           {new Date(project.createdAt).toLocaleDateString()}
         </span>

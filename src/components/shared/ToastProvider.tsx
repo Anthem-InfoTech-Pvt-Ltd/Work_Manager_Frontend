@@ -92,32 +92,14 @@ export function ConfirmModal({
           <button
             type="button"
             onClick={onCancel}
-            style={{
-              padding: '9px 18px',
-              borderRadius: 8,
-              border: '1px solid var(--border)',
-              background: 'transparent',
-              color: 'var(--text-primary)',
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
+            className="btn btn-secondary"
           >
             {cancelText}
           </button>
           <button
             type="button"
             onClick={onConfirm}
-            style={{
-              padding: '9px 18px',
-              borderRadius: 8,
-              border: 'none',
-              background: isDanger ? '#ef4444' : 'var(--accent, #6366f1)',
-              color: '#ffffff',
-              fontWeight: 600,
-              fontSize: 14,
-              cursor: 'pointer',
-            }}
+            className={isDanger ? 'btn btn-danger' : 'btn btn-primary'}
           >
             {confirmText}
           </button>

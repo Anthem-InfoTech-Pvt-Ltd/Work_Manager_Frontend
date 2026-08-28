@@ -50,7 +50,7 @@ export default function Sidebar() {
     if (item.href === '/admin/users') {
       return userRole === 'Super Admin';
     }
-    if (item.href === '/admin/error-logs' || item.href === '/admin/plans' || item.href === '/admin/subscriptions') {
+    if (item.href === '/admin/error-logs' || item.href === '/admin/plans') {
       return userRole === 'Super Admin';
     }
     if (isAdminOrSuper) return true;

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { adminApi, projectsApi, boardsApi } from '@/lib/api';
+import { adminApi, projectsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 import { useRouter } from 'next/navigation';
@@ -9,27 +9,12 @@ import { useRouter } from 'next/navigation';
 interface WorkspaceItem {
   id: number;
   name: string;
-  ownerId?: number;
-  ownerName?: string;
-  createdAt: string;
-  memberCount: number;
 }
 
 interface ProjectItem {
   id: number;
   workspaceId: number;
   workspaceName: string;
-  ownerId: number;
-  ownerName: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-}
-
-interface BoardItem {
-  id: number;
-  projectId: number;
-  projectName: string;
   ownerId: number;
   ownerName: string;
   name: string;
@@ -50,40 +35,37 @@ export default function PlatformManagementPage() {
   const { user } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'workspaces' | 'projects' | 'boards'>('projects');
 
-  // Summary state
+  // Data state
   const [workspaces, setWorkspaces] = useState<WorkspaceItem[]>([]);
   const [projects, setProjects] = useState<ProjectItem[]>([]);
-  const [boards, setBoards] = useState<BoardItem[]>([]);
   const [users, setUsers] = useState<UserItem[]>([]);
 
-  // Modals / Drawer State
-  const [isWorkspaceModalOpen, setIsWorkspaceModalOpen] = useState(false);
-  const [editingWorkspace, setEditingWorkspace] = useState<WorkspaceItem | null>(null);
-  const [workspaceName, setWorkspaceName] = useState('');
-  const [workspaceOwnerId, setWorkspaceOwnerId] = useState('');
-
+  // Project Modal State
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<ProjectItem | null>(null);
   const [projectForm, setProjectForm] = useState({ name: '', description: '', workspaceId: '', ownerId: '' });
 
-  const [isBoardModalOpen, setIsBoardModalOpen] = useState(false);
-  const [editingBoard, setEditingBoard] = useState<BoardItem | null>(null);
-  const [boardForm, setBoardForm] = useState({ name: '', description: '', projectId: '', ownerId: '' });
-
-  // Workspace members manager modal state
+  // Members Modal state
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
-  const [memberModalType, setMemberModalType] = useState<'workspace' | 'project' | 'board'>('workspace');
-  const [selectedWorkspace, setSelectedWorkspace] = useState<WorkspaceItem | null>(null);
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
-  const [selectedBoard, setSelectedBoard] = useState<BoardItem | null>(null);
-  const [workspaceMembers, setWorkspaceMembers] = useState<any[]>([]);
+  const [members, setMembers] = useState<any[]>([]);
   const [addingMemberUserId, setAddingMemberUserId] = useState('');
 
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title?: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    message: '',
+    onConfirm: () => {},
+  });
 
   // Redirect if not Super Admin
   useEffect(() => {
@@ -100,7 +82,6 @@ export default function PlatformManagementPage() {
       if (res.data.success) {
         setWorkspaces(res.data.data.workspaces || []);
         setProjects(res.data.data.projects || []);
-        setBoards(res.data.data.boards || []);
         setUsers(res.data.data.users || []);
       } else {
         setError(res.data.message || 'Failed to load summary data.');
@@ -118,79 +99,30 @@ export default function PlatformManagementPage() {
     }
   }, [user]);
 
-  // -- WORKSPACE ACTIONS --
-  const handleSaveWorkspace = async (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
-  const [confirmState, setConfirmState] = useState<{
-    isOpen: boolean;
-    title?: string;
-    message: string;
-    onConfirm: () => void;
-  }>({
-    isOpen: false,
-    message: '',
-    onConfirm: () => {},
-  });
-
-  const handleDeleteWorkspace = async (id: number, name: string) => {
-  };
-
   // -- MEMBERS MANAGEMENT --
-  const handleOpenMembersModal = async (type: 'workspace' | 'project' | 'board', item: any) => {
-    setMemberModalType(type);
-    if (type === 'workspace') {
-      setSelectedWorkspace(item);
-      setSelectedProject(null);
-      setSelectedBoard(null);
-    } else if (type === 'project') {
-      setSelectedWorkspace(null);
-      setSelectedProject(item);
-      setSelectedBoard(null);
-    } else {
-      setSelectedWorkspace(null);
-      setSelectedProject(null);
-      setSelectedBoard(item);
-    }
+  const handleOpenMembersModal = async (project: ProjectItem) => {
+    setSelectedProject(project);
     setIsMembersModalOpen(true);
     setAddingMemberUserId('');
     setActionError(null);
     try {
-      let res;
-      if (type === 'workspace') {
-        return;
-      } else if (type === 'project') {
-        res = await projectsApi.getMembers(item.id);
-      } else {
-        res = await boardsApi.getMembers(item.id);
-      }
+      const res = await projectsApi.getMembers(project.id);
       if (res.data.success) {
-        setWorkspaceMembers(res.data.data || []);
+        setMembers(res.data.data || []);
       }
     } catch (err: any) {
-      setActionError(err.response?.data?.message || `Failed to load ${type} members.`);
+      setActionError(err.response?.data?.message || 'Failed to load project members.');
     }
   };
 
-  const handleAddWorkspaceMember = async (e: React.FormEvent) => {
+  const handleAddMember = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!addingMemberUserId) return;
+    if (!addingMemberUserId || !selectedProject) return;
     setActionError(null);
     try {
-      let res;
-      if (memberModalType === 'workspace') {
-        return;
-      } else if (memberModalType === 'project') {
-        if (!selectedProject) return;
-        res = await projectsApi.addMember(selectedProject.id, Number(addingMemberUserId));
-      } else {
-        if (!selectedBoard) return;
-        res = await boardsApi.addMember(selectedBoard.id, { userId: Number(addingMemberUserId) });
-      }
-
+      const res = await projectsApi.addMember(selectedProject.id, Number(addingMemberUserId));
       if (res.data.success) {
-        handleOpenMembersModal(memberModalType, selectedWorkspace || selectedProject || selectedBoard);
+        handleOpenMembersModal(selectedProject);
       } else {
         setActionError(res.data.message || 'Failed to add member.');
       }
@@ -199,22 +131,13 @@ export default function PlatformManagementPage() {
     }
   };
 
-  const handleRemoveWorkspaceMember = async (userId: number) => {
+  const handleRemoveMember = async (userId: number) => {
+    if (!selectedProject) return;
     setActionError(null);
     try {
-      let res;
-      if (memberModalType === 'workspace') {
-        return;
-      } else if (memberModalType === 'project') {
-        if (!selectedProject) return;
-        res = await projectsApi.removeMember(selectedProject.id, userId);
-      } else {
-        if (!selectedBoard) return;
-        res = await boardsApi.removeMember(selectedBoard.id, userId);
-      }
-
+      const res = await projectsApi.removeMember(selectedProject.id, userId);
       if (res.data.success) {
-        handleOpenMembersModal(memberModalType, selectedWorkspace || selectedProject || selectedBoard);
+        handleOpenMembersModal(selectedProject);
       } else {
         setActionError(res.data.message || 'Failed to remove member.');
       }
@@ -232,8 +155,8 @@ export default function PlatformManagementPage() {
       const data = {
         name: projectForm.name,
         description: projectForm.description,
-        workspaceId: Number(projectForm.workspaceId),
-        ownerId: Number(projectForm.ownerId)
+        workspaceId: Number(projectForm.workspaceId || workspaces[0]?.id || 1),
+        ownerId: Number(projectForm.ownerId || users[0]?.id || 1)
       };
 
       if (editingProject) {
@@ -282,80 +205,19 @@ export default function PlatformManagementPage() {
     });
   };
 
-  // -- BOARD ACTIONS --
-  const handleSaveBoard = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setActionError(null);
-    setSubmitting(true);
-    try {
-      const data = {
-        name: boardForm.name,
-        description: boardForm.description,
-        projectId: Number(boardForm.projectId),
-        ownerId: Number(boardForm.ownerId)
-      };
-
-      if (editingBoard) {
-        const res = await boardsApi.update(editingBoard.id, data);
-        if (res.data.success) {
-          setIsBoardModalOpen(false);
-          fetchData();
-        } else {
-          setActionError(res.data.message || 'Failed to update board.');
-        }
-      } else {
-        const res = await boardsApi.create(data);
-        if (res.data.success) {
-          setIsBoardModalOpen(false);
-          fetchData();
-        } else {
-          setActionError(res.data.message || 'Failed to create board.');
-        }
-      }
-    } catch (err: any) {
-      setActionError(err.response?.data?.message || 'Server error.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDeleteBoard = async (id: number, name: string) => {
-    setConfirmState({
-      isOpen: true,
-      title: 'Delete Board',
-      message: `Are you sure you want to delete board "${name}"? This will delete all lists and tasks.`,
-      onConfirm: async () => {
-        setConfirmState(prev => ({ ...prev, isOpen: false }));
-        try {
-          const res = await boardsApi.delete(id);
-          if (res.data.success) {
-            showToast.success('Board deleted successfully.');
-            fetchData();
-          } else {
-            showToast.error(res.data.message || 'Failed to delete board.');
-          }
-        } catch (err: any) {
-          showToast.error(err.response?.data?.message || 'Server error.');
-        }
-      },
-    });
-  };
-
   if (!user || !user.roles?.includes('Super Admin')) {
     return <div style={{ padding: 24 }}>Access Denied</div>;
   }
 
   return (
-    <div style={{ padding: '32px 40px', maxWidth: 1400, margin: '0 auto', fontFamily: 'var(--font-sans)' }}>
+    <div style={{ padding: '32px 40px', maxWidth: 1400, margin: '0 auto' }}>
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 32 }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
         <div>
-          <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.025em' }}>Platform Management</h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 15 }}>Manage global platform projects, users, and member access.</p>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: 'var(--text-primary)' }}>Platform Management</h1>
+          <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 15 }}>Manage global platform projects, project owners, and member access.</p>
         </div>
       </div>
-
-
 
       {loading ? (
         <div style={{ display: 'flex', justifyContent: 'center', padding: '64px 0' }}>
@@ -367,265 +229,80 @@ export default function PlatformManagementPage() {
           <p style={{ color: 'var(--text-secondary)', fontSize: 14, marginTop: 4 }}>{error}</p>
         </div>
       ) : (
-        <div>
-          {/* Workspaces Tab */}
-          {activeTab === 'workspaces' && (
-            <div className="card table-container" style={{ padding: 0 }}>
-              <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Workspaces</h3>
-                <button
-                  onClick={() => {
-                    setEditingWorkspace(null);
-                    setWorkspaceName('');
-                    setWorkspaceOwnerId(users[0]?.id.toString() || '');
-                    setIsWorkspaceModalOpen(true);
-                  }}
-                  className="btn btn-primary btn-sm"
-                >
-                  + Add Workspace
-                </button>
-              </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Workspace Name</th>
-                    <th>Owner</th>
-                    <th>Members</th>
-                    <th>Created Date</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {workspaces.map(ws => (
-                    <tr key={ws.id} className="table-row-hover">
-                      <td style={{ fontWeight: 600 }}>{ws.name}</td>
-                      <td style={{ color: 'var(--text-secondary)' }}>{ws.ownerName || '-'}</td>
-                      <td>
-                        <span className="badge" style={{ background: 'var(--bg-hover)', color: 'var(--text-secondary)' }}>
-                          {ws.memberCount} members
-                        </span>
-                      </td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                        {new Date(ws.createdAt).toLocaleDateString()}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 8 }}>
-                          <button
-                            onClick={() => handleOpenMembersModal('workspace', ws)}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Members
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingWorkspace(ws);
-                              setWorkspaceName(ws.name);
-                              setWorkspaceOwnerId(ws.ownerId?.toString() || '');
-                              setIsWorkspaceModalOpen(true);
-                            }}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteWorkspace(ws.id, ws.name)}
-                            className="btn btn-danger-outline btn-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Projects Tab */}
-          {activeTab === 'projects' && (
-            <div className="card table-container" style={{ padding: 0 }}>
-              <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Projects</h3>
-                <button
-                  onClick={() => {
-                    setEditingProject(null);
-                    setProjectForm({ name: '', description: '', workspaceId: workspaces[0]?.id.toString() || '', ownerId: users[0]?.id.toString() || '' });
-                    setIsProjectModalOpen(true);
-                  }}
-                  className="btn btn-primary btn-sm"
-                >
-                  + Add Project
-                </button>
-              </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Project Name</th>
-                    <th>Owner</th>
-                    <th>Created Date</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {projects.map(p => (
-                    <tr key={p.id} className="table-row-hover">
-                      <td style={{ fontWeight: 600 }}>
-                        <div>
-                          <span>{p.name}</span>
-                          {p.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{p.description}</p>}
-                        </div>
-                      </td>
-                      <td style={{ color: 'var(--text-secondary)' }}>{p.ownerName}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                        {new Date(p.createdAt).toLocaleDateString()}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 8 }}>
-                          <button
-                            onClick={() => handleOpenMembersModal('project', p)}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Members
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingProject(p);
-                              setProjectForm({ name: p.name, description: p.description || '', workspaceId: p.workspaceId.toString(), ownerId: p.ownerId.toString() });
-                              setIsProjectModalOpen(true);
-                            }}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteProject(p.id, p.name)}
-                            className="btn btn-danger-outline btn-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          {/* Boards Tab */}
-          {activeTab === 'boards' && (
-            <div className="card table-container" style={{ padding: 0 }}>
-              <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Boards</h3>
-                <button
-                  onClick={() => {
-                    setEditingBoard(null);
-                    setBoardForm({ name: '', description: '', projectId: projects[0]?.id.toString() || '', ownerId: users[0]?.id.toString() || '' });
-                    setIsBoardModalOpen(true);
-                  }}
-                  className="btn btn-primary btn-sm"
-                >
-                  + Add Board
-                </button>
-              </div>
-              <table className="table">
-                <thead>
-                  <tr>
-                    <th>Board Name</th>
-                    <th>Project</th>
-                    <th>Owner</th>
-                    <th>Created Date</th>
-                    <th style={{ textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {boards.map(b => (
-                    <tr key={b.id} className="table-row-hover">
-                      <td style={{ fontWeight: 600 }}>
-                        <div>
-                          <span>{b.name}</span>
-                          {b.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{b.description}</p>}
-                        </div>
-                      </td>
-                      <td style={{ color: 'var(--text-secondary)' }}>{b.projectName}</td>
-                      <td style={{ color: 'var(--text-secondary)' }}>{b.ownerName}</td>
-                      <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
-                        {new Date(b.createdAt).toLocaleDateString()}
-                      </td>
-                      <td style={{ textAlign: 'right' }}>
-                        <div style={{ display: 'inline-flex', gap: 8 }}>
-                          <button
-                            onClick={() => handleOpenMembersModal('board', b)}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Members
-                          </button>
-                          <button
-                            onClick={() => {
-                              setEditingBoard(b);
-                              setBoardForm({ name: b.name, description: b.description || '', projectId: b.projectId.toString(), ownerId: b.ownerId.toString() });
-                              setIsBoardModalOpen(true);
-                            }}
-                            className="btn btn-secondary btn-sm"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDeleteBoard(b.id, b.name)}
-                            className="btn btn-danger-outline btn-sm"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* --- WORKSPACE MODAL --- */}
-      {isWorkspaceModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
-          <div className="card" style={{ width: 440, padding: 32 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>{editingWorkspace ? 'Edit Workspace' : 'Create Workspace'}</h3>
-            <form onSubmit={handleSaveWorkspace}>
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Workspace Name</label>
-                <input
-                  type="text"
-                  required
-                  value={workspaceName}
-                  onChange={e => setWorkspaceName(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                />
-              </div>
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
-                <select
-                  required
-                  value={workspaceOwnerId}
-                  onChange={e => setWorkspaceOwnerId(e.target.value)}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                >
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
-                  ))}
-                </select>
-              </div>
-              {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                <button type="button" onClick={() => setIsWorkspaceModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} className="btn-primary" style={{ padding: '10px 20px', borderRadius: 8 }}>
-                  {submitting ? 'Saving...' : 'Save Workspace'}
-                </button>
-              </div>
-            </form>
+        <div className="card table-container" style={{ padding: 0 }}>
+          <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Projects</h3>
+            <button
+              onClick={() => {
+                setEditingProject(null);
+                setProjectForm({ name: '', description: '', workspaceId: workspaces[0]?.id.toString() || '1', ownerId: users[0]?.id.toString() || '' });
+                setIsProjectModalOpen(true);
+              }}
+              className="btn btn-primary btn-sm"
+            >
+              + Add Project
+            </button>
           </div>
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Owner</th>
+                <th>Created Date</th>
+                <th style={{ textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.length === 0 ? (
+                <tr>
+                  <td colSpan={4} style={{ padding: 32, textAlign: 'center', color: 'var(--text-muted)' }}>
+                    No projects found on the platform.
+                  </td>
+                </tr>
+              ) : (
+                projects.map(p => (
+                  <tr key={p.id} className="table-row-hover">
+                    <td style={{ fontWeight: 600 }}>
+                      <div>
+                        <span>{p.name}</span>
+                        {p.description && <p style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 400, marginTop: 2 }}>{p.description}</p>}
+                      </div>
+                    </td>
+                    <td style={{ color: 'var(--text-secondary)' }}>{p.ownerName}</td>
+                    <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                      {new Date(p.createdAt).toLocaleDateString()}
+                    </td>
+                    <td style={{ textAlign: 'right' }}>
+                      <div style={{ display: 'inline-flex', gap: 8 }}>
+                        <button
+                          onClick={() => handleOpenMembersModal(p)}
+                          className="btn btn-secondary btn-sm"
+                        >
+                          Members
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingProject(p);
+                            setProjectForm({ name: p.name, description: p.description || '', workspaceId: p.workspaceId.toString(), ownerId: p.ownerId.toString() });
+                            setIsProjectModalOpen(true);
+                          }}
+                          className="btn btn-secondary btn-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProject(p.id, p.name)}
+                          className="btn btn-danger-outline btn-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -640,26 +317,28 @@ export default function PlatformManagementPage() {
                 <input
                   type="text"
                   required
+                  className="input"
                   value={projectForm.name}
                   onChange={e => setProjectForm({ ...projectForm, name: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Description</label>
                 <textarea
+                  className="input"
                   value={projectForm.description}
                   onChange={e => setProjectForm({ ...projectForm, description: e.target.value })}
-                  style={{ width: '100%', height: 80, padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)', resize: 'none' }}
+                  style={{ resize: 'none' }}
+                  rows={3}
                 />
               </div>
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
                 <select
                   required
+                  className="select"
                   value={projectForm.ownerId}
                   onChange={e => setProjectForm({ ...projectForm, ownerId: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
                 >
                   {users.map(u => (
                     <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
@@ -668,8 +347,8 @@ export default function PlatformManagementPage() {
               </div>
               {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                <button type="button" onClick={() => setIsProjectModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} className="btn-primary" style={{ padding: '10px 20px', borderRadius: 8 }}>
+                <button type="button" onClick={() => setIsProjectModalOpen(false)} className="btn btn-secondary">Cancel</button>
+                <button type="submit" disabled={submitting} className="btn btn-primary">
                   {submitting ? 'Saving...' : 'Save Project'}
                 </button>
               </div>
@@ -678,104 +357,43 @@ export default function PlatformManagementPage() {
         </div>
       )}
 
-      {/* --- BOARD MODAL --- */}
-      {isBoardModalOpen && (
-        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
-          <div className="card" style={{ width: 460, padding: 32 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>{editingBoard ? 'Edit Board' : 'Create Board'}</h3>
-            <form onSubmit={handleSaveBoard}>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Board Name</label>
-                <input
-                  type="text"
-                  required
-                  value={boardForm.name}
-                  onChange={e => setBoardForm({ ...boardForm, name: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                />
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Description</label>
-                <textarea
-                  value={boardForm.description}
-                  onChange={e => setBoardForm({ ...boardForm, description: e.target.value })}
-                  style={{ width: '100%', height: 80, padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)', resize: 'none' }}
-                />
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Parent Project</label>
-                <select
-                  required
-                  value={boardForm.projectId}
-                  onChange={e => setBoardForm({ ...boardForm, projectId: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                >
-                  {projects.map(p => (
-                    <option key={p.id} value={p.id}>{p.name} ({p.workspaceName})</option>
-                  ))}
-                </select>
-              </div>
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
-                <select
-                  required
-                  value={boardForm.ownerId}
-                  onChange={e => setBoardForm({ ...boardForm, ownerId: e.target.value })}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
-                >
-                  {users.map(u => (
-                    <option key={u.id} value={u.id}>{u.fullName} ({u.role.replace('_', ' ')})</option>
-                  ))}
-                </select>
-              </div>
-              {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-                <button type="button" onClick={() => setIsBoardModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Cancel</button>
-                <button type="submit" disabled={submitting} className="btn-primary" style={{ padding: '10px 20px', borderRadius: 8 }}>
-                  {submitting ? 'Saving...' : 'Save Board'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
       {/* --- MEMBERS MODAL --- */}
-      {isMembersModalOpen && (selectedWorkspace || selectedProject || selectedBoard) && (
+      {isMembersModalOpen && selectedProject && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
           <div className="card" style={{ width: 500, padding: 32 }}>
-            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8, textTransform: 'capitalize' }}>{memberModalType} Members</h3>
+            <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 8 }}>Project Members</h3>
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
-              Managing members for <strong>{selectedWorkspace?.name || selectedProject?.name || selectedBoard?.name}</strong>
+              Managing members for <strong>{selectedProject.name}</strong>
             </p>
 
             {/* Add Member Form */}
-            <form onSubmit={handleAddWorkspaceMember} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
+            <form onSubmit={handleAddMember} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
               <select
                 required
+                className="select"
                 value={addingMemberUserId}
                 onChange={e => setAddingMemberUserId(e.target.value)}
-                style={{ flex: 1, padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg-body)', color: 'var(--text-primary)' }}
+                style={{ flex: 1 }}
               >
-                <option value="">-- Add User to {memberModalType} --</option>
+                <option value="">-- Select user to add --</option>
                 {users
-                  .filter(u => !workspaceMembers.some(m => m.userId === u.id))
+                  .filter(u => !members.some(m => m.userId === u.id))
                   .map(u => (
                     <option key={u.id} value={u.id}>{u.fullName} ({u.email})</option>
                   ))}
               </select>
-              <button type="submit" className="btn-primary" style={{ padding: '10px 16px', borderRadius: 8 }}>Add</button>
+              <button type="submit" className="btn btn-primary">Add</button>
             </form>
 
             {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
 
             {/* Members List */}
             <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 24, border: '1px solid var(--border)', borderRadius: 8 }}>
-              {workspaceMembers.length === 0 ? (
-                <p style={{ padding: 16, textAlign: 'center', color: 'var(--text-muted)' }}>No members in this {memberModalType}.</p>
+              {members.length === 0 ? (
+                <p style={{ padding: 16, textAlign: 'center', color: 'var(--text-muted)' }}>No extra members in this project.</p>
               ) : (
-                workspaceMembers.map(member => {
-                  const isOwner = (selectedProject && member.userId === selectedProject.ownerId) || (selectedWorkspace && member.userId === selectedWorkspace.ownerId);
+                members.map(member => {
+                  const isOwner = member.userId === selectedProject.ownerId;
                   return (
                     <div key={member.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', borderBottom: '1px solid var(--border)' }}>
                       <div>
@@ -788,7 +406,7 @@ export default function PlatformManagementPage() {
                       {!isOwner && (
                         <button
                           type="button"
-                          onClick={() => handleRemoveWorkspaceMember(member.userId)}
+                          onClick={() => handleRemoveMember(member.userId)}
                           style={{ padding: '4px 8px', borderRadius: 6, background: 'transparent', border: '1px solid var(--danger)', color: 'var(--danger)', fontSize: 11, cursor: 'pointer' }}
                         >
                           Remove
@@ -801,7 +419,7 @@ export default function PlatformManagementPage() {
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button type="button" onClick={() => setIsMembersModalOpen(false)} style={{ padding: '10px 20px', borderRadius: 8, border: '1px solid var(--border)', background: 'transparent', cursor: 'pointer' }}>Close</button>
+              <button type="button" onClick={() => setIsMembersModalOpen(false)} className="btn btn-secondary">Close</button>
             </div>
           </div>
         </div>
