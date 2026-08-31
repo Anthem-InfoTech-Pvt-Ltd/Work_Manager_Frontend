@@ -58,6 +58,7 @@ export default function Header() {
     '/calendar':             'Calendar',
     '/members':              'Members',
     '/profile':              'My Profile',
+    '/change-password':      'Change Password',
     '/admin':                'Admin Control Center',
     '/admin/roles':          'Roles & Permissions',
     '/admin/custom-fields':  'Custom Fields',
