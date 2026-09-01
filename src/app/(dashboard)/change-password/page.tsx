@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validatePassword } from '@/lib/validation';
 
 export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -13,10 +14,18 @@ export default function ChangePasswordPage() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const passwordError = validatePassword(newPassword, 'New password');
+    if (passwordError) {
+      showToast.error(passwordError);
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       showToast.error("New passwords do not match.");
       return;
     }
+
     setChanging(true);
     try {
       await authApi.changePassword({ currentPassword, newPassword });

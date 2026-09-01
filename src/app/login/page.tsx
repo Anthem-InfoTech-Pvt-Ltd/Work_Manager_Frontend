@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { authApi, invitationsApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validateEmail } from '@/lib/validation';
 
 export default function LoginPage() {
   return (
@@ -66,14 +67,19 @@ function LoginForm() {
     return () => clearInterval(interval);
   }, [loginMethod, otpStep, timer]);
 
-  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!EMAIL_REGEX.test(email.trim())) {
-      const errMsg = 'Please enter a valid email address.';
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      showToast.error(emailErr);
+      return;
+    }
+
+    if (!password) {
+      const errMsg = 'Please enter your password.';
       setError(errMsg);
       showToast.error(errMsg);
       return;
@@ -89,7 +95,7 @@ function LoginForm() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      let errMsg = 'Invalid email or password';
+      let errMsg = 'Incorrect email or password. Please try again.';
       if (err.response?.data?.message) {
         errMsg = err.response.data.message;
       } else if (err.message) {
@@ -106,10 +112,10 @@ function LoginForm() {
     e.preventDefault();
     setError('');
 
-    if (!EMAIL_REGEX.test(email.trim())) {
-      const errMsg = 'Please enter a valid email address.';
-      setError(errMsg);
-      showToast.error(errMsg);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      showToast.error(emailErr);
       return;
     }
 
@@ -194,7 +200,9 @@ function LoginForm() {
 
     const otpCode = otp.join('');
     if (otpCode.length !== 6) {
-      setError('Please enter all 6 digits of the login code.');
+      const errMsg = 'Please enter all 6 digits of the verification code.';
+      setError(errMsg);
+      showToast.error(errMsg);
       return;
     }
 
@@ -209,7 +217,7 @@ function LoginForm() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Invalid or expired login code.';
+      const errMsg = err.response?.data?.message || 'Invalid or expired verification code.';
       setError(errMsg);
       showToast.error(errMsg);
     } finally {

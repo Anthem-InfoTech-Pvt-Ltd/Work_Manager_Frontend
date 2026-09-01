@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validateEmail, validatePassword } from '@/lib/validation';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -24,19 +25,24 @@ function ResetPasswordForm() {
     if (t) setToken(t);
   }, [searchParams]);
 
-  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!EMAIL_REGEX.test(email.trim())) {
-      const errMsg = 'Please enter a valid email address.';
-      setError(errMsg);
-      showToast.error(errMsg);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      showToast.error(emailErr);
       return;
     }
-    
+
+    const passwordErr = validatePassword(newPassword, 'New password');
+    if (passwordErr) {
+      setError(passwordErr);
+      showToast.error(passwordErr);
+      return;
+    }
+
     if (newPassword !== confirmPassword) {
       const errMsg = 'Passwords do not match.';
       setError(errMsg);

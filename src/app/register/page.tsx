@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { authApi, invitationsApi, planApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validateEmail, validatePassword } from '@/lib/validation';
 
 interface DbPlan {
   id: number;
@@ -105,22 +106,31 @@ function RegisterForm() {
     e.preventDefault();
     setError('');
 
-    if (!firstName.trim() || !lastName.trim()) {
-      setError('Please enter your full name.');
-      return;
-    }
-
-    if (!EMAIL_REGEX.test(email.trim())) {
-      const errMsg = 'Please enter a valid email address.';
+    if (!firstName.trim()) {
+      const errMsg = 'Please enter your first name.';
       setError(errMsg);
       showToast.error(errMsg);
       return;
     }
 
-    if (password.length < 6) {
-      const errMsg = 'Password must be at least 6 characters long.';
+    if (!lastName.trim()) {
+      const errMsg = 'Please enter your last name.';
       setError(errMsg);
       showToast.error(errMsg);
+      return;
+    }
+
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      showToast.error(emailErr);
+      return;
+    }
+
+    const passwordErr = validatePassword(password, 'Password');
+    if (passwordErr) {
+      setError(passwordErr);
+      showToast.error(passwordErr);
       return;
     }
 
@@ -207,7 +217,9 @@ function RegisterForm() {
 
     const otpCode = otp.join('');
     if (otpCode.length !== 6) {
-      setError('Please enter all 6 digits of the verification code.');
+      const errMsg = 'Please enter all 6 digits of the verification code.';
+      setError(errMsg);
+      showToast.error(errMsg);
       return;
     }
 
@@ -217,8 +229,9 @@ function RegisterForm() {
       // 1. Verify OTP
       const verifyRes = await authApi.verifyOtp(email.trim(), otpCode);
       if (!verifyRes.data.success) {
-        setError(verifyRes.data.message || 'Invalid verification code.');
-        showToast.error(verifyRes.data.message || 'Invalid verification code.');
+        const errMsg = verifyRes.data.message || 'Invalid or expired verification code.';
+        setError(errMsg);
+        showToast.error(errMsg);
         setLoading(false);
         return;
       }
@@ -348,6 +361,9 @@ function RegisterForm() {
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Password</label>
               <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required maxLength={50} />
+              <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
+                Must be at least 6 characters with uppercase, lowercase, number, and special character.
+              </p>
             </div>
 
             <button className="btn btn-primary" style={{ marginTop: 8, justifyContent: 'center' }} disabled={loading}>
@@ -417,7 +433,7 @@ function RegisterForm() {
             </div>
 
             <button className="btn btn-primary" style={{ marginTop: 8, justifyContent: 'center' }} disabled={loading}>
-              {loading ? 'Verifying & Registering...' : 'Verify Email & Complete Sign Up ✓'}
+              {loading ? 'Verifying & Registering...' : 'Register'}
             </button>
           </form>
         )}
