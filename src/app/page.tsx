@@ -1,12 +1,33 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
+import { planApi } from '@/lib/api';
+
+interface DbPlan {
+  id: number;
+  name: string;
+  maxWorkspaces: number;
+  maxProjectsPerWorkspace: number;
+  maxBoardsPerProject: number;
+  maxMembersPerWorkspace: number;
+}
 
 export default function LandingPage() {
   const { user } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [plans, setPlans] = useState<DbPlan[]>([]);
+
+  useEffect(() => {
+    planApi.getPublicPlans()
+      .then(res => {
+        if (res.data?.data) {
+          setPlans(res.data.data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const faqs = [
     {
@@ -75,6 +96,7 @@ export default function LandingPage() {
           <a href="#features" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Features</a>
           <a href="#views" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Views</a>
           <a href="#collaboration" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Collaboration</a>
+          <a href="#pricing" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Pricing</a>
           <a href="#faq" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQ</a>
         </div>
 
@@ -443,6 +465,98 @@ export default function LandingPage() {
             </p>
           </div>
         </div>
+      </section>
+
+      {/* ── Pricing & Plans Section ──────────────────────────────── */}
+      <section id="pricing" style={{
+        maxWidth: 1280,
+        margin: '0 auto',
+        padding: '90px 32px'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: 54 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+            Simple & Transparent Pricing
+          </div>
+          <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 16 }}>
+            Plans Built for Every Team
+          </h2>
+          <p style={{ color: 'var(--text-secondary)', fontSize: 18, maxWidth: 640, margin: '0 auto' }}>
+            Choose a plan that fits your workload. Upgrade or downgrade anytime.
+          </p>
+        </div>
+
+        {plans.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Loading pricing plans...</div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.min(plans.length, 3)}, 1fr)`, gap: 32, alignItems: 'stretch' }}>
+            {plans.map((plan, idx) => {
+              const isMiddle = idx === 1;
+              return (
+                <div
+                  key={plan.id}
+                  className="card"
+                  style={{
+                    padding: 36,
+                    borderRadius: 24,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    position: 'relative',
+                    border: isMiddle ? '2px solid var(--accent)' : '1px solid var(--border)',
+                    boxShadow: isMiddle ? '0 12px 40px var(--accent-glow)' : '0 4px 20px rgba(0, 0, 0, 0.04)'
+                  }}
+                >
+                  {isMiddle && (
+                    <span style={{
+                      position: 'absolute',
+                      top: -14,
+                      right: 24,
+                      background: 'var(--gradient-primary)',
+                      color: '#ffffff',
+                      fontSize: 11,
+                      fontWeight: 800,
+                      padding: '6px 14px',
+                      borderRadius: 20,
+                      boxShadow: '0 4px 12px var(--accent-glow)'
+                    }}>
+                      RECOMMENDED
+                    </span>
+                  )}
+
+                  <div>
+                    <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>{plan.name} Plan</h3>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 24 }}>Plan #{plan.id}</div>
+
+                    <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14, padding: 0, margin: '0 0 32px 0' }}>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                        <span style={{ color: 'var(--success)', fontWeight: 800 }}>✓</span> {plan.maxProjectsPerWorkspace === 0 ? 'Unlimited Projects' : `Up to ${plan.maxProjectsPerWorkspace} Projects`}
+                      </li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                        <span style={{ color: 'var(--success)', fontWeight: 800 }}>✓</span> {plan.maxMembersPerWorkspace === 0 ? 'Unlimited Members' : `Up to ${plan.maxMembersPerWorkspace} Members`}
+                      </li>
+                    </ul>
+                  </div>
+
+                  <Link
+                    href={`/register?planId=${plan.id}`}
+                    className={isMiddle ? 'btn btn-primary' : 'btn btn-secondary'}
+                    style={{
+                      width: '100%',
+                      padding: '14px',
+                      borderRadius: 12,
+                      fontSize: 15,
+                      fontWeight: 700,
+                      textAlign: 'center',
+                      textDecoration: 'none'
+                    }}
+                  >
+                    Select {plan.name} →
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {/* ── FAQ Section ────────────────────────────────────────────── */}
