@@ -3,9 +3,18 @@
 import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { authApi, invitationsApi } from '@/lib/api';
+import { authApi, invitationsApi, planApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { showToast } from '@/components/shared/ToastProvider';
+
+interface DbPlan {
+  id: number;
+  name: string;
+  maxWorkspaces: number;
+  maxProjectsPerWorkspace: number;
+  maxBoardsPerProject: number;
+  maxMembersPerWorkspace: number;
+}
 
 export default function RegisterPage() {
   return (
@@ -19,14 +28,36 @@ function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const inviteToken = searchParams.get('invite') || undefined;
+  const planParam = searchParams.get('planId') || searchParams.get('plan');
   const { token } = useAuth();
 
+  const [selectedDbPlan, setSelectedDbPlan] = useState<DbPlan | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    planApi.getPublicPlans()
+      .then(res => {
+        if (res.data?.data) {
+          const list: DbPlan[] = res.data.data;
+          const match = planParam
+            ? list.find(p =>
+                String(p.id) === String(planParam) ||
+                p.name.toLowerCase() === String(planParam).toLowerCase()
+              )
+            : list.find(p => p.name.toLowerCase() === 'free') || list[0];
+
+          if (match) {
+            setSelectedDbPlan(match);
+          }
+        }
+      })
+      .catch(() => { });
+  }, [planParam]);
 
   useEffect(() => {
     if (token && inviteToken) {
@@ -112,15 +143,43 @@ function RegisterForm() {
             margin: '0 auto 16px', boxShadow: '0 0 20px rgba(99,102,241,0.4)'
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1"/>
-              <rect x="14" y="3" width="7" height="7" rx="1"/>
-              <rect x="3" y="14" width="7" height="7" rx="1"/>
-              <rect x="14" y="14" width="7" height="7" rx="1"/>
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
             </svg>
           </div>
           <h1 style={{ fontSize: 24, fontWeight: 700, marginBottom: 6 }}>Create an Account</h1>
           <p style={{ fontSize: 14, color: 'var(--text-secondary)' }}>Get started with WorkManager today</p>
         </div>
+
+        {selectedDbPlan && (
+          <div style={{
+            padding: '14px 18px',
+            borderRadius: 12,
+            background: 'var(--accent-glow)',
+            border: '1px solid var(--border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: 20
+          }}>
+            <div>
+              <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--accent)', marginBottom: 2 }}>
+                Selected Plan
+              </div>
+              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)' }}>
+                {selectedDbPlan.name} Plan
+              </div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                {selectedDbPlan.maxProjectsPerWorkspace === 0 ? 'Unlimited Projects' : `${selectedDbPlan.maxProjectsPerWorkspace} Projects`} • {selectedDbPlan.maxMembersPerWorkspace === 0 ? 'Unlimited Members' : `${selectedDbPlan.maxMembersPerWorkspace} Members`}
+              </div>
+            </div>
+            <Link href="/plans" style={{ fontSize: 12, fontWeight: 700, color: 'var(--accent)', textDecoration: 'none' }}>
+              Change
+            </Link>
+          </div>
+        )}
 
         {error && (
           <div style={{

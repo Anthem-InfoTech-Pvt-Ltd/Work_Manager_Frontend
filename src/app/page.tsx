@@ -101,7 +101,7 @@ export default function LandingPage() {
               }}>
                 Sign In
               </Link>
-              <Link href="/register" className="btn btn-primary" style={{
+              <Link href="/plans" className="btn btn-primary" style={{
                 padding: '12px 24px',
                 borderRadius: 10,
                 fontSize: 15,
@@ -161,7 +161,7 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 70 }}>
-          <Link href="/register" className="btn btn-primary" style={{
+          <Link href="/plans" className="btn btn-primary" style={{
             padding: '16px 36px',
             borderRadius: 12,
             fontSize: 17,
@@ -552,7 +552,7 @@ export default function LandingPage() {
             Join WorkManager today and start managing your projects with clarity and speed.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-            <Link href="/register" className="btn" style={{
+            <Link href="/plans" className="btn" style={{
               padding: '16px 36px',
               borderRadius: 12,
               background: '#ffffff',

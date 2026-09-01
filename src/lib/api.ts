@@ -241,6 +241,7 @@ export const errorLogsApi = {
 };
 
 export const planApi = {
+  getPublicPlans: () => api.get('/plans'),
   getPlans: () => api.get('/planmanagement/plans'),
   updatePlanLimits: (id: number, data: { maxWorkspaces: number; maxProjects: number; maxBoards: number; maxMembers: number }) => 
     api.put(`/planmanagement/plans/${id}`, data),
