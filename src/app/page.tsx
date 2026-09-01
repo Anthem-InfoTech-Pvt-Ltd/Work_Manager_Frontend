@@ -11,14 +11,10 @@ export default function LandingPage() {
     <div style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
       {/* ── Top Navigation Bar ────────────────────────────────────────── */}
-      <nav style={{
+      <nav className="glass" style={{
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backdropFilter: 'blur(12px)',
-        background: 'var(--bg-secondary)',
-        opacity: 0.97,
-        borderBottom: '1px solid var(--border)',
         padding: '18px 48px',
         display: 'flex',
         alignItems: 'center',
@@ -29,12 +25,12 @@ export default function LandingPage() {
           <div style={{
             width: 44,
             height: 44,
-            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            background: 'var(--gradient-primary)',
             borderRadius: 12,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
+            boxShadow: '0 4px 14px var(--accent-glow)'
           }}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
               <rect x="3" y="3" width="7" height="7" rx="1.5"/>
@@ -44,7 +40,13 @@ export default function LandingPage() {
             </svg>
           </div>
           <div>
-            <span style={{ fontSize: 22, fontWeight: 800, letterSpacing: '-0.5px', color: 'var(--text-primary)' }}>WorkManager</span>
+            <span className="text-gradient" style={{
+              fontSize: 22,
+              fontWeight: 800,
+              letterSpacing: '-0.5px'
+            }}>
+              WorkManager
+            </span>
           </div>
         </div>
 
@@ -59,39 +61,32 @@ export default function LandingPage() {
         {/* Action Buttons */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           {user ? (
-            <Link href="/dashboard" style={{
+            <Link href="/dashboard" className="btn btn-primary" style={{
               padding: '12px 24px',
               borderRadius: 10,
-              background: 'var(--accent)',
-              color: '#ffffff',
-              fontWeight: 600,
               fontSize: 15,
-              textDecoration: 'none',
-              boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
+              fontWeight: 600,
+              textDecoration: 'none'
             }}>
               Go to Dashboard →
             </Link>
           ) : (
             <>
-              <Link href="/login" style={{
+              <Link href="/login" className="btn btn-secondary" style={{
                 fontSize: 15,
                 fontWeight: 600,
-                color: 'var(--text-secondary)',
-                textDecoration: 'none',
                 padding: '10px 18px',
-                borderRadius: 8
+                borderRadius: 8,
+                textDecoration: 'none'
               }}>
                 Sign In
               </Link>
-              <Link href="/register" style={{
+              <Link href="/register" className="btn btn-primary" style={{
                 padding: '12px 24px',
                 borderRadius: 10,
-                background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-                color: '#ffffff',
-                fontWeight: 600,
                 fontSize: 15,
-                textDecoration: 'none',
-                boxShadow: '0 4px 14px rgba(99, 102, 241, 0.35)'
+                fontWeight: 600,
+                textDecoration: 'none'
               }}>
                 Get Started Free
               </Link>
@@ -114,10 +109,10 @@ export default function LandingPage() {
           padding: '8px 20px',
           borderRadius: 24,
           background: 'var(--accent-glow)',
-          border: '1px solid rgba(99, 102, 241, 0.25)',
-          color: 'var(--accent)',
+          border: '1px solid var(--border)',
+          color: 'var(--text-primary)',
           fontSize: 14,
-          fontWeight: 600,
+          fontWeight: 700,
           marginBottom: 28
         }}>
           <span>✨ Everything your team needs to plan, track & deliver</span>
@@ -132,11 +127,7 @@ export default function LandingPage() {
           color: 'var(--text-primary)'
         }}>
           Organize Your Projects with <br/>
-          <span style={{
-            background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>Complete Clarity & Visual Flow</span>
+          <span className="text-gradient">Complete Clarity & Visual Flow</span>
         </h1>
 
         <p style={{
@@ -150,26 +141,20 @@ export default function LandingPage() {
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 70 }}>
-          <Link href="/register" style={{
+          <Link href="/register" className="btn btn-primary" style={{
             padding: '16px 36px',
             borderRadius: 12,
-            background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            color: '#ffffff',
-            fontWeight: 700,
             fontSize: 17,
-            textDecoration: 'none',
-            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)'
+            fontWeight: 700,
+            textDecoration: 'none'
           }}>
             Get Started for Free
           </Link>
-          <Link href="/login" style={{
+          <Link href="/login" className="btn btn-secondary" style={{
             padding: '16px 36px',
             borderRadius: 12,
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--border)',
-            color: 'var(--text-primary)',
-            fontWeight: 700,
             fontSize: 17,
+            fontWeight: 700,
             textDecoration: 'none'
           }}>
             Sign In to Account
@@ -177,12 +162,9 @@ export default function LandingPage() {
         </div>
 
         {/* Product Visual Mock Container */}
-        <div style={{
-          background: 'var(--bg-card)',
-          border: '1px solid var(--border)',
-          borderRadius: 20,
+        <div className="card" style={{
           padding: 24,
-          boxShadow: '0 20px 50px rgba(0, 0, 0, 0.08)'
+          borderRadius: 20
         }}>
           <div style={{
             background: 'var(--bg-primary)',
@@ -195,9 +177,9 @@ export default function LandingPage() {
             marginBottom: 20
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#ef4444' }}/>
-              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#f59e0b' }}/>
-              <div style={{ width: 12, height: 12, borderRadius: '50%', background: '#22c55e' }}/>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--danger)' }}/>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--warning)' }}/>
+              <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--success)' }}/>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 12 }}>Project: Product Roadmap 2026</span>
             </div>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Live Preview</div>
@@ -210,11 +192,11 @@ export default function LandingPage() {
                 <span>To Do</span>
                 <span style={{ color: 'var(--text-muted)' }}>3</span>
               </div>
-              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+              <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Design System Updates</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-high)', fontWeight: 600 }}>High Priority</div>
               </div>
-              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div className="card" style={{ padding: 14, borderRadius: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>User Onboarding Flow</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-medium)', fontWeight: 600 }}>Medium Priority</div>
               </div>
@@ -226,11 +208,11 @@ export default function LandingPage() {
                 <span>In Progress</span>
                 <span style={{ color: 'var(--text-muted)' }}>2</span>
               </div>
-              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+              <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>API Optimization & Caching</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-critical)', fontWeight: 600 }}>Critical Priority</div>
               </div>
-              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)' }}>
+              <div className="card" style={{ padding: 14, borderRadius: 8 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Calendar View Redesign</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-low)', fontWeight: 600 }}>Low Priority</div>
               </div>
@@ -242,7 +224,7 @@ export default function LandingPage() {
                 <span>Completed</span>
                 <span style={{ color: 'var(--text-muted)' }}>4</span>
               </div>
-              <div style={{ background: 'var(--bg-card)', padding: 14, borderRadius: 8, border: '1px solid var(--border)', marginBottom: 10 }}>
+              <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Remove Workspace Layer</div>
                 <div style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>Done</div>
               </div>
@@ -272,22 +254,18 @@ export default function LandingPage() {
           gap: 32
         }}>
           {/* Feature 1 */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: 40
-          }}>
+          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
             <div style={{
               width: 54,
               height: 54,
               borderRadius: 14,
-              background: 'rgba(99, 102, 241, 0.12)',
-              color: '#6366f1',
+              background: 'var(--gradient-primary)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24
+              marginBottom: 24,
+              boxShadow: '0 6px 16px var(--accent-glow)'
             }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -302,22 +280,18 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 2 */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: 40
-          }}>
+          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
             <div style={{
               width: 54,
               height: 54,
               borderRadius: 14,
-              background: 'rgba(34, 197, 94, 0.12)',
-              color: '#22c55e',
+              background: 'var(--gradient-secondary)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24
+              marginBottom: 24,
+              boxShadow: '0 6px 16px rgba(6, 182, 212, 0.35)'
             }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -333,22 +307,18 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 3 */}
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: 40
-          }}>
+          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
             <div style={{
               width: 54,
               height: 54,
               borderRadius: 14,
-              background: 'rgba(168, 85, 247, 0.12)',
-              color: '#a855f7',
+              background: 'var(--gradient-accent)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24
+              marginBottom: 24,
+              boxShadow: '0 6px 16px rgba(244, 63, 94, 0.35)'
             }}>
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -385,24 +355,18 @@ export default function LandingPage() {
             </p>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Priority-based color coding for critical tasks
+                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Priority-based color coding for critical tasks
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Task assignee avatars and quick filters
+                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Task assignee avatars and quick filters
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: '#22c55e', fontSize: 18 }}>✓</span> Instant drag-and-drop column positioning
+                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Instant drag-and-drop column positioning
               </li>
             </ul>
           </div>
 
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: 32,
-            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.05)'
-          }}>
+          <div className="card" style={{ padding: 32, borderRadius: 20 }}>
             <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Task Details Card</div>
             <div style={{ background: 'var(--bg-primary)', padding: 20, borderRadius: 12, border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Setup Production Monitoring</div>
@@ -410,7 +374,7 @@ export default function LandingPage() {
                 Configure health checks and automated email alerts for backend service uptime.
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
+                <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: 'var(--priority-critical)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
                   Critical Priority
                 </span>
                 <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>Due: Oct 28</span>
@@ -427,13 +391,7 @@ export default function LandingPage() {
         padding: '90px 32px'
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
-          <div style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            borderRadius: 20,
-            padding: 36,
-            boxShadow: '0 12px 30px rgba(0, 0, 0, 0.05)'
-          }}>
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Project Members & Permissions</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 14, background: 'var(--bg-primary)', borderRadius: 10, border: '1px solid var(--border)' }}>
@@ -448,7 +406,7 @@ export default function LandingPage() {
                   <div style={{ fontSize: 14, fontWeight: 700 }}>Dev Team</div>
                   <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Project Member</div>
                 </div>
-                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Can Edit Tasks</span>
+                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: 'var(--success)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Can Edit Tasks</span>
               </div>
             </div>
           </div>
@@ -482,15 +440,15 @@ export default function LandingPage() {
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Is WorkManager free to use?</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes! You can create a free account and start managing projects immediately.</p>
             </div>
-            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>How many projects and boards can I create?</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>You can create multiple projects and boards to organize your workload efficiently.</p>
             </div>
-            <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 14, padding: 24 }}>
+            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
               <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Can I invite external team members?</h3>
               <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes, you can invite team members by email directly to specific projects or boards with custom permissions.</p>
             </div>
@@ -506,11 +464,11 @@ export default function LandingPage() {
         textAlign: 'center'
       }}>
         <div style={{
-          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+          background: 'var(--gradient-primary)',
           borderRadius: 28,
           padding: '70px 32px',
           color: '#ffffff',
-          boxShadow: '0 20px 50px rgba(99, 102, 241, 0.3)'
+          boxShadow: '0 20px 50px var(--accent-glow)'
         }}>
           <h2 style={{ fontSize: 42, fontWeight: 900, letterSpacing: '-1px', marginBottom: 16 }}>
             Ready to Organize Your Work?
@@ -519,11 +477,11 @@ export default function LandingPage() {
             Join WorkManager today and start managing your projects with clarity and speed.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-            <Link href="/register" style={{
+            <Link href="/register" className="btn" style={{
               padding: '16px 36px',
               borderRadius: 12,
               background: '#ffffff',
-              color: '#4f46e5',
+              color: 'var(--accent-hover)',
               fontWeight: 800,
               fontSize: 16,
               textDecoration: 'none',
@@ -531,7 +489,7 @@ export default function LandingPage() {
             }}>
               Get Started Free
             </Link>
-            <Link href="/login" style={{
+            <Link href="/login" className="btn" style={{
               padding: '16px 36px',
               borderRadius: 12,
               background: 'rgba(255, 255, 255, 0.15)',
