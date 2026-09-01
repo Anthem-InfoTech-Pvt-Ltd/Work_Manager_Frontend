@@ -246,18 +246,8 @@ function RegisterForm() {
       });
 
       if (regRes.data.success) {
-        showToast.success('Email verified & account created successfully!');
-        const { token, user, boardId, workspaceId } = regRes.data.data;
-        localStorage.setItem('wm_token', token);
-        localStorage.setItem('wm_user', JSON.stringify(user));
-        if (workspaceId) {
-          localStorage.setItem('wm_ws_id', String(workspaceId));
-        }
-        if (boardId) {
-          router.push(`/boards/${boardId}`);
-        } else {
-          router.push('/dashboard');
-        }
+        showToast.success('Account created successfully! Please login.');
+        router.push(inviteToken ? `/login?invite=${inviteToken}` : '/login');
       } else {
         const errMsg = regRes.data.message || 'Registration failed';
         setError(errMsg);
