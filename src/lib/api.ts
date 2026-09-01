@@ -41,6 +41,8 @@ export const authApi = {
     api.post('/auth/login', { email, password, inviteToken }),
   register: (data: { email: string; password: string; firstName: string; lastName: string; inviteToken?: string }) =>
     api.post('/auth/register', data),
+  sendOtp: (email: string, firstName?: string) => api.post('/auth/send-otp', { email, firstName }),
+  verifyOtp: (email: string, otp: string) => api.post('/auth/verify-otp', { email, otp }),
   me: () => api.get('/auth/me'),
   changePassword: (data: { currentPassword: string; newPassword: string }) =>
     api.post('/auth/change-password', data),
