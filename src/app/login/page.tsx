@@ -334,7 +334,7 @@ function LoginForm() {
               className="btn btn-secondary"
               style={{ justifyContent: 'center', marginTop: 12 }}
             >
-              ✉️ Log in with Email OTP Code
+              Log in with OTP
             </button>
 
             <div style={{ marginTop: 8, padding: '14px 16px', background: 'var(--bg-secondary)', borderRadius: 10, fontSize: 13, color: 'var(--text-muted)' }}>
