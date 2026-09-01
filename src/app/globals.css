@@ -10,6 +10,7 @@
   --text-primary: #1e1b4b;
   --text-secondary: #4c4f69;
   --text-muted: #818cf8;
+  --placeholder-color: #94a3b8;
   --accent: #6366f1;
   --accent-hover: #4f46e5;
   --accent-glow: rgba(99, 102, 241, 0.25);
@@ -39,6 +40,7 @@
   --text-primary: #f5f3ff;
   --text-secondary: #c4b5fd;
   --text-muted: #8b5cf6;
+  --placeholder-color: #64748b;
   --accent: #818cf8;
   --accent-hover: #a5b4fc;
   --accent-glow: rgba(129, 140, 248, 0.35);
@@ -237,7 +239,10 @@ body {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-glow), 0 4px 16px rgba(99, 102, 241, 0.15);
 }
-.input::placeholder { color: var(--text-muted); }
+.input::placeholder {
+  color: var(--placeholder-color, #94a3b8);
+  opacity: 0.7;
+}
 
 /* Table System */
 .table-container {

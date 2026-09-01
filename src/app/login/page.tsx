@@ -18,8 +18,8 @@ export default function LoginPage() {
 
 function LoginForm() {
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
-  const [email, setEmail] = useState('admin@workmanager.com');
-  const [password, setPassword] = useState('Admin@123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   // OTP State
   const [otpStep, setOtpStep] = useState<'request' | 'verify'>('request');
