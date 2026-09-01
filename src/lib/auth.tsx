@@ -29,6 +29,18 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
+function isTokenExpired(token: string): boolean {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return true;
+    const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+    if (!payload.exp) return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -38,8 +50,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedToken = localStorage.getItem('wm_token');
     const storedUser = localStorage.getItem('wm_user');
     if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
+      if (isTokenExpired(storedToken)) {
+        localStorage.removeItem('wm_token');
+        localStorage.removeItem('wm_user');
+        localStorage.removeItem('wm_ws_id');
+      } else {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      }
     }
     setIsLoading(false);
   }, []);
