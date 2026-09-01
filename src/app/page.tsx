@@ -1,11 +1,31 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 
 export default function LandingPage() {
   const { user } = useAuth();
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+
+  const faqs = [
+    {
+      q: 'Is WorkManager free to use?',
+      a: 'Yes! You can create a free account and start managing projects immediately.'
+    },
+    {
+      q: 'How many projects and boards can I create?',
+      a: 'You can create multiple projects and boards to organize your workload efficiently.'
+    },
+    {
+      q: 'Can I invite external team members?',
+      a: 'Yes, you can invite team members by email directly to specific projects or boards with custom permissions.'
+    },
+    {
+      q: 'How secure is my project data?',
+      a: 'Your data is protected with industry-standard encryption, secure authentication, and strict access controls.'
+    }
+  ];
 
   return (
     <div style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
@@ -439,19 +459,74 @@ export default function LandingPage() {
             <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Everything you need to know about WorkManager.</p>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Is WorkManager free to use?</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes! You can create a free account and start managing projects immediately.</p>
-            </div>
-            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>How many projects and boards can I create?</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>You can create multiple projects and boards to organize your workload efficiently.</p>
-            </div>
-            <div className="card" style={{ borderRadius: 14, padding: 24 }}>
-              <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Can I invite external team members?</h3>
-              <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.6 }}>Yes, you can invite team members by email directly to specific projects or boards with custom permissions.</p>
-            </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {faqs.map((faq, index) => {
+              const isOpen = openFaqIndex === index;
+              return (
+                <div
+                  key={index}
+                  className="card"
+                  style={{
+                    borderRadius: 16,
+                    overflow: 'hidden',
+                    cursor: 'pointer',
+                    transition: 'all 0.25s ease'
+                  }}
+                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
+                >
+                  <div style={{
+                    padding: '22px 28px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 16,
+                    userSelect: 'none'
+                  }}>
+                    <h3 style={{
+                      fontSize: 18,
+                      fontWeight: 700,
+                      margin: 0,
+                      color: isOpen ? 'var(--accent)' : 'var(--text-primary)',
+                      transition: 'color 0.2s ease'
+                    }}>
+                      {faq.q}
+                    </h3>
+                    <div style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '50%',
+                      background: isOpen ? 'var(--accent-glow)' : 'var(--bg-primary)',
+                      color: isOpen ? 'var(--accent)' : 'var(--text-secondary)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                      transition: 'transform 0.3s ease, background 0.2s ease',
+                      transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)'
+                    }}>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </div>
+                  </div>
+
+                  {isOpen && (
+                    <div style={{
+                      padding: '0 28px 22px 28px',
+                      color: 'var(--text-secondary)',
+                      fontSize: 15,
+                      lineHeight: 1.7,
+                      animation: 'fadeIn 0.25s ease-out',
+                      borderTop: '1px solid var(--border)',
+                      paddingTop: 16,
+                      marginTop: 0
+                    }}>
+                      {faq.a}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
