@@ -20,6 +20,7 @@ interface AuthContextType {
   user: User | null;
   token: string | null;
   login: (email: string, password: string, inviteToken?: string) => Promise<{ boardId?: number }>;
+  loginWithOtp: (email: string, otp: string, inviteToken?: string) => Promise<{ boardId?: number }>;
   logout: () => void;
   isLoading: boolean;
   hasPermission: (key: string) => boolean;
@@ -72,6 +73,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { boardId };
   };
 
+  const loginWithOtp = async (email: string, otp: string, inviteToken?: string) => {
+    const res = await authApi.loginWithOtp(email, otp, inviteToken);
+    const { token: t, user: u, boardId } = res.data.data;
+    localStorage.setItem('wm_token', t);
+    localStorage.setItem('wm_user', JSON.stringify(u));
+    setToken(t);
+    setUser(u);
+    return { boardId };
+  };
+
   const logout = () => {
     localStorage.removeItem('wm_token');
     localStorage.removeItem('wm_user');
@@ -86,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading, hasPermission, workspaceId: 1, setWorkspaceId: () => {} }}>
+    <AuthContext.Provider value={{ user, token, login, loginWithOtp, logout, isLoading, hasPermission, workspaceId: 1, setWorkspaceId: () => {} }}>
       {children}
     </AuthContext.Provider>
   );
