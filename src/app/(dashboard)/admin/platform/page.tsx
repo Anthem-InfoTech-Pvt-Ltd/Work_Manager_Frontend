@@ -152,7 +152,8 @@ export default function PlatformManagementPage() {
     e.preventDefault();
     setActionError(null);
 
-    const nameErr = validateRequired(projectForm.name, 'a project name');
+    const trimmedName = projectForm.name.trim();
+    const nameErr = validateRequired(trimmedName, 'a project name');
     if (nameErr) {
       setActionError(nameErr);
       showToast.error(nameErr);
@@ -162,8 +163,8 @@ export default function PlatformManagementPage() {
     setSubmitting(true);
     try {
       const data = {
-        name: projectForm.name,
-        description: projectForm.description,
+        name: trimmedName,
+        description: projectForm.description.trim(),
         workspaceId: Number(projectForm.workspaceId || workspaces[0]?.id || 1),
         ownerId: Number(projectForm.ownerId || users[0]?.id || 1)
       };
@@ -243,6 +244,7 @@ export default function PlatformManagementPage() {
             <h3 style={{ fontWeight: 700, fontSize: 16 }}>All Projects</h3>
             <button
               onClick={() => {
+                setActionError(null);
                 setEditingProject(null);
                 setProjectForm({ name: '', description: '', workspaceId: workspaces[0]?.id.toString() || '1', ownerId: users[0]?.id.toString() || '' });
                 setIsProjectModalOpen(true);
@@ -291,6 +293,7 @@ export default function PlatformManagementPage() {
                         </button>
                         <button
                           onClick={() => {
+                            setActionError(null);
                             setEditingProject(p);
                             setProjectForm({ name: p.name, description: p.description || '', workspaceId: p.workspaceId.toString(), ownerId: p.ownerId.toString() });
                             setIsProjectModalOpen(true);
@@ -320,6 +323,14 @@ export default function PlatformManagementPage() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0, 0, 0, 0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, backdropFilter: 'blur(4px)' }}>
           <div className="card" style={{ width: 460, padding: 32 }}>
             <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 16 }}>{editingProject ? 'Edit Project' : 'Create Project'}</h3>
+            {actionError && (
+              <div style={{
+                padding: '12px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--danger)', fontSize: 13, marginBottom: 16
+              }}>
+                {actionError}
+              </div>
+            )}
             <form onSubmit={handleSaveProject}>
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Project Name</label>
@@ -327,7 +338,11 @@ export default function PlatformManagementPage() {
                   type="text"
                   className="input"
                   value={projectForm.name}
-                  onChange={e => setProjectForm({ ...projectForm, name: e.target.value })}
+                  onChange={e => {
+                    setProjectForm({ ...projectForm, name: e.target.value });
+                    if (actionError) setActionError(null);
+                  }}
+                  placeholder="e.g. Website Redesign"
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
@@ -335,9 +350,13 @@ export default function PlatformManagementPage() {
                 <textarea
                   className="input"
                   value={projectForm.description}
-                  onChange={e => setProjectForm({ ...projectForm, description: e.target.value })}
+                  onChange={e => {
+                    setProjectForm({ ...projectForm, description: e.target.value });
+                    if (actionError) setActionError(null);
+                  }}
                   style={{ resize: 'none' }}
                   rows={3}
+                  placeholder="Brief description of the project"
                 />
               </div>
               <div style={{ marginBottom: 20 }}>
@@ -352,7 +371,6 @@ export default function PlatformManagementPage() {
                   ))}
                 </select>
               </div>
-              {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
               <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
                 <button type="button" onClick={() => setIsProjectModalOpen(false)} className="btn btn-secondary">Cancel</button>
                 <button type="submit" disabled={submitting} className="btn btn-primary">
@@ -372,13 +390,24 @@ export default function PlatformManagementPage() {
             <p style={{ fontSize: 14, color: 'var(--text-secondary)', marginBottom: 20 }}>
               Managing members for <strong>{selectedProject.name}</strong>
             </p>
+            {actionError && (
+              <div style={{
+                padding: '12px 16px', borderRadius: 8, background: 'rgba(239, 68, 68, 0.1)',
+                border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--danger)', fontSize: 13, marginBottom: 16
+              }}>
+                {actionError}
+              </div>
+            )}
 
             {/* Add Member Form */}
             <form onSubmit={handleAddMember} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
               <select
                 className="select"
                 value={addingMemberUserId}
-                onChange={e => setAddingMemberUserId(e.target.value)}
+                onChange={e => {
+                  setAddingMemberUserId(e.target.value);
+                  if (actionError) setActionError(null);
+                }}
                 style={{ flex: 1 }}
               >
                 <option value="">-- Select user to add --</option>
@@ -390,8 +419,6 @@ export default function PlatformManagementPage() {
               </select>
               <button type="submit" className="btn btn-primary">Add</button>
             </form>
-
-            {actionError && <p style={{ color: 'var(--danger)', fontSize: 13, marginBottom: 16 }}>{actionError}</p>}
 
             {/* Members List */}
             <div style={{ maxHeight: 220, overflowY: 'auto', marginBottom: 24, border: '1px solid var(--border)', borderRadius: 8 }}>
