@@ -109,7 +109,6 @@ function ResetPasswordForm() {
             value={newPassword}
             onChange={e => setNewPassword(e.target.value)}
             placeholder="••••••••"
-            required
             maxLength={50}
           />
         </div>
@@ -122,7 +121,6 @@ function ResetPasswordForm() {
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             placeholder="••••••••"
-            required
             maxLength={50}
           />
         </div>

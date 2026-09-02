@@ -100,7 +100,7 @@ function RegisterForm() {
     return () => clearInterval(interval);
   }, [step, timer]);
 
-  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -335,22 +335,22 @@ function RegisterForm() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>First Name</label>
-                <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Rahul" required maxLength={50} />
+                <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="Rahul" maxLength={50} />
               </div>
               <div>
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Last Name</label>
-                <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Sharma" required maxLength={50} />
+                <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Sharma" maxLength={50} />
               </div>
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Work Email</label>
-              <input type="email" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="rahul@workmanager.com" required maxLength={50} />
+              <input type="text" className="input" value={email} onChange={e => setEmail(e.target.value)} placeholder="rahul@workmanager.com" maxLength={50} />
             </div>
 
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Password</label>
-              <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" required maxLength={50} />
+              <input type="password" className="input" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" maxLength={50} />
               <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
                 Must be at least 6 characters with uppercase, lowercase, number, and special character.
               </p>

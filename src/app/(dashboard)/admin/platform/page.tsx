@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { adminApi, projectsApi } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
+import { validateRequired } from '@/lib/validation';
 import { useRouter } from 'next/navigation';
 
 interface WorkspaceItem {
@@ -150,6 +151,14 @@ export default function PlatformManagementPage() {
   const handleSaveProject = async (e: React.FormEvent) => {
     e.preventDefault();
     setActionError(null);
+
+    const nameErr = validateRequired(projectForm.name, 'a project name');
+    if (nameErr) {
+      setActionError(nameErr);
+      showToast.error(nameErr);
+      return;
+    }
+
     setSubmitting(true);
     try {
       const data = {
@@ -316,7 +325,6 @@ export default function PlatformManagementPage() {
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Project Name</label>
                 <input
                   type="text"
-                  required
                   className="input"
                   value={projectForm.name}
                   onChange={e => setProjectForm({ ...projectForm, name: e.target.value })}
@@ -335,7 +343,6 @@ export default function PlatformManagementPage() {
               <div style={{ marginBottom: 20 }}>
                 <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>Owner (Super Admin / Admin)</label>
                 <select
-                  required
                   className="select"
                   value={projectForm.ownerId}
                   onChange={e => setProjectForm({ ...projectForm, ownerId: e.target.value })}
@@ -369,7 +376,6 @@ export default function PlatformManagementPage() {
             {/* Add Member Form */}
             <form onSubmit={handleAddMember} style={{ display: 'flex', gap: 10, marginBottom: 20 }}>
               <select
-                required
                 className="select"
                 value={addingMemberUserId}
                 onChange={e => setAddingMemberUserId(e.target.value)}

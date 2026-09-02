@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/lib/auth';
 import { usersApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validateRequired } from '@/lib/validation';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -22,6 +23,19 @@ export default function ProfilePage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    const firstNameErr = validateRequired(firstName, 'your first name');
+    if (firstNameErr) {
+      showToast.error(firstNameErr);
+      return;
+    }
+
+    const lastNameErr = validateRequired(lastName, 'your last name');
+    if (lastNameErr) {
+      showToast.error(lastNameErr);
+      return;
+    }
+
     setSaving(true);
     try {
       await usersApi.update(user.id, { firstName, lastName });
@@ -65,11 +79,11 @@ export default function ProfilePage() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>First Name</label>
-              <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} required maxLength={50} />
+              <input className="input" value={firstName} onChange={e => setFirstName(e.target.value)} maxLength={50} />
             </div>
             <div>
               <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Last Name</label>
-              <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} required maxLength={50} />
+              <input className="input" value={lastName} onChange={e => setLastName(e.target.value)} maxLength={50} />
             </div>
           </div>
 

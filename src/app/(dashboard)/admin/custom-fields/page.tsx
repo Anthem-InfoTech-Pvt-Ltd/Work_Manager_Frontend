@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { projectsApi, customFieldsApi } from '@/lib/api';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
+import { validateRequired } from '@/lib/validation';
 
 interface Workspace {
   id: number;
@@ -118,6 +119,20 @@ export default function CustomFieldsPage() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProjectId) return;
+
+    const nameErr = validateRequired(fieldName, 'a field name');
+    if (nameErr) {
+      showToast.error(nameErr);
+      return;
+    }
+
+    if (fieldType === 'select') {
+      const optErr = validateRequired(fieldOptions, 'dropdown options');
+      if (optErr) {
+        showToast.error(optErr);
+        return;
+      }
+    }
 
     const payload: CustomFieldDefinition = {
       projectId: selectedProjectId,
@@ -325,7 +340,6 @@ export default function CustomFieldsPage() {
                   Field Name
                 </label>
                 <input
-                  required
                   className="input"
                   value={fieldName}
                   onChange={e => setFieldName(e.target.value)}
@@ -359,7 +373,6 @@ export default function CustomFieldsPage() {
                     Options (comma-separated list)
                   </label>
                   <input
-                    required
                     className="input"
                     value={fieldOptions}
                     onChange={e => setFieldOptions(e.target.value)}

@@ -7,6 +7,7 @@ import { formatDateDDMMYYYY, formatDateTimeDDMMYYYY12h } from '@/lib/format';
 import RichTextEditor from '@/components/shared/RichTextEditor';
 import { Paperclip } from 'lucide-react';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
+import { numbersOnlyHandler } from '@/lib/validation';
 
 interface Task {
   id: number; title: string; description?: string; priority: string;
@@ -565,16 +566,17 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                       },
                       {
                         label: 'Estimated (hrs)', value: (
-                          <input type="number" className="input" style={{ fontSize: 13 }}
+                          <input type="text" className="input" style={{ fontSize: 13 }}
                             defaultValue={task.estimatedHours ?? ''}
                             disabled={!canEdit}
                             onBlur={e => saveField('estimatedHours', parseFloat(e.target.value) || null)}
+                            onKeyDown={numbersOnlyHandler}
                           />
                         )
                       },
                       {
                         label: 'Actual (hrs)', value: (
-                          <input type="number" className="input" style={{ fontSize: 13 }}
+                          <input type="text" className="input" style={{ fontSize: 13 }}
                             value={task.actualHours ?? 0}
                             readOnly
                           />
@@ -698,13 +700,14 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                     <h4 style={{ fontWeight: 600, fontSize: 14 }}>Log Time</h4>
                     <div style={{ display: 'flex', gap: 10 }}>
                       <input
-                        type="number"
+                        type="text"
                         step="0.5"
                         className="input"
                         placeholder="Hours (e.g. 2.5)"
                         style={{ width: 140, fontSize: 13 }}
                         value={logHours}
                         onChange={e => setLogHours(e.target.value)}
+                        onKeyDown={numbersOnlyHandler}
                       />
                       <input
                         className="input"

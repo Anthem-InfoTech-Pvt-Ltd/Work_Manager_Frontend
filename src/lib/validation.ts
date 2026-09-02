@@ -32,3 +32,29 @@ export function validatePassword(password: string, fieldName: string = 'Password
   }
   return null;
 }
+
+export function validateRequired(value: string, fieldName: string): string | null {
+  if (!value.trim()) {
+    return `Please enter ${fieldName}.`;
+  }
+  return null;
+}
+
+export function numbersOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
+  // Allow: digits, decimal point, backspace, delete, tab, escape, enter, arrows
+  const allowed = [
+    'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'Home', 'End',
+    '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+  ];
+
+  // Allow Ctrl/Cmd + A, C, V, X (select all, copy, paste, cut)
+  if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+    return;
+  }
+
+  if (!allowed.includes(e.key)) {
+    e.preventDefault();
+  }
+}

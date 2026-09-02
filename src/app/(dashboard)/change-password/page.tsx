@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
-import { validatePassword } from '@/lib/validation';
+import { validatePassword, validateRequired } from '@/lib/validation';
 
 export default function ChangePasswordPage() {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -14,6 +14,12 @@ export default function ChangePasswordPage() {
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const currentErr = validateRequired(currentPassword, 'your current password');
+    if (currentErr) {
+      showToast.error(currentErr);
+      return;
+    }
 
     const passwordError = validatePassword(newPassword, 'New password');
     if (passwordError) {
@@ -86,7 +92,6 @@ export default function ChangePasswordPage() {
               value={currentPassword}
               onChange={e => setCurrentPassword(e.target.value)}
               placeholder="Enter current password"
-              required
               maxLength={50}
             />
           </div>
@@ -102,7 +107,6 @@ export default function ChangePasswordPage() {
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                required
                 maxLength={50}
               />
             </div>
@@ -116,7 +120,6 @@ export default function ChangePasswordPage() {
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter new password"
-                required
                 maxLength={50}
               />
             </div>

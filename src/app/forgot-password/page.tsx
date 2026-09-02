@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
 import { showToast } from '@/components/shared/ToastProvider';
+import { validateEmail } from '@/lib/validation';
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -12,16 +13,14 @@ export default function ForgotPasswordPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (!EMAIL_REGEX.test(email.trim())) {
-      const errMsg = 'Please enter a valid email address.';
-      setError(errMsg);
-      showToast.error(errMsg);
+    const emailErr = validateEmail(email);
+    if (emailErr) {
+      setError(emailErr);
+      showToast.error(emailErr);
       return;
     }
 
@@ -80,12 +79,11 @@ export default function ForgotPasswordPage() {
           <div>
             <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>Email Address</label>
             <input
-              type="email"
+              type="text"
               className="input"
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="admin@workmanager.com"
-              required
               maxLength={50}
             />
           </div>

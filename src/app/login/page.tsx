@@ -275,11 +275,10 @@ function LoginForm() {
               </label>
               <input
                 className="input"
-                type="email"
+                type="text"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="admin@workmanager.com"
-                required
                 id="email"
                 maxLength={50}
               />
@@ -300,7 +299,6 @@ function LoginForm() {
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
-                required
                 id="password"
                 maxLength={50}
               />
@@ -353,11 +351,10 @@ function LoginForm() {
                 </label>
                 <input
                   className="input"
-                  type="email"
+                  type="text"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                   placeholder="rahul@workmanager.com"
-                  required
                   maxLength={50}
                 />
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>

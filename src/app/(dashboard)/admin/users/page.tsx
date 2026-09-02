@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { usersApi, authApi, planApi } from '@/lib/api';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
+import { validateRequired, validateEmail } from '@/lib/validation';
 
 interface User {
   id: number;
@@ -27,7 +28,7 @@ interface UserSubscription {
   planId: number;
 }
 
-const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 
 export default function UserManagementPage() {
   const [users, setUsers] = useState<User[]>([]);
@@ -74,13 +75,22 @@ export default function UserManagementPage() {
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const firstErr = validateRequired(newFirstName, 'first name');
+    if (firstErr) { showToast.error(firstErr); return; }
+
+    const lastErr = validateRequired(newLastName, 'last name');
+    if (lastErr) { showToast.error(lastErr); return; }
+
     // Regex check for email format
-    if (!EMAIL_REGEX.test(newEmail.trim())) {
-      const errMsg = 'Please enter a valid email address.';
-      setCreateError(errMsg);
-      showToast.error(errMsg);
+    const emailErr = validateEmail(newEmail);
+    if (emailErr) {
+      setCreateError(emailErr);
+      showToast.error(emailErr);
       return;
     }
+
+    const passErr = validateRequired(newPassword, 'a password');
+    if (passErr) { showToast.error(passErr); return; }
 
     try {
       setCreateSaving(true);
@@ -174,6 +184,12 @@ export default function UserManagementPage() {
   const handleUpdateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingUser) return;
+
+    const firstErr = validateRequired(firstName, 'first name');
+    if (firstErr) { showToast.error(firstErr); return; }
+
+    const lastErr = validateRequired(lastName, 'last name');
+    if (lastErr) { showToast.error(lastErr); return; }
 
     try {
       setSaving(true);
@@ -467,7 +483,6 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="text"
-                  required
                   maxLength={50}
                   className="input"
                   value={firstName}
@@ -481,7 +496,6 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="text"
-                  required
                   maxLength={50}
                   className="input"
                   value={lastName}
@@ -552,7 +566,6 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="text"
-                  required
                   maxLength={50}
                   className="input"
                   value={newFirstName}
@@ -566,7 +579,6 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="text"
-                  required
                   maxLength={50}
                   className="input"
                   value={newLastName}
@@ -579,8 +591,7 @@ export default function UserManagementPage() {
                   Email Address
                 </label>
                 <input
-                  type="email"
-                  required
+                  type="text"
                   maxLength={50}
                   className="input"
                   value={newEmail}
@@ -594,7 +605,6 @@ export default function UserManagementPage() {
                 </label>
                 <input
                   type="password"
-                  required
                   maxLength={50}
                   className="input"
                   value={newPassword}

@@ -8,6 +8,7 @@ import TaskDetailDrawer from '@/components/board/TaskDetailDrawer';
 import { formatDateIndian } from '@/lib/format';
 import { useAuth } from '@/lib/auth';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
+import { validateEmail } from '@/lib/validation';
 
 interface Task {
   id: number; title: string; priority: string; status: string;
@@ -97,7 +98,14 @@ export default function BoardPageClient() {
 
   const handleSendInvite = async () => {
     const inviteWsId = projectWorkspaceId || workspaceId;
-    if (!inviteEmail.trim() || !inviteWsId || !board) return;
+    if (!inviteWsId || !board) return;
+
+    const emailErr = validateEmail(inviteEmail);
+    if (emailErr) {
+      showToast.error(emailErr);
+      return;
+    }
+
     setInviting(true);
     setGeneratedLink('');
     try {
@@ -847,7 +855,7 @@ export default function BoardPageClient() {
                 </label>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <input
-                    type="email"
+                    type="text"
                     className="input"
                     placeholder="Enter email address..."
                     value={inviteEmail}

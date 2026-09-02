@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { settingsApi } from '@/lib/api';
+import { numbersOnlyHandler } from '@/lib/validation';
 
 interface SettingItem {
   id: number;
@@ -268,10 +269,11 @@ export default function SettingsPage() {
                   Maximum File Size (MB)
                 </label>
                 <input
-                  type="number"
+                  type="text"
                   className="input"
                   value={getSettingValue('attachment.max_size_mb')}
                   onChange={e => handleValueChange('attachment.max_size_mb', e.target.value)}
+                  onKeyDown={numbersOnlyHandler}
                   style={{ width: '100%', background: 'var(--bg-primary)' }}
                 />
               </div>
