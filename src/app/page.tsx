@@ -18,6 +18,7 @@ export default function LandingPage() {
   const { user } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [plans, setPlans] = useState<DbPlan[]>([]);
+  const [activeTab, setActiveTab] = useState<'kanban' | 'calendar'>('kanban');
 
   useEffect(() => {
     planApi.getPublicPlans()
@@ -31,21 +32,32 @@ export default function LandingPage() {
 
   const faqs = [
     {
-      q: 'Is WorkManager free to use?',
-      a: 'Yes! You can create a free account and start managing projects immediately.'
+      q: 'Is WorkManager free to get started?',
+      a: 'Yes! You can choose our Free plan upon registration and start creating projects and boards right away.'
     },
     {
-      q: 'How many projects and boards can I create?',
-      a: 'You can create multiple projects and boards to organize your workload efficiently.'
+      q: 'What is included in subscription plans?',
+      a: 'Each plan defines specific limits for maximum projects, workspace members, and boards per project. You can choose the plan that best fits your team.'
     },
     {
-      q: 'Can I invite external team members?',
-      a: 'Yes, you can invite team members by email directly to specific projects or boards with custom permissions.'
+      q: 'How does Email OTP authentication work?',
+      a: 'WorkManager supports passwordless login and 2-step registration using a 6-digit verification code sent directly to your email.'
     },
     {
-      q: 'How secure is my project data?',
-      a: 'Your data is protected with industry-standard encryption, secure authentication, and strict access controls.'
+      q: 'Can I upgrade my subscription plan anytime?',
+      a: 'Yes! You can upgrade your plan anytime from your account settings to unlock higher project and member limits.'
+    },
+    {
+      q: 'How do team permissions work?',
+      a: 'You can invite team members to projects as Project Owners with full administrative access or as Project Members to manage tasks.'
     }
+  ];
+
+  const pillars = [
+    { title: 'Kanban Boards', desc: 'Visual workflow management' },
+    { title: 'Smart Calendar', desc: 'Task deadline tracking' },
+    { title: 'OTP Security', desc: 'Email verification code login' },
+    { title: 'Plan Options', desc: 'Flexible workspace tiers' }
   ];
 
   return (
@@ -94,8 +106,8 @@ export default function LandingPage() {
         {/* Navigation Links */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
           <a href="#features" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Features</a>
-          <a href="#views" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Views</a>
-          <a href="#collaboration" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Collaboration</a>
+          <a href="#views" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Interactive Views</a>
+          <a href="#collaboration" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Permissions</a>
           <a href="#pricing" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>Pricing</a>
           <a href="#faq" style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQ</a>
         </div>
@@ -141,7 +153,7 @@ export default function LandingPage() {
       <section style={{
         maxWidth: 1280,
         margin: '0 auto',
-        padding: '110px 32px 80px',
+        padding: '90px 32px 60px',
         textAlign: 'center'
       }}>
         <div style={{
@@ -157,32 +169,32 @@ export default function LandingPage() {
           fontWeight: 700,
           marginBottom: 28
         }}>
-          <span>✨ Everything your team needs to plan, track & deliver</span>
+          <span>✨ Modern Project & Task Management Platform</span>
         </div>
 
         <h1 style={{
-          fontSize: 60,
+          fontSize: 58,
           fontWeight: 900,
-          lineHeight: 1.12,
+          lineHeight: 1.15,
           letterSpacing: '-2px',
-          marginBottom: 28,
+          marginBottom: 24,
           color: 'var(--text-primary)'
         }}>
-          Organize Your Projects with <br/>
-          <span className="text-gradient">Complete Clarity & Visual Flow</span>
+          Manage Tasks & Projects with <br/>
+          <span className="text-gradient">Complete Control & Visual Flow</span>
         </h1>
 
         <p style={{
-          fontSize: 20,
+          fontSize: 19,
           color: 'var(--text-secondary)',
           maxWidth: 780,
-          margin: '0 auto 42px',
+          margin: '0 auto 40px',
           lineHeight: 1.6
         }}>
-          WorkManager combines Kanban boards, interactive task details, and calendar scheduling into a single powerful platform built for high-performing teams.
+          WorkManager brings Kanban board tracking, due date calendar scheduling, and secure email OTP authentication into one clean workspace.
         </p>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 70 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 50 }}>
           <Link href="/plans" className="btn btn-primary" style={{
             padding: '16px 36px',
             borderRadius: 12,
@@ -203,6 +215,29 @@ export default function LandingPage() {
           </Link>
         </div>
 
+        {/* ── Core Platform Pillars Bar ─────────────────────────────── */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
+          gap: 20,
+          marginBottom: 60,
+          padding: '24px 32px',
+          background: 'var(--bg-secondary)',
+          borderRadius: 20,
+          border: '1px solid var(--border)'
+        }}>
+          {pillars.map((pil, i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>
+                {pil.title}
+              </div>
+              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>
+                {pil.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+
         {/* Product Visual Mock Container */}
         <div className="card" style={{
           padding: 24,
@@ -211,7 +246,7 @@ export default function LandingPage() {
           <div style={{
             background: 'var(--bg-primary)',
             borderRadius: 12,
-            padding: '20px 24px',
+            padding: '16px 24px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
@@ -222,9 +257,9 @@ export default function LandingPage() {
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--danger)' }}/>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--warning)' }}/>
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--success)' }}/>
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 12 }}>Project: Product Roadmap 2026</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 12 }}>Kanban Board: Sprint Execution</span>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Live Preview</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Live Interface Preview</div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, textAlign: 'left' }}>
@@ -232,14 +267,14 @@ export default function LandingPage() {
             <div style={{ background: 'var(--bg-primary)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
                 <span>To Do</span>
-                <span style={{ color: 'var(--text-muted)' }}>3</span>
+                <span style={{ color: 'var(--text-muted)' }}>2</span>
               </div>
               <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Design System Updates</div>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Design System Component Review</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-high)', fontWeight: 600 }}>High Priority</div>
               </div>
               <div className="card" style={{ padding: 14, borderRadius: 8 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>User Onboarding Flow</div>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Update User Profile Info</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-medium)', fontWeight: 600 }}>Medium Priority</div>
               </div>
             </div>
@@ -251,11 +286,11 @@ export default function LandingPage() {
                 <span style={{ color: 'var(--text-muted)' }}>2</span>
               </div>
               <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>API Optimization & Caching</div>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Email OTP Login Handler</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-critical)', fontWeight: 600 }}>Critical Priority</div>
               </div>
               <div className="card" style={{ padding: 14, borderRadius: 8 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Calendar View Redesign</div>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Calendar Due Date Picker</div>
                 <div style={{ fontSize: 12, color: 'var(--priority-low)', fontWeight: 600 }}>Low Priority</div>
               </div>
             </div>
@@ -263,11 +298,15 @@ export default function LandingPage() {
             {/* Column 3 */}
             <div style={{ background: 'var(--bg-primary)', padding: 16, borderRadius: 12, border: '1px solid var(--border)' }}>
               <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, display: 'flex', justifyContent: 'space-between' }}>
-                <span>Completed</span>
-                <span style={{ color: 'var(--text-muted)' }}>4</span>
+                <span>Done</span>
+                <span style={{ color: 'var(--text-muted)' }}>2</span>
               </div>
               <div className="card" style={{ padding: 14, borderRadius: 8, marginBottom: 10 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Remove Workspace Layer</div>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Subscription Plan Selection</div>
+                <div style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>Done</div>
+              </div>
+              <div className="card" style={{ padding: 14, borderRadius: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>Global Input Character Limits</div>
                 <div style={{ fontSize: 12, color: 'var(--success)', fontWeight: 600 }}>Done</div>
               </div>
             </div>
@@ -282,11 +321,14 @@ export default function LandingPage() {
         padding: '80px 32px'
       }}>
         <div style={{ textAlign: 'center', marginBottom: 60 }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+            Platform Features
+          </div>
           <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 16 }}>
-            Designed to Streamline Team Execution
+            Built for Clear Task Execution
           </h2>
-          <p style={{ color: 'var(--text-secondary)', fontSize: 18, maxWidth: 640, margin: '0 auto' }}>
-            WorkManager provides clear structure without clutter, giving your team full visibility into project progress.
+          <p style={{ color: 'var(--text-secondary)', fontSize: 17, maxWidth: 640, margin: '0 auto' }}>
+            WorkManager helps team members collaborate smoothly with visual boards, scheduled due dates, and secure authentication.
           </p>
         </div>
 
@@ -296,133 +338,284 @@ export default function LandingPage() {
           gap: 32
         }}>
           {/* Feature 1 */}
-          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
-              width: 54,
-              height: 54,
+              width: 50,
+              height: 50,
               borderRadius: 14,
               background: 'var(--gradient-primary)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24,
+              marginBottom: 20,
               boxShadow: '0 6px 16px var(--accent-glow)'
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="3" width="18" height="18" rx="2"/>
                 <path d="M9 3v18"/>
                 <path d="M15 3v18"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Interactive Kanban Boards</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
-              Create custom workflow columns (Backlog, To Do, In Progress, Review, Testing, Done). Move cards effortlessly and track status updates instantly.
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Kanban Workflow Boards</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Organize tasks into status columns (Backlog, To Do, In Progress, Review, Done). Update task statuses easily across columns.
             </p>
           </div>
 
           {/* Feature 2 */}
-          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
-              width: 54,
-              height: 54,
+              width: 50,
+              height: 50,
               borderRadius: 14,
               background: 'var(--gradient-secondary)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24,
+              marginBottom: 20,
               boxShadow: '0 6px 16px rgba(6, 182, 212, 0.35)'
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="4" width="18" height="18" rx="2"/>
                 <path d="M16 2v4"/>
                 <path d="M8 2v4"/>
                 <path d="M3 10h18"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Smart Calendar View</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
-              Never miss a deadline. View task due dates across all active projects on an interactive, color-coded monthly calendar.
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Monthly Calendar Schedule</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Keep deadlines visible. View upcoming task due dates across active projects in a clean monthly calendar layout.
             </p>
           </div>
 
           {/* Feature 3 */}
-          <div className="card" style={{ padding: 40, borderRadius: 20 }}>
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
-              width: 54,
-              height: 54,
+              width: 50,
+              height: 50,
               borderRadius: 14,
               background: 'var(--gradient-accent)',
               color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              marginBottom: 24,
+              marginBottom: 20,
               boxShadow: '0 6px 16px rgba(244, 63, 94, 0.35)'
             }}>
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
                 <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
               </svg>
             </div>
-            <h3 style={{ fontSize: 22, fontWeight: 800, marginBottom: 12 }}>Team Access & Permissions</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 15, lineHeight: 1.7 }}>
-              Invite teammates directly to projects and boards. Control member capabilities such as task creation, board management, and member administration.
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Team Collaboration</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Invite teammates to projects by email to make contributions and manage tasks together in real time.
+            </p>
+          </div>
+
+          {/* Feature 4 */}
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+            <div style={{
+              width: 50,
+              height: 50,
+              borderRadius: 14,
+              background: 'var(--gradient-primary)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20,
+              boxShadow: '0 6px 16px var(--accent-glow)'
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+              </svg>
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Task Priority Badges</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Categorize task urgency with Low, Medium, High, and Critical priority levels for quick visual sorting.
+            </p>
+          </div>
+
+          {/* Feature 5 */}
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+            <div style={{
+              width: 50,
+              height: 50,
+              borderRadius: 14,
+              background: 'var(--gradient-secondary)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20,
+              boxShadow: '0 6px 16px rgba(6, 182, 212, 0.35)'
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Email OTP Security</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Sign in securely using password authentication or instant 6-digit verification codes sent directly to your email.
+            </p>
+          </div>
+
+          {/* Feature 6 */}
+          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+            <div style={{
+              width: 50,
+              height: 50,
+              borderRadius: 14,
+              background: 'var(--gradient-accent)',
+              color: '#ffffff',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: 20,
+              boxShadow: '0 6px 16px rgba(244, 63, 94, 0.35)'
+            }}>
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <path d="M3 9h18"/>
+              </svg>
+            </div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, marginBottom: 10 }}>Task Details Drawer</h3>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 14, lineHeight: 1.7 }}>
+              Open side drawers to manage task descriptions, priority levels, checklists, file attachments, time logs, and comments.
             </p>
           </div>
         </div>
       </section>
 
-      {/* ── Detail Breakdown Section 1: Kanban & Views ────────────────── */}
+      {/* ── Interactive View Showcase Section ───────────────────────────── */}
       <section id="views" style={{
         background: 'var(--bg-secondary)',
         borderTop: '1px solid var(--border)',
         borderBottom: '1px solid var(--border)',
         padding: '90px 32px'
       }}>
-        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
-          <div>
+        <div style={{ maxWidth: 1280, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
-              Visual Workflow Engine
+              Interactive View Showcase
             </div>
-            <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 20 }}>
-              Keep Tasks Moving from Ideation to Production
+            <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 16 }}>
+              Multiple Views for Project Management
             </h2>
-            <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
-              Break complex projects into manageable task cards. Assign task priorities (Low, Medium, High, Critical), set due dates, add detailed descriptions, and leave comments in real time.
+            <p style={{ color: 'var(--text-secondary)', fontSize: 17, maxWidth: 640, margin: '0 auto' }}>
+              Switch between Kanban workflow columns and monthly calendar deadlines.
             </p>
-            <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Priority-based color coding for critical tasks
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Task assignee avatars and quick filters
-              </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 15, fontWeight: 600 }}>
-                <span style={{ color: 'var(--success)', fontSize: 18 }}>✓</span> Instant drag-and-drop column positioning
-              </li>
-            </ul>
           </div>
 
-          <div className="card" style={{ padding: 32, borderRadius: 20 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 16 }}>Task Details Card</div>
-            <div style={{ background: 'var(--bg-primary)', padding: 20, borderRadius: 12, border: '1px solid var(--border)' }}>
-              <div style={{ fontSize: 15, fontWeight: 700, marginBottom: 8 }}>Setup Production Monitoring</div>
-              <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16 }}>
-                Configure health checks and automated email alerts for backend service uptime.
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: 'var(--priority-critical)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
-                  Critical Priority
-                </span>
-                <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>Due: Oct 28</span>
+          {/* Tab Selection Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 12, marginBottom: 36 }}>
+            <button
+              onClick={() => setActiveTab('kanban')}
+              className={`btn ${activeTab === 'kanban' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '12px 24px', borderRadius: 10, fontSize: 15, fontWeight: 700 }}
+            >
+              📋 Kanban View
+            </button>
+            <button
+              onClick={() => setActiveTab('calendar')}
+              className={`btn ${activeTab === 'calendar' ? 'btn-primary' : 'btn-secondary'}`}
+              style={{ padding: '12px 24px', borderRadius: 10, fontSize: 15, fontWeight: 700 }}
+            >
+              📅 Calendar Schedule
+            </button>
+          </div>
+
+          {/* Tab Content 1: Kanban */}
+          {activeTab === 'kanban' && (
+            <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: 26, fontWeight: 800, marginBottom: 16 }}>Kanban Task Workflow</h3>
+                  <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
+                    Group task cards into customizable status columns. Assign priorities and set due dates to keep progress clear for everyone.
+                  </p>
+                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, padding: 0 }}>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Priority tags: Low, Medium, High, Critical
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Quick card status updates
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Detailed drawer for description & sub-tasks
+                    </li>
+                  </ul>
+                </div>
+                <div style={{ background: 'var(--bg-primary)', padding: 20, borderRadius: 14, border: '1px solid var(--border)' }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: 'var(--accent)' }}>Task Card Drawer</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 8 }}>Integrate Email Notification Service</div>
+                  <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 16, lineHeight: 1.5 }}>
+                    Connect backend service to send verification codes and task assignment notification emails.
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ background: 'rgba(239, 68, 68, 0.15)', color: 'var(--priority-critical)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>
+                      Critical Priority
+                    </span>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)', fontWeight: 600 }}>Due: Today</span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
+
+          {/* Tab Content 2: Calendar */}
+          {activeTab === 'calendar' && (
+            <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ fontSize: 26, fontWeight: 800, marginBottom: 16 }}>Smart Deadline Calendar</h3>
+                  <p style={{ fontSize: 15, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 20 }}>
+                    Track scheduled due dates in a clean monthly calendar layout. Click any date pill to inspect task details.
+                  </p>
+                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, padding: 0 }}>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Color-coded task pills on scheduled dates
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Direct click to open task detail modal
+                    </li>
+                    <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                      <span style={{ color: 'var(--success)' }}>✓</span> Month navigation controls
+                    </li>
+                  </ul>
+                </div>
+                <div style={{ background: 'var(--bg-primary)', padding: 20, borderRadius: 14, border: '1px solid var(--border)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                    <span style={{ fontSize: 14, fontWeight: 700 }}>Monthly Schedule</span>
+                    <span style={{ fontSize: 12, color: 'var(--accent)', fontWeight: 600 }}>Calendar View</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, textAlign: 'center', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)' }}>
+                    <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 8, marginTop: 12 }}>
+                    {[1,2,3,4,5,6,7,8,9,10,11,12,13,14].map(day => (
+                      <div key={day} style={{
+                        padding: '10px 4px',
+                        background: day === 2 ? 'var(--accent-glow)' : 'var(--bg-secondary)',
+                        border: day === 2 ? '1px solid var(--accent)' : '1px solid var(--border)',
+                        borderRadius: 8,
+                        textAlign: 'center',
+                        fontSize: 12,
+                        fontWeight: day === 2 ? 800 : 500
+                      }}>
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -434,34 +627,34 @@ export default function LandingPage() {
       }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
           <div className="card" style={{ padding: 36, borderRadius: 20 }}>
-            <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Project Members & Permissions</div>
+            <div style={{ fontSize: 18, fontWeight: 800, marginBottom: 20 }}>Project Roles & Permissions</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 14, background: 'var(--bg-primary)', borderRadius: 10, border: '1px solid var(--border)' }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>Alex Morgan</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Project Owner</div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>Project Owner</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Full admin capabilities & board management</div>
                 </div>
-                <span style={{ background: 'var(--accent-glow)', color: 'var(--accent)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Full Access</span>
+                <span style={{ background: 'var(--accent-glow)', color: 'var(--accent)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Owner</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: 14, background: 'var(--bg-primary)', borderRadius: 10, border: '1px solid var(--border)' }}>
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 700 }}>Dev Team</div>
-                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Project Member</div>
+                  <div style={{ fontSize: 14, fontWeight: 700 }}>Project Member</div>
+                  <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>Task creation, editing & status updates</div>
                 </div>
-                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: 'var(--success)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Can Edit Tasks</span>
+                <span style={{ background: 'rgba(34, 197, 94, 0.15)', color: 'var(--success)', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 700 }}>Member</span>
               </div>
             </div>
           </div>
 
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
-              Seamless Teamwork
+              Clear Access Controls
             </div>
             <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 20 }}>
-              Collaborate Without Friction
+              Collaborate with Proper Access
             </h2>
             <p style={{ fontSize: 16, color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: 24 }}>
-              Send direct email invitations to team members. Maintain granular access controls so everyone knows exactly what they are responsible for.
+              Invite teammates to projects by email address. Keep project settings secure while giving members the ability to create and update tasks.
             </p>
           </div>
         </div>
@@ -475,13 +668,13 @@ export default function LandingPage() {
       }}>
         <div style={{ textAlign: 'center', marginBottom: 54 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
-            Simple & Transparent Pricing
+            Subscription Plans
           </div>
           <h2 style={{ fontSize: 38, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 16 }}>
-            Plans Built for Every Team
+            Plans Built for Your Team Size
           </h2>
           <p style={{ color: 'var(--text-secondary)', fontSize: 18, maxWidth: 640, margin: '0 auto' }}>
-            Choose a plan that fits your workload. Upgrade or downgrade anytime.
+            Choose a plan that fits your project and team requirements.
           </p>
         </div>
 
@@ -519,13 +712,13 @@ export default function LandingPage() {
                       borderRadius: 20,
                       boxShadow: '0 4px 12px var(--accent-glow)'
                     }}>
-                      RECOMMENDED
+                      POPULAR
                     </span>
                   )}
 
                   <div>
                     <h3 style={{ fontSize: 24, fontWeight: 800, marginBottom: 8 }}>{plan.name} Plan</h3>
-                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 24 }}>Plan #{plan.id}</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--accent)', marginBottom: 24 }}>Plan Option #{plan.id}</div>
 
                     <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 14, padding: 0, margin: '0 0 32px 0' }}>
                       <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
@@ -533,6 +726,9 @@ export default function LandingPage() {
                       </li>
                       <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
                         <span style={{ color: 'var(--success)', fontWeight: 800 }}>✓</span> {plan.maxMembersPerWorkspace === 0 ? 'Unlimited Members' : `Up to ${plan.maxMembersPerWorkspace} Members`}
+                      </li>
+                      <li style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600 }}>
+                        <span style={{ color: 'var(--success)', fontWeight: 800 }}>✓</span> {plan.maxBoardsPerProject === 0 ? 'Unlimited Boards' : `Up to ${plan.maxBoardsPerProject} Boards per Project`}
                       </li>
                     </ul>
                   </div>
@@ -567,10 +763,13 @@ export default function LandingPage() {
       }}>
         <div style={{ maxWidth: 900, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 54 }}>
+            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--accent)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+              Questions & Answers
+            </div>
             <h2 style={{ fontSize: 36, fontWeight: 800, letterSpacing: '-0.5px', marginBottom: 12 }}>
               Frequently Asked Questions
             </h2>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Everything you need to know about WorkManager.</p>
+            <p style={{ color: 'var(--text-secondary)', fontSize: 16 }}>Learn more about how WorkManager operates.</p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -663,7 +862,7 @@ export default function LandingPage() {
             Ready to Organize Your Work?
           </h2>
           <p style={{ fontSize: 18, opacity: 0.9, maxWidth: 600, margin: '0 auto 36px', lineHeight: 1.6 }}>
-            Join WorkManager today and start managing your projects with clarity and speed.
+            Join WorkManager today and start managing your projects with clarity.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
             <Link href="/plans" className="btn" style={{
@@ -697,12 +896,67 @@ export default function LandingPage() {
       {/* ── Footer ─────────────────────────────────────────────────── */}
       <footer style={{
         borderTop: '1px solid var(--border)',
-        padding: '40px 32px',
-        textAlign: 'center',
-        color: 'var(--text-muted)',
-        fontSize: 14
+        background: 'var(--bg-secondary)',
+        padding: '60px 48px 30px',
+        color: 'var(--text-secondary)'
       }}>
-        <p>© {new Date().getFullYear()} WorkManager. All rights reserved.</p>
+        <div style={{ maxWidth: 1280, margin: '0 auto', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', gap: 40, marginBottom: 40, textAlign: 'left' }}>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+              <div style={{
+                width: 32,
+                height: 32,
+                background: 'var(--gradient-primary)',
+                borderRadius: 8,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
+                  <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+                </svg>
+              </div>
+              <span className="text-gradient" style={{ fontSize: 18, fontWeight: 800 }}>WorkManager</span>
+            </div>
+            <p style={{ fontSize: 14, color: 'var(--text-muted)', lineHeight: 1.6, maxWidth: 320 }}>
+              The modern project management platform designed to keep your team aligned, productive, and focused.
+            </p>
+          </div>
+
+          <div>
+            <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Product</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
+              <a href="#features" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Features</a>
+              <a href="#views" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Interactive Views</a>
+              <a href="#pricing" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Pricing Plans</a>
+            </div>
+          </div>
+
+          <div>
+            <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Account</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
+              <Link href="/login" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Sign In</Link>
+              <Link href="/plans" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Get Started</Link>
+              <Link href="/forgot-password" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>Forgot Password</Link>
+            </div>
+          </div>
+
+          <div>
+            <h4 style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16 }}>Security & Help</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, fontSize: 14 }}>
+              <a href="#faq" style={{ color: 'var(--text-secondary)', textDecoration: 'none' }}>FAQ</a>
+              <span style={{ color: 'var(--text-muted)' }}>Email & OTP Auth</span>
+              <span style={{ color: 'var(--text-muted)' }}>Access Controls</span>
+            </div>
+          </div>
+        </div>
+
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: 24, textAlign: 'center', color: 'var(--text-muted)', fontSize: 13 }}>
+          <p>© {new Date().getFullYear()} WorkManager. All rights reserved.</p>
+        </div>
       </footer>
 
     </div>
