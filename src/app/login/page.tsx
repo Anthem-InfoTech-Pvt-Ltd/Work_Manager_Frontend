@@ -124,19 +124,19 @@ function LoginForm() {
     try {
       const res = await authApi.sendLoginOtp(email.trim());
       if (res.data.success) {
-        showToast.success('Login verification code sent to your email!');
+        showToast.success('OTP sent to your email!');
         setOtpStep('verify');
         setTimer(60);
         setCanResend(false);
         setOtp(['', '', '', '', '', '']);
         setTimeout(() => inputRefs.current[0]?.focus(), 100);
       } else {
-        const errMsg = res.data.message || 'Failed to send login code.';
+        const errMsg = res.data.message || 'Failed to send OTP.';
         setError(errMsg);
         showToast.error(errMsg);
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'An error occurred while sending login code.';
+      const errMsg = err.response?.data?.message || 'An error occurred while sending OTP.';
       setError(errMsg);
       showToast.error(errMsg);
     } finally {
@@ -152,16 +152,16 @@ function LoginForm() {
     try {
       const res = await authApi.sendLoginOtp(email.trim());
       if (res.data.success) {
-        showToast.success('New login code sent!');
+        showToast.success('New OTP sent!');
         setTimer(60);
         setCanResend(false);
         setOtp(['', '', '', '', '', '']);
         inputRefs.current[0]?.focus();
       } else {
-        showToast.error(res.data.message || 'Failed to resend login code.');
+        showToast.error(res.data.message || 'Failed to resend OTP.');
       }
     } catch (err: any) {
-      showToast.error(err.response?.data?.message || 'Failed to resend login code.');
+      showToast.error(err.response?.data?.message || 'Failed to resend OTP.');
     } finally {
       setLoading(false);
     }
@@ -200,7 +200,7 @@ function LoginForm() {
 
     const otpCode = otp.join('');
     if (otpCode.length !== 6) {
-      const errMsg = 'Please enter all 6 digits of the verification code.';
+      const errMsg = 'Please enter all 6 digits of the OTP.';
       setError(errMsg);
       showToast.error(errMsg);
       return;
@@ -217,7 +217,7 @@ function LoginForm() {
         router.push('/dashboard');
       }
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || 'Invalid or expired verification code.';
+      const errMsg = err.response?.data?.message || 'Incorrect OTP. Please try again.';
       setError(errMsg);
       showToast.error(errMsg);
     } finally {
@@ -346,7 +346,7 @@ function LoginForm() {
           otpStep === 'request' ? (
             <form onSubmit={handleSendLoginOtp} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               <div>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-muted)', marginBottom: 6 }}>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 6 }}>
                   Work Email Address
                 </label>
                 <input
@@ -358,7 +358,7 @@ function LoginForm() {
                   maxLength={50}
                 />
                 <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 6 }}>
-                  We'll email you a single-use 6-digit login code.
+                  We'll email you a single-use 6-digit OTP.
                 </p>
               </div>
 
@@ -368,7 +368,7 @@ function LoginForm() {
                 disabled={loading}
                 style={{ marginTop: 8, justifyContent: 'center' }}
               >
-                {loading ? 'Sending Code...' : 'Send Login Code →'}
+                {loading ? 'Sending OTP...' : 'Send OTP →'}
               </button>
 
               <button
@@ -386,7 +386,7 @@ function LoginForm() {
             <form onSubmit={handleLoginWithOtp} style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <div style={{ textAlign: 'center' }}>
                 <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
-                  Enter the 6-digit code sent to <strong>{email}</strong>
+                  Enter the 6-digit OTP sent to <strong>{email}</strong>
                 </p>
 
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'center', margin: '8px 0 16px' }}>
@@ -428,10 +428,10 @@ function LoginForm() {
                     disabled={loading}
                     style={{ background: 'none', border: 'none', color: 'var(--accent)', fontWeight: 700, cursor: 'pointer' }}
                   >
-                    Resend Code
+                    Resend OTP
                   </button>
                 ) : (
-                  <span>Resend code in <strong>{timer}s</strong></span>
+                  <span>Resend OTP in <strong>{timer}s</strong></span>
                 )}
                 <span style={{ margin: '0 8px', color: 'var(--border)' }}>•</span>
                 <button
