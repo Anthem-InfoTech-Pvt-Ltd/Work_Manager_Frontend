@@ -22,6 +22,7 @@ interface AuthContextType {
   login: (email: string, password: string, inviteToken?: string) => Promise<{ boardId?: number }>;
   loginWithOtp: (email: string, otp: string, inviteToken?: string) => Promise<{ boardId?: number }>;
   logout: () => void;
+  updateUser: (updatedData: Partial<User>) => void;
   isLoading: boolean;
   hasPermission: (key: string) => boolean;
   workspaceId: number | null;
@@ -91,13 +92,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   };
 
+  const updateUser = (updatedData: Partial<User>) => {
+    setUser((prevUser) => {
+      if (!prevUser) return null;
+      const firstName = updatedData.firstName !== undefined ? updatedData.firstName : prevUser.firstName;
+      const lastName = updatedData.lastName !== undefined ? updatedData.lastName : prevUser.lastName;
+      const fullName = `${firstName} ${lastName}`.trim();
+      const updated: User = {
+        ...prevUser,
+        ...updatedData,
+        firstName,
+        lastName,
+        fullName: updatedData.fullName || fullName,
+      };
+      localStorage.setItem('wm_user', JSON.stringify(updated));
+      return updated;
+    });
+  };
+
   const hasPermission = (key: string) => {
     if (!user) return false;
     return user.permissions?.includes(key) ?? false;
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, loginWithOtp, logout, isLoading, hasPermission, workspaceId: 1, setWorkspaceId: () => {} }}>
+    <AuthContext.Provider value={{ user, token, login, loginWithOtp, logout, updateUser, isLoading, hasPermission, workspaceId: 1, setWorkspaceId: () => {} }}>
       {children}
     </AuthContext.Provider>
   );

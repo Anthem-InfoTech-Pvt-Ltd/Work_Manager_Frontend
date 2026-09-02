@@ -8,7 +8,7 @@ import { showToast } from '@/components/shared/ToastProvider';
 import { validateRequired } from '@/lib/validation';
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [saving, setSaving] = useState(false);
@@ -38,7 +38,13 @@ export default function ProfilePage() {
 
     setSaving(true);
     try {
-      await usersApi.update(user.id, { firstName, lastName });
+      const res = await usersApi.update(user.id, { firstName, lastName });
+      const updatedUser = res.data?.data;
+      updateUser({
+        firstName,
+        lastName,
+        fullName: updatedUser?.fullName || `${firstName} ${lastName}`.trim(),
+      });
       showToast.success('Profile updated successfully!');
     } catch {
       showToast.error('Failed to update profile.');

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { usersApi, authApi, planApi } from '@/lib/api';
 import { showToast, ConfirmModal } from '@/components/shared/ToastProvider';
 import { validateRequired, validateEmail } from '@/lib/validation';
+import { useAuth } from '@/lib/auth';
 
 interface User {
   id: number;
@@ -31,6 +32,7 @@ interface UserSubscription {
 
 
 export default function UserManagementPage() {
+  const { user: currentUser, updateUser } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [userSubs, setUserSubs] = useState<UserSubscription[]>([]);
@@ -201,6 +203,9 @@ export default function UserManagementPage() {
       });
 
       if (res.data.success) {
+        if (currentUser && editingUser.id === currentUser.id) {
+          updateUser({ firstName: firstName.trim(), lastName: lastName.trim() });
+        }
         setSaveSuccess(true);
         showToast.success('User updated successfully.');
         setTimeout(() => {
