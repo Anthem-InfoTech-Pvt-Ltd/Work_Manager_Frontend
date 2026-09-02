@@ -540,6 +540,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                             placeholder="DD-MM-YYYY"
                             defaultValue={task.dueDate ? formatDateDDMMYYYY(task.dueDate) : ''}
                             disabled={!canEdit}
+                            maxLength={10}
                           />
                         )
                       },

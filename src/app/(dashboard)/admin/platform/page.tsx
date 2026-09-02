@@ -343,6 +343,7 @@ export default function PlatformManagementPage() {
                     if (actionError) setActionError(null);
                   }}
                   placeholder="e.g. Website Redesign"
+                  maxLength={50}
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
@@ -357,6 +358,7 @@ export default function PlatformManagementPage() {
                   style={{ resize: 'none' }}
                   rows={3}
                   placeholder="Brief description of the project"
+                  maxLength={200}
                 />
               </div>
               <div style={{ marginBottom: 20 }}>
