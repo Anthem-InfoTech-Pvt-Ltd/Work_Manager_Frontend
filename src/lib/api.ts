@@ -39,7 +39,7 @@ const dummyResolve = (data: any, message = '') => Promise.resolve({
 export const authApi = {
   login: (email: string, password: string, inviteToken?: string) =>
     api.post('/auth/login', { email, password, inviteToken }),
-  register: (data: { email: string; password: string; firstName: string; lastName: string; inviteToken?: string }) =>
+  register: (data: { email: string; password: string; firstName: string; lastName: string; inviteToken?: string; planId?: number }) =>
     api.post('/auth/register', data),
   sendOtp: (email: string, firstName?: string) => api.post('/auth/send-otp', { email, firstName }),
   verifyOtp: (email: string, otp: string) => api.post('/auth/verify-otp', { email, otp }),

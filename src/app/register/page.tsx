@@ -243,6 +243,7 @@ function RegisterForm() {
         firstName: firstName.trim(),
         lastName: lastName.trim(),
         inviteToken,
+        planId: selectedDbPlan?.id,
       });
 
       if (regRes.data.success) {
