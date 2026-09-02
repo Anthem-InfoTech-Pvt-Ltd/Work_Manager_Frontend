@@ -40,8 +40,7 @@ export function validateRequired(value: string, fieldName: string): string | nul
   return null;
 }
 
-export function numbersOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
-  // Allow: digits, decimal point, backspace, delete, tab, escape, enter, arrows
+export function decimalNumbersOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
   const allowed = [
     'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
     'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
@@ -49,7 +48,29 @@ export function numbersOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
     '.', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
   ];
 
-  // Allow Ctrl/Cmd + A, C, V, X (select all, copy, paste, cut)
+  if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
+    return;
+  }
+
+  // Prevent multiple decimal points
+  if (e.key === '.' && e.currentTarget.value.includes('.')) {
+    e.preventDefault();
+    return;
+  }
+
+  if (!allowed.includes(e.key)) {
+    e.preventDefault();
+  }
+}
+
+export function integerOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
+  const allowed = [
+    'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+    'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
+    'Home', 'End',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+  ];
+
   if ((e.ctrlKey || e.metaKey) && ['a', 'c', 'v', 'x'].includes(e.key.toLowerCase())) {
     return;
   }
@@ -58,3 +79,5 @@ export function numbersOnlyHandler(e: React.KeyboardEvent<HTMLInputElement>) {
     e.preventDefault();
   }
 }
+
+export const numbersOnlyHandler = decimalNumbersOnlyHandler;

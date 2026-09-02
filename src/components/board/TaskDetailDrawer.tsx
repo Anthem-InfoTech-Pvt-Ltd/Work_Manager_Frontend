@@ -571,6 +571,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                             disabled={!canEdit}
                             onBlur={e => saveField('estimatedHours', parseFloat(e.target.value) || null)}
                             onKeyDown={numbersOnlyHandler}
+                            maxLength={6}
                           />
                         )
                       },
@@ -708,6 +709,7 @@ export default function TaskDetailDrawer({ taskId, boardId, projectId, boardOwne
                         value={logHours}
                         onChange={e => setLogHours(e.target.value)}
                         onKeyDown={numbersOnlyHandler}
+                        maxLength={6}
                       />
                       <input
                         className="input"

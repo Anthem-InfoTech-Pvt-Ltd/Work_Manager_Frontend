@@ -5,7 +5,7 @@ import { useAuth } from '@/lib/auth';
 import { planApi } from '@/lib/api';
 import { ShieldAlert, Edit2, Check } from 'lucide-react';
 import { showToast } from '@/components/shared/ToastProvider';
-import { numbersOnlyHandler } from '@/lib/validation';
+import { integerOnlyHandler } from '@/lib/validation';
 
 interface Plan {
   id: number;
@@ -136,7 +136,8 @@ export default function PlansPage() {
                           style={{ width: 90, padding: '4px 8px' }}
                           value={editingForm?.maxProjects}
                           onChange={e => setEditingForm(f => f ? { ...f, maxProjects: parseInt(e.target.value) || 0 } : null)}
-                          onKeyDown={numbersOnlyHandler}
+                          onKeyDown={integerOnlyHandler}
+                          maxLength={4}
                         />
                       ) : (
                         p.maxProjectsPerWorkspace === 0 ? 'Unlimited' : p.maxProjectsPerWorkspace
@@ -150,7 +151,8 @@ export default function PlansPage() {
                           style={{ width: 90, padding: '4px 8px' }}
                           value={editingForm?.maxMembers}
                           onChange={e => setEditingForm(f => f ? { ...f, maxMembers: parseInt(e.target.value) || 0 } : null)}
-                          onKeyDown={numbersOnlyHandler}
+                          onKeyDown={integerOnlyHandler}
+                          maxLength={4}
                         />
                       ) : (
                         p.maxMembersPerWorkspace === 0 ? 'Unlimited' : p.maxMembersPerWorkspace

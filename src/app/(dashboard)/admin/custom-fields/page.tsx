@@ -343,6 +343,7 @@ export default function CustomFieldsPage() {
                   className="input"
                   value={fieldName}
                   onChange={e => setFieldName(e.target.value)}
+                  maxLength={50}
                   style={{ width: '100%', background: 'var(--bg-primary)' }}
                   placeholder="e.g. Story Points, QA Status"
                 />
@@ -376,6 +377,7 @@ export default function CustomFieldsPage() {
                     className="input"
                     value={fieldOptions}
                     onChange={e => setFieldOptions(e.target.value)}
+                    maxLength={500}
                     style={{ width: '100%', background: 'var(--bg-primary)' }}
                     placeholder="e.g. Planning, Ready, Completed"
                   />
@@ -390,6 +392,7 @@ export default function CustomFieldsPage() {
                   className="input"
                   value={fieldDefault}
                   onChange={e => setFieldDefault(e.target.value)}
+                  maxLength={100}
                   style={{ width: '100%', background: 'var(--bg-primary)' }}
                   placeholder="e.g. 5, Pending"
                 />

@@ -274,6 +274,7 @@ export default function SettingsPage() {
                   value={getSettingValue('attachment.max_size_mb')}
                   onChange={e => handleValueChange('attachment.max_size_mb', e.target.value)}
                   onKeyDown={numbersOnlyHandler}
+                  maxLength={4}
                   style={{ width: '100%', background: 'var(--bg-primary)' }}
                 />
               </div>
