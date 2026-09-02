@@ -19,6 +19,7 @@ export default function LandingPage() {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const [plans, setPlans] = useState<DbPlan[]>([]);
   const [activeTab, setActiveTab] = useState<'kanban' | 'calendar'>('kanban');
+  const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
     planApi.getPublicPlans()
@@ -28,6 +29,12 @@ export default function LandingPage() {
         }
       })
       .catch(() => {});
+
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const faqs = [
@@ -36,8 +43,12 @@ export default function LandingPage() {
       a: 'Yes! You can choose our Free plan upon registration and start creating projects and boards right away.'
     },
     {
+      q: 'How do notifications work in WorkManager?',
+      a: 'WorkManager sends instant real-time in-app alerts when tasks are updated or assigned, plus automated email notifications for task reminders and team invitations.'
+    },
+    {
       q: 'What is included in subscription plans?',
-      a: 'Each plan defines specific limits for maximum projects, workspace members, and boards per project. You can choose the plan that best fits your team.'
+      a: 'Each plan defines specific limits for maximum projects, team members, and boards per project. You can choose the plan that best fits your team.'
     },
     {
       q: 'How does Email OTP authentication work?',
@@ -56,13 +67,176 @@ export default function LandingPage() {
   const pillars = [
     { title: 'Kanban Boards', desc: 'Visual workflow management' },
     { title: 'Smart Calendar', desc: 'Task deadline tracking' },
+    { title: 'Email & Live Alerts', desc: 'Real-time & email notifications' },
     { title: 'OTP Security', desc: 'Email verification code login' },
-    { title: 'Plan Options', desc: 'Flexible workspace tiers' }
+    { title: 'Plan Options', desc: 'Flexible subscription tiers' }
   ];
 
   return (
-    <div style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
+    <div style={{ background: 'var(--bg-primary)', color: 'var(--text-primary)', minHeight: '100vh', fontFamily: 'Inter, sans-serif', position: 'relative', overflowX: 'hidden' }}>
       
+      {/* Dynamic Keyframe & Background Parallax Helper Styles */}
+      <style jsx global>{`
+        html {
+          scroll-behavior: smooth;
+        }
+        @keyframes floatOrb1 {
+          0%, 100% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+          50% { transform: translate(60px, -70px) rotate(180deg) scale(1.2); }
+        }
+        @keyframes floatOrb2 {
+          0%, 100% { transform: translate(0px, 0px) rotate(0deg) scale(1); }
+          50% { transform: translate(-70px, 60px) rotate(-180deg) scale(1.15); }
+        }
+        @keyframes floatOrb3 {
+          0%, 100% { transform: translate(0px, 0px) scale(0.9); }
+          50% { transform: translate(50px, 50px) scale(1.18); }
+        }
+        @keyframes floatParticle {
+          0% { transform: translateY(0px) scale(1); opacity: 0.3; }
+          50% { transform: translateY(-30px) scale(1.3); opacity: 0.8; }
+          100% { transform: translateY(0px) scale(1); opacity: 0.3; }
+        }
+        @keyframes pulseGlow {
+          0%, 100% { opacity: 0.45; }
+          50% { opacity: 0.85; }
+        }
+        .parallax-card {
+          transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease, border-color 0.35s ease !important;
+        }
+        .parallax-card:hover {
+          transform: translateY(-10px) scale(1.02) !important;
+          box-shadow: 0 20px 40px var(--accent-glow) !important;
+          border-color: var(--accent) !important;
+        }
+      `}</style>
+
+      {/* ── Background Dot Grid Pattern Overlay ─────────────────────────── */}
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        backgroundImage: 'radial-gradient(var(--border) 1.2px, transparent 1.2px)',
+        backgroundSize: '36px 36px',
+        opacity: 0.35,
+        pointerEvents: 'none',
+        zIndex: 0
+      }} />
+
+      {/* ── Layer 1: Multi-Speed Parallax Glowing Orbs ────────────────── */}
+      {/* Orb 1 - Top Left Violet/Indigo Glow */}
+      <div style={{
+        position: 'absolute',
+        top: -120,
+        left: '2%',
+        width: 650,
+        height: 650,
+        borderRadius: '50%',
+        background: 'var(--accent-glow)',
+        filter: 'blur(140px)',
+        opacity: 0.6,
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * 0.4}px)`,
+        animation: 'floatOrb1 11s ease-in-out infinite, pulseGlow 7s ease-in-out infinite'
+      }} />
+
+      {/* Orb 2 - Middle Right Cyan/Blue Glow */}
+      <div style={{
+        position: 'absolute',
+        top: 500,
+        right: '1%',
+        width: 600,
+        height: 600,
+        borderRadius: '50%',
+        background: 'rgba(6, 182, 212, 0.28)',
+        filter: 'blur(130px)',
+        opacity: 0.55,
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * -0.3}px)`,
+        animation: 'floatOrb2 14s ease-in-out infinite, pulseGlow 9s ease-in-out infinite'
+      }} />
+
+      {/* Orb 3 - Center Pink/Purple Glow */}
+      <div style={{
+        position: 'absolute',
+        top: 1300,
+        left: '15%',
+        width: 550,
+        height: 550,
+        borderRadius: '50%',
+        background: 'rgba(236, 72, 153, 0.22)',
+        filter: 'blur(135px)',
+        opacity: 0.5,
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * 0.2}px)`,
+        animation: 'floatOrb3 16s ease-in-out infinite'
+      }} />
+
+      {/* Orb 4 - Lower Right Deep Indigo Glow */}
+      <div style={{
+        position: 'absolute',
+        top: 2100,
+        right: '10%',
+        width: 580,
+        height: 580,
+        borderRadius: '50%',
+        background: 'rgba(99, 102, 241, 0.25)',
+        filter: 'blur(140px)',
+        opacity: 0.5,
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * -0.15}px)`,
+        animation: 'floatOrb1 18s ease-in-out infinite'
+      }} />
+
+      {/* ── Layer 2: Floating Animated Ambient Dust Particles ──────────── */}
+      <div style={{
+        position: 'absolute',
+        top: 250,
+        left: '20%',
+        width: 12,
+        height: 12,
+        borderRadius: '50%',
+        background: 'var(--accent)',
+        filter: 'blur(2px)',
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * 0.15}px)`,
+        animation: 'floatParticle 6s ease-in-out infinite'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        top: 450,
+        right: '25%',
+        width: 16,
+        height: 16,
+        borderRadius: '50%',
+        background: '#ec4899',
+        filter: 'blur(3px)',
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * -0.2}px)`,
+        animation: 'floatParticle 8s ease-in-out infinite 1s'
+      }} />
+
+      <div style={{
+        position: 'absolute',
+        top: 900,
+        left: '12%',
+        width: 14,
+        height: 14,
+        borderRadius: '50%',
+        background: '#06b6d4',
+        filter: 'blur(2px)',
+        pointerEvents: 'none',
+        zIndex: 0,
+        transform: `translateY(${scrollY * 0.1}px)`,
+        animation: 'floatParticle 7s ease-in-out infinite 2s'
+      }} />
+
       {/* ── Top Navigation Bar ────────────────────────────────────────── */}
       <nav className="glass" style={{
         position: 'sticky',
@@ -149,13 +323,18 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* ── Hero Section ────────────────────────────────────────────── */}
+      {/* ── Hero Section with Parallax Movement ─────────────────────── */}
       <section style={{
         maxWidth: 1280,
         margin: '0 auto',
         padding: '90px 32px 60px',
-        textAlign: 'center'
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 1,
+        transform: `translateY(${Math.min(scrollY * 0.1, 50)}px)`,
+        transition: 'transform 0.08s ease-out'
       }}>
+
         <div style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -167,7 +346,8 @@ export default function LandingPage() {
           color: 'var(--text-primary)',
           fontSize: 14,
           fontWeight: 700,
-          marginBottom: 28
+          marginBottom: 28,
+          transform: `translateY(${Math.min(scrollY * 0.05, 20)}px)`
         }}>
           <span>✨ Modern Project & Task Management Platform</span>
         </div>
@@ -178,7 +358,8 @@ export default function LandingPage() {
           lineHeight: 1.15,
           letterSpacing: '-2px',
           marginBottom: 24,
-          color: 'var(--text-primary)'
+          color: 'var(--text-primary)',
+          transform: `translateY(${Math.min(scrollY * 0.04, 15)}px)`
         }}>
           Manage Tasks & Projects with <br/>
           <span className="text-gradient">Complete Control & Visual Flow</span>
@@ -191,7 +372,7 @@ export default function LandingPage() {
           margin: '0 auto 40px',
           lineHeight: 1.6
         }}>
-          WorkManager brings Kanban board tracking, due date calendar scheduling, and secure email OTP authentication into one clean workspace.
+          WorkManager brings Kanban board tracking, due date calendar scheduling, real-time in-app notifications, and email alerts into one clean platform.
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 20, marginBottom: 50 }}>
@@ -218,31 +399,35 @@ export default function LandingPage() {
         {/* ── Core Platform Pillars Bar ─────────────────────────────── */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(4, 1fr)',
-          gap: 20,
+          gridTemplateColumns: 'repeat(5, 1fr)',
+          gap: 16,
           marginBottom: 60,
           padding: '24px 32px',
           background: 'var(--bg-secondary)',
           borderRadius: 20,
-          border: '1px solid var(--border)'
+          border: '1px solid var(--border)',
+          boxShadow: '0 8px 24px rgba(99, 102, 241, 0.08)'
         }}>
           {pillars.map((pil, i) => (
             <div key={i} style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>
+              <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', marginBottom: 4 }}>
                 {pil.title}
               </div>
-              <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-muted)' }}>
+              <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-muted)' }}>
                 {pil.desc}
               </div>
             </div>
           ))}
         </div>
 
-        {/* Product Visual Mock Container */}
-        <div className="card" style={{
+        {/* 3D Parallax Tilt Product Mock Container */}
+        <div className="card parallax-card" style={{
           padding: 24,
-          borderRadius: 20
+          borderRadius: 20,
+          transform: `perspective(1200px) rotateX(${Math.min(scrollY * 0.03, 10)}deg) scale(${Math.max(1 - scrollY * 0.0002, 0.94)})`,
+          transition: 'transform 0.1s ease-out, box-shadow 0.3s ease'
         }}>
+
           <div style={{
             background: 'var(--bg-primary)',
             borderRadius: 12,
@@ -259,7 +444,21 @@ export default function LandingPage() {
               <div style={{ width: 12, height: 12, borderRadius: '50%', background: 'var(--success)' }}/>
               <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 12 }}>Kanban Board: Sprint Execution</span>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Live Interface Preview</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{
+                background: 'var(--accent-glow)',
+                color: 'var(--accent)',
+                padding: '4px 12px',
+                borderRadius: 20,
+                fontSize: 12,
+                fontWeight: 700,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6
+              }}>
+                🔔 Real-Time Email & In-App Alerts
+              </span>
+            </div>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, textAlign: 'left' }}>
@@ -338,7 +537,7 @@ export default function LandingPage() {
           gap: 32
         }}>
           {/* Feature 1 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
@@ -364,7 +563,7 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 2 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
@@ -391,7 +590,7 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 3 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
@@ -418,7 +617,7 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 4 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
@@ -442,7 +641,7 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 5 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
@@ -466,7 +665,7 @@ export default function LandingPage() {
           </div>
 
           {/* Feature 6 */}
-          <div className="card" style={{ padding: 36, borderRadius: 20 }}>
+          <div className="card parallax-card" style={{ padding: 36, borderRadius: 20 }}>
             <div style={{
               width: 50,
               height: 50,
